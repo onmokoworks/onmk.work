@@ -1,0 +1,33 @@
+@charset 'UTF-8';
+
+html{
+    background-color: #F0F0F0;
+    ;
+}
+
+h1{
+    font-family: Now-Bold;
+    src: url(/fonts/now/Now-Bold.otf) format(opentype);
+}
+
+h2{
+    font-family: Now-Light;
+    src: url(/fonts/now/Now-Light.otf) format(opentype);
+}
+
+body{
+    font-family: Now-Bold;
+}
+
+.grid{
+    display: grid;
+    grid-template-columns: 200px 1fr 200px;
+    /* grid-template-rows: 100px 1fr 100px; */
+    grid-template: 100px;
+    padding: 1rem;
+}
+
+.item{
+    border: 1px solid #000;
+    padding: 1rem;
+}
