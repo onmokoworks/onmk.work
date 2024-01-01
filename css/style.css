@@ -1,11 +1,11 @@
 @charset 'UTF-8';
 /* Black */
-@font-face {
+/* @font-face {
     font-family: Now;
     src: url(/fonts/now/Now-Black.otf) format(opentype);
     font-weight: Black;
     font-style: normal;
-}
+} */
 /* Bold */
 @font-face {
     font-family: Now;
