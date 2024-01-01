@@ -1,64 +1,100 @@
 @charset 'UTF-8';
+/* Black */
+@font-face {
+    font-family: Now;
+    src: url(/fonts/now/Now-Black.otf) format(opentype);
+    font-weight: Black;
+    font-style: normal;
+}
+/* Bold */
+@font-face {
+    font-family: Now;
+    src: url(/fonts/now/Now-Bold.otf) format(opentype);
+    font-weight: Bold;
+    font-style: normal;
+}
+/* Medium */
+@font-face {
+    font-family: Now;
+    src: url(/fonts/now/Now-Medium.otf) format(opentype);
+    font-weight: Medium;
+    font-style: normal;
+}
 
 html{
     background-color: #F0F0F0;
-    ;
 }
 
-h1{
-    font-family: Now;
+a{
+    /* font: 1.5rem; */
+    color: #202020;
+    font-family: "Now", Medium;
     src: url(/fonts/now/Now-Black.otf) format(opentype);
 }
 
-h2{
-    text-decoration-line: underline;
-    text-decoration-thickness: 13px;
-    text-decoration-color: #E2FF32;
-    text-underline-offset: 1px;
-    padding-bottom: 100px;
-    font-family: Now-Light;
-    src: url(/fonts/now/Now-Light.otf) format(opentype);
+#menu_right{
+    grid-row: 1 / 2;
+    grid-column: 4 / 5;
+    float: left;
 }
 
 body{
     font-family: Now-Bold;
 }
 
-#container{
-    /* border: 1px solid #000; */
+#menu{
+    grid-row: 1 / 2;
+    grid-column: 1 / 4;
+    border: 1px solid #000;
     display: grid;
-    grid-template-rows: 100px 1fr 200px;
-    grid-template-columns: 300px 1fr 150px 300px;
+    grid-template-rows: 100px;
+    grid-template-columns: 300px 1fr 100px 200px;
+    padding: 1rem;
 }
 
 #LOGO{
+    font-family: "Now", "Black";
     grid-row: 1 / 2;
     grid-column: 1 / 2;
-    /* border: 1px solid #000; */
-    padding: 1rem 1rem 1rem 185px;
+    padding: 1rem;
+    font-size: 200%;
 }
 
 #works{
     grid-row: 1 / 2;
     grid-column: 3 / 4;
-    /* border: 1px solid #000; */
     padding: 1rem;
 }
 
-#about{
+#works::after{
+    background-color: aqua;
+}
+
+#aboutcontact{
     grid-row: 1 / 2;
-    grid-column: 4 / 4;
+    grid-column: 4 / 5;
+    padding: 1rem;
+}
+
+#container{
     /* border: 1px solid #000; */
-    padding: 1rem 185px 1rem 1rem;
+    display: grid;
+    grid-template-rows: 100px 1fr 100px;
+    grid-template-columns: 300px 1fr 300px;
 }
 
 #main{
+    grid-row: 2 / 3;
+    grid-column: 2 / 3;
     border: 1px solid #000;
     padding: 1rem;
 }
 
 #footer{
-    border: 1px solid #000;
+    grid-row: 3 / 4;
+    grid-column: 1 / 4;
+    /* border: 1px solid #000; */
     padding: 1rem;
+    background-color: #EBEBEB;
 }
 
