@@ -13,7 +13,13 @@
     font-optical-sizing: auto;
     font-weight: <weight>;
     font-style: normal;
-  }
+}
+
+.zen-maru-gothic-regular {
+    font-family: "Zen Maru Gothic", serif;
+    font-weight: 400;
+    font-style: normal;
+}
 
 /* html{ */
     /* background-color: rgb(250, 250, 250); */
@@ -24,41 +30,40 @@ p{
 }
 
 .text{
-    font-family: Noto Sans JP;
-    font-weight: 400;
+    font-family: Zen Maru Gothic;
+    font-weight: 500;
     font-size: 1rem;
     font-feature-settings: "palt" 1;
     letter-spacing: 0.1rem;
-
 }
 
 h1{
-    font-family: Source Code Pro;
-    font-weight: 500;
-    font-size: 2.3rem;
+    font-family: Zen Maru Gothic;
+    font-weight: 700;
+    font-size: 2rem;
     /* font-feature-settings: "palt" 1; */
-    letter-spacing: -0.13rem;
+    letter-spacing: 0.13rem;
     color: black;
 }
 
 h2{
-    font-family: Source Code Pro;
-    font-weight: 500;
-    font-size: 1.7rem;
+    font-family: Zen Maru Gothic;
+    font-weight: 300;
+    font-size: 1rem;
     font-feature-settings: "palt" 1;
-    letter-spacing: -0.15rem;
-    margin-top: -2rem;
-    color: rgb(132, 132, 132);
+    letter-spacing: 0.1rem;
+    margin-top: -1.2rem;
+    color: rgb(177, 177, 177);
 }
 
 h3{
     /* font-family: Source Code Pro; */
-    font-family: Noto Sans JP;
+    font-family: Zen Maru Gothic;
     font-weight: 600;
     /* font-size: 2.5rem; */
     /* font-feature-settings: "palt" 1; */
     letter-spacing: 0.1rem;
-    margin-top: 1.8rem;
+    margin-top: 1.7rem;
 }
 
 .title{
@@ -67,7 +72,7 @@ h3{
 
 body{
     /* font-size: 25px; */
-    margin: 30px;
+    margin: 25px;
     display: flex;
     /* margin-top:50px; */
     gap: 6px 40px; /* 余白 */
@@ -83,15 +88,15 @@ body{
 }
 
 #menu{
-    letter-spacing: 0.05em;
-    font-family: Source Code Pro;
+    letter-spacing: 0.1em;
+    font-family: Zen Maru Gothic;
     font-weight: 600;
     font-size: 1.3rem;
     /* font-feature-settings: "palt" 1; */
     text-decoration: none;
     color: black;
     top: 8%;
-    height: 100px;
+    height: 50px;
     position: sticky;
 }
 
@@ -108,7 +113,7 @@ hr{
 }
 
 .click{
-    font-family: Source Code Pro;
+    font-family: Zen Maru Gothic;
     /* text-decoration: none; */
     color: black;
 }
