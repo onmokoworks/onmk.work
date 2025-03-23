@@ -31,15 +31,15 @@ html{
 
   
   
-  .text{
+.text{
       font-family: Zen Maru Gothic;
       font-weight: 500;
       font-size: 1rem;
       font-feature-settings: "palt" 1;
-      letter-spacing: 0.1rem;]
+      letter-spacing: 0.1rem;
   }
   
-  .text_url{
+.text_url{
       font-family: Zen Maru Gothic;
       font-weight: 500;
       font-size: 1rem;
@@ -57,6 +57,8 @@ html{
       /* font-feature-settings: "palt" 1; */
       letter-spacing: 0rem;
       color: black;
+      width: 80%;
+      animation: fadeIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   }
   
   h2{
@@ -91,65 +93,97 @@ html{
       /* margin-top:50px; */
       gap: 6px 40px; /* 余白 */
   }
+
+.onmkicon{
+    width: 30%;
+    image-rendering: pixelated;
+}
   
-  #main{
-      margin: 5px;
-      width: 65rem;
+#main{
+    margin: 5px;
+    width: 65rem;
+}
+
+/* アイコンテキストの部分 */
+.minitext{
+    display: inline-block;
+    color: rgb(168, 168, 168);
+}
+  
+#main-about{
+    /* height: -100px; */
+}
+  
+#menu{
+    letter-spacing: 0.1em;
+    font-family: Zen Maru Gothic;
+    font-weight: 600;
+    /* font-feature-settings: "palt" 1; */
+    text-decoration: none;
+    color: black;
+    top: 8%;
+    height: 50px;
+    line-height: 2rem;
+    /* margin-top: 1.2rem; */
+    /* letter-spacing: 0.5rem; */
+    position: sticky;
+}
+  
+ul{
+    padding: 0;
+    list-style-type: none;
+    color: blue;
+}
+  
+  
+hr{
+    height: 0.1px;
+    /* color:black; */
+}
+
+.click{
+    font-family: Zen Maru Gothic;
+    /* text-decoration: none; */
+    text-decoration-color: rgb(240, 240, 240);
+    color: black;
+    border-width: 2px;
+}
+
+.click:hover{
+    /* text-decoration: underline; */
+    color: blue;
+}
+  
+.onmkicon{
+    width: 30%;
+    animation: fadeY .5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* テキストフェード */
+.text{
+    animation: fadeIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+/* 透明度フェードイン */
+@keyframes fadeIn {
+0% {
+    opacity: 0;
+    }
+  30%,100% {
+    opacity: 1;
   }
-  
-  #main-about{
-      /* height: -100px; */
+}
+
+/* 画像フェード */
+.item-img{
+      width: 80%;
+      animation: fadeY 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   }
-  
-  #menu{
-      letter-spacing: 0.1em;
-      font-family: Zen Maru Gothic;
-      font-weight: 600;
-      /* font-feature-settings: "palt" 1; */
-      text-decoration: none;
-      color: black;
-      top: 8%;
-      height: 50px;
-      line-height: 2rem;
-      /* margin-top: 1.2rem; */
-      /* letter-spacing: 0.5rem; */
-      position: sticky;
-  }
-  
-  ul{
-      padding: 0;
-      list-style-type: none;
-      color: blue;
-  }
-  
-  
-  hr{
-      height: 0.1px;
-      /* color:black; */
-  }
-  
-  .click{
-      font-family: Zen Maru Gothic;
-      /* text-decoration: none; */
-      text-decoration-color: rgb(240, 240, 240);
-      color: black;
-      border-width: 2px;
-  }
-  
-  .click:hover{
-      /* text-decoration: underline; */
-      color: blue;
-  }
-  
-  /* 画像フェード */
-  .item-img{
-      width: 100%;
-      animation: fadeIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-  }
-  
-  @keyframes fadeIn {
+
+ /* 下からフェードイン */
+@keyframes fadeY {
     0% {
-      transform: translateY(10px);
+      transform: translateY(5px);
       opacity: 0;
     }
     100% {
@@ -160,12 +194,17 @@ html{
     }
   }
   
+  
   .url{
       text-decoration: none;
       text-decoration: underline;
-      color: rgb(0, 0, 255);
-      
+      color: rgb(0, 0, 255);   
   }
+
+.minitext{
+    font-family: Zen Maru Gothic;
+    text-decoration-color: rgb(240, 240, 240);
+}
   
   
   @media screen and ( max-width:1024px) {
