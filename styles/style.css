@@ -141,10 +141,24 @@ html{
       color: blue;
   }
   
+  /* 画像フェード */
   .item-img{
       width: 100%;
+      animation: fadeIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
   }
   
+  @keyframes fadeIn {
+    0% {
+      transform: translateY(10px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+    }
+    40%,100% {
+      opacity: 1;
+    }
+  }
   
   .url{
       text-decoration: none;
@@ -187,7 +201,7 @@ html{
           letter-spacing: 0.1em;
           font-family: Zen Maru Gothic;
           font-weight: 500;
-          font-size: 2rem;
+          font-size: 4rem;
           /* font-feature-settings: "palt" 1; */
           text-decoration: none;
           color: black;
