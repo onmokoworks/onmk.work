@@ -134,7 +134,7 @@ ul{
     list-style-type: none;
     color: blue;
 }
-  
+
   
 hr{
     height: 0.1px;
@@ -162,6 +162,10 @@ hr{
 /* テキストフェード */
 .text{
     animation: fadeIn 1s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.tyui{
+    color: red;
 }
 
 /* 透明度フェードイン */
@@ -230,7 +234,7 @@ hr{
           /* font-family: Source Code Pro; */
           font-family: Zen Maru Gothic;
           font-weight: 600;
-          font-size: 1.2rem;
+          font-size: 2rem;
           /* font-feature-settings: "palt" 1; */
           letter-spacing: 0.1rem;
           margin-top: 1.7rem;
@@ -240,7 +244,7 @@ hr{
           letter-spacing: 0.1em;
           font-family: Zen Maru Gothic;
           font-weight: 500;
-          font-size: 2rem;
+          font-size: 2.2rem;
           /* font-feature-settings: "palt" 1; */
           text-decoration: none;
           color: black;
@@ -252,3 +256,17 @@ hr{
           position: sticky;
       }
   }
+
+@media (max-width: 1024px) {
+  #main img {
+    width: 100%; /* 画像を親要素の幅いっぱいに拡大 */
+    display: block; /* 画像をブロックレベル要素として表示 */
+  }
+  #main img.text {
+    display: inline-block; /* 画像をインラインブロックレベル要素として表示 */
+    width: auto; /* 画像の幅を自動調整 */
+    max-width: 100%; /* 画像の最大幅を親要素の幅に制限 */
+    float: right; /* 画像を右端に配置 */
+    clear: both; /* 画像の後に改行 */
+  }
+}
