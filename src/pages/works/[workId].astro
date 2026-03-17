@@ -1,0 +1,127 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getWorks, getWorkDetail } from "../../library/microcms";
+
+export async function getStaticPaths() {
+  const response = await getWorks({ fields: ["id"], limit: 100 });
+  return response.contents.map((work) => ({
+    params: { workId: work.id },
+  }));
+}
+
+const { workId } = Astro.params;
+const work = await getWorkDetail(workId as string);
+---
+
+<Layout title={`${work.title} | onmk`}>
+  <div class="container">
+    <a href="/works" class="back">← works</a>
+
+    <article class="work-detail">
+      {work.images?.[0] && !work.description && (
+        <div class="image-wrap">
+          <img src={`${work.images[0].url}?w=1200`} alt={work.title} />
+        </div>
+      )}
+
+      <div class="work-meta">
+        <h1 class="work-title">{work.title}</h1>
+        <div class="work-sub">
+          {work.tag && <span class="work-tag">{work.tag.title}</span>}
+          {work.year && <span class="work-year">{work.year}</span>}
+        </div>
+      </div>
+
+      {work.description && (
+        <div class="work-description" set:html={work.description} />
+      )}
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .container { max-width: 680px; padding-top: 40px; }
+
+  .back {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    margin-bottom: 40px;
+    transition: color 0.2s;
+  }
+  .back:hover { color: var(--text-main); }
+
+  /* Video */
+  .video-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    margin-bottom: 24px;
+  }
+  .video-wrap iframe {
+    width: 100%; height: 100%;
+    display: block;
+  }
+
+  /* Fallback image */
+  .image-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .image-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  /* Meta */
+  .work-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 16px;
+    gap: 16px;
+  }
+  .work-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.4;
+  }
+  .work-sub {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+    align-items: baseline;
+  }
+  .work-tag {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    letter-spacing: 0.05em;
+  }
+  .work-year {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    font-style: italic;
+  }
+
+  .work-description {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--text-sub);
+  }
+  .work-description :global(iframe) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    display: block;
+    margin-bottom: 16px;
+  }
+  .work-description :global(p) {
+    margin-bottom: 12px;
+  }
+</style>

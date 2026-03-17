@@ -1,0 +1,91 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const references = [
+  { label: "Yoichi Azegami", url: "https://yoichiazegami.com/" },
+  { label: "euske oiwa", url: "https://euskeoiwa.com/jp.html" },
+  { label: "Shunya Hagiwara", url: "https://shunyahagiwara.com/" },
+  { label: "yohoshika", url: "https://yohoshika.neocities.org/" },
+];
+---
+
+<Layout title="このサイトについて | onmk">
+  <div class="container">
+    <h1 class="page-title">このサイトについて</h1>
+
+    <p class="body-text">
+      おーんのポートフォリオサイトです。
+    </p>
+
+    <hr />
+
+    <section>
+      <span class="label">reference</span>
+      <ul class="ref-list">
+        {references.map((ref) => (
+          <li>
+            <a href={ref.url} target="_blank" rel="noopener" class="ref-link">
+              {ref.label}
+              <span class="ref-url">{ref.url}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .container { max-width: 560px; }
+
+  .page-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    margin-bottom: 24px;
+  }
+
+  .body-text {
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: var(--text-main);
+  }
+
+  .label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .ref-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .ref-link {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px 0;
+    border-bottom: 0.1px solid #e5e5e5;
+    text-decoration: none;
+    color: var(--text-main);
+    transition: opacity 0.2s;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+  .ref-list li:first-child .ref-link { border-top: 0.1px solid #e5e5e5; }
+  .ref-link:hover { opacity: 0.5; }
+
+  .ref-url {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    font-weight: 400;
+  }
+</style>

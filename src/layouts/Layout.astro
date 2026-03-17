@@ -1,0 +1,77 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+}
+
+const { title = "onmk" } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="icon" href="https://images.microcms-assets.io/assets/7e9fc87adf964e50b35455f8944b5a5a/f35d72c6aa904e59b1b5021aabb70eb7/icon.jpg" />
+  </head>
+  <body>
+    <nav class="nav-bar">
+      <div class="nav-container">
+        <a href="/" class="nav-icon">
+          <img src="https://i.gyazo.com/b65650558543ca07d173b5dc840e2ed8.png" alt="icon" />
+        </a>
+        <div class="nav-links">
+          <a href="/works" class="nav-link">works</a>
+          <a href="/about" class="nav-link">about</a>
+        </div>
+      </div>
+    </nav>
+
+    <slot />
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <span>Some Rights Reserved. © 2026 onmk</span>
+        <a href="/site" class="footer-link">このサイトについて</a>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-footer {
+    display: flex;
+    justify-content: center;
+    padding: 40px 40px 60px;
+    margin-top: 80px;
+    border-top: 0.1px solid #e5e5e5;
+  }
+  .footer-inner {
+    width: 100%;
+    max-width: var(--content-width);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    letter-spacing: 0.05em;
+  }
+  .footer-link {
+    color: var(--text-sub);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-link:hover { color: var(--text-main); }
+  @media (max-width: 768px) {
+    .footer-inner { padding: 0 20px; }
+  }
+</style>
+
+<script>
+  const navBar = document.querySelector('.nav-bar');
+  window.addEventListener('scroll', () => {
+    navBar?.classList.toggle('is-shrunk', window.scrollY > 40);
+  }, { passive: true });
+</script>

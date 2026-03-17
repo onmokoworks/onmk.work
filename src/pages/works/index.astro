@@ -1,0 +1,231 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getWorks, getTags } from "../../library/microcms";
+
+const [worksRes, tagsRes] = await Promise.all([
+  getWorks({ orders: "-publishedAt", limit: 100 }),
+  getTags({ limit: 100 }),
+]);
+
+const works = worksRes.contents;
+const tags = tagsRes.contents;
+---
+
+<Layout title="works | onmk">
+  <div class="container">
+    <div class="tag-filter">
+      <button class="tag-btn tag-btn--all is-active" data-tag="all">all</button>
+      {tags.length > 0 && (
+        <div class="tag-submenu">
+          <div class="tag-submenu-inner">
+            {tags.map((tag) => (
+              <button class="tag-item" data-tag={tag.id}>{tag.title}</button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+
+    <section class="works-grid">
+      {works.map((work) => (
+        <a
+          href={`/works/${work.id}`}
+          class="work-item"
+          data-tags={work.tag ? work.tag.id : ""}
+        >
+          <div class="work-thumb">
+            {work.images?.[0]
+              ? <img src={`${work.images[0].url}?w=800`} alt={work.title} />
+              : <div class="work-thumb-empty" />
+            }
+          </div>
+          <div class="work-info">
+            <span class="work-year">{new Date(work.publishedAt).getFullYear()}</span>
+            <span class="work-title">{work.title}</span>
+          </div>
+        </a>
+      ))}
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .container { padding-top: 40px; }
+
+  /* Tag Filter */
+  .tag-filter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 40px;
+  }
+
+  /* ALL ボタン: 少し太めのボーダー */
+  .tag-btn {
+    background: none;
+    border: 1.5px solid var(--text-main);
+    border-radius: 999px;
+    padding: 5px 16px;
+    font-size: 0.7rem;
+    font-family: var(--font-family);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    color: var(--text-main);
+    flex-shrink: 0;
+  }
+
+  /* クリッピング用の外側ラッパー */
+  .tag-submenu {
+    overflow: hidden;
+    max-width: 0;
+    transition: max-width 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+  }
+
+  /* ボーダー・角丸を持つ内側コンテナ (ここがクリッピングされる) */
+  .tag-submenu-inner {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 999px;
+    padding: 0 6px;
+    white-space: nowrap;
+  }
+
+  /* 個別タグ: ボーダーなし */
+  .tag-item {
+    background: none;
+    border: none;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 0.62rem;
+    font-family: var(--font-family);
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    color: var(--text-sub);
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: color 0.2s;
+  }
+  .tag-item:hover,
+  .tag-item.is-active {
+    color: var(--text-main);
+  }
+
+  /* フィルター全体ホバー or タグ選択中 → 展開 */
+  .tag-filter:hover .tag-submenu,
+  .tag-filter:focus-within .tag-submenu,
+  .tag-filter.has-tag .tag-submenu {
+    max-width: 800px;
+  }
+
+  /* Works Grid */
+  .works-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  .work-item {
+    text-decoration: none;
+    color: var(--text-main);
+    transition: opacity 0.2s ease;
+  }
+  .work-item.is-hidden { display: none; }
+  .work-item.is-out { opacity: 0; }
+  .work-item.is-in { opacity: 0; }
+
+  .work-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .work-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .work-item:hover .work-thumb img { transform: scale(1.05); }
+  .work-thumb-empty { width: 100%; height: 100%; background-color: #111; }
+
+  .work-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    letter-spacing: 0.01em;
+  }
+  .work-year {
+    font-size: 0.65rem;
+    color: var(--text-sub);
+    font-style: italic;
+  }
+  .work-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .works-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const tagFilter = document.querySelector<HTMLElement>('.tag-filter');
+  const tagBtns = document.querySelectorAll<HTMLElement>('[data-tag]');
+  const workItems = document.querySelectorAll<HTMLElement>('.work-item');
+  const FADE = 200;
+
+  // 初期表示: アニメーションなしで即時適用
+  let activeTag = new URLSearchParams(location.search).get('tag') ?? 'all';
+  showFilter(activeTag);
+  tagBtns.forEach(btn => btn.classList.toggle('is-active', btn.dataset.tag === activeTag));
+  tagFilter?.classList.toggle('has-tag', activeTag !== 'all');
+
+  tagBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeTag = btn.dataset.tag ?? 'all';
+      tagBtns.forEach(b => b.classList.toggle('is-active', b.dataset.tag === activeTag));
+      tagFilter?.classList.toggle('has-tag', activeTag !== 'all');
+      animateFilter(activeTag);
+      const url = new URL(location.href);
+      if (activeTag === 'all') url.searchParams.delete('tag');
+      else url.searchParams.set('tag', activeTag);
+      history.replaceState(null, '', url);
+    });
+  });
+
+  // アニメーションなし（初期表示用）
+  function showFilter(tag: string) {
+    workItems.forEach(item => {
+      const matches = tag === 'all' || item.dataset.tags === tag;
+      item.classList.toggle('is-hidden', !matches);
+    });
+  }
+
+  // フェードアウト → リフロー → フェードイン
+  function animateFilter(tag: string) {
+    // 1. 表示中アイテムをフェードアウト
+    const visible = Array.from(workItems).filter(i => !i.classList.contains('is-hidden'));
+    visible.forEach(i => i.classList.add('is-out'));
+
+    setTimeout(() => {
+      // 2. display切り替え（opacity:0 の状態なのでリフローが見えない）
+      workItems.forEach(item => {
+        const matches = tag === 'all' || item.dataset.tags === tag;
+        item.classList.remove('is-out');
+        if (matches) {
+          item.classList.remove('is-hidden');
+          item.classList.add('is-in');
+        } else {
+          item.classList.add('is-hidden');
+        }
+      });
+
+      // 3. フェードイン
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        workItems.forEach(i => i.classList.remove('is-in'));
+      }));
+    }, FADE);
+  }
+</script>

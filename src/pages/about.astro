@@ -1,0 +1,224 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="about | onmk">
+  <div class="container">
+
+    <div class="about-section profile">
+      <p class="profile-name">おーん/onmk</p>
+      <div class="profile-links">
+        <a href="https://x.com/onmokoworks" target="_blank" rel="noopener" class="profile-link">X</a>
+        <a href="https://www.instagram.com/onmokoworks/" target="_blank" rel="noopener" class="profile-link">Instagram</a>
+        <a href="https://annict.com/@onmk" target="_blank" rel="noopener" class="profile-link">Annict</a>
+      </div>
+      <div class="profile-icon">
+        <img
+          src="https://images.microcms-assets.io/assets/7e9fc87adf964e50b35455f8944b5a5a/f35d72c6aa904e59b1b5021aabb70eb7/icon.jpg"
+          alt="onmk icon"
+          width="400" height="400"
+        />
+        <p class="icon-credit">illustrated by <a href="https://x.com/my0nruri" class="inline-link" target="_blank" rel="noopener">my0nruri</a></p>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-text">
+        <span class="trigger">おーん</span>
+        <span class="content">
+          （<span class="trigger">onmk</span><span class="content">　読み：おんもこ</span>）
+        </span>
+        は
+        <span class="trigger">映像作家</span>
+        <span class="content">（で、主に3DCGやモーショングラフィックスを用いた映像制作をしている）</span>
+        。
+        <br />
+        また、
+        <span class="trigger">複数のグループ</span>
+        <span class="content">
+          （<a href="https://x.com/hakumei_lab" class="external-link" target="_blank" rel="noopener">hakumei</a> / .prism）
+        </span>
+        に所属し、
+        <span class="trigger">制作</span>
+        <span class="content">（映像制作、同人活動）</span>
+        をしている。
+      </div>
+    </div>
+
+    <hr />
+
+    <div class="about-section">
+      <span class="label">Contact</span>
+      <div class="contact-row">
+        <span class="contact-label">hakumei</span>
+        <span
+          class="contact-email"
+          data-email="hakumeilab@gmail.com"
+          role="button"
+          tabindex="0"
+          title="クリックでコピー"
+        >hakumeilab(at)gmail.com</span>
+      </div>
+    </div>
+
+  </div>
+</Layout>
+
+<style>
+  .about-section { margin-bottom: 60px; }
+
+  /* Profile */
+  .profile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .profile-name {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+  .profile-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .profile-icon img {
+    width: 120px;
+    height: 120px;
+    display: block;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  .icon-credit {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+  }
+  .profile-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .profile-link {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: #ddd;
+    transition: color 0.2s, text-decoration-color 0.2s;
+  }
+  .profile-link:hover {
+    color: var(--text-main);
+    text-decoration-color: var(--text-main);
+  }
+
+  /* Self-intro triggers */
+  .about-text {
+    line-height: 1.8;
+    font-size: 0.95rem;
+    letter-spacing: 0.01em;
+  }
+  .trigger {
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-color: #ddd;
+    transition: color 0.2s;
+  }
+  .trigger:hover { text-decoration-color: var(--accent); color: var(--text-sub); }
+  .content {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+    color: var(--text-sub);
+    font-weight: 500;
+    vertical-align: bottom;
+  }
+  .content.is-open { max-width: 1000px; opacity: 1; margin: 0 4px; }
+  .external-link {
+    color: var(--text-main);
+    font-weight: 400;
+    text-decoration: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .inline-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: #ccc;
+    transition: text-decoration-color 0.2s;
+  }
+  .inline-link:hover { text-decoration-color: var(--text-main); }
+
+  .label {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+    margin-bottom: 20px;
+    display: block;
+  }
+
+  /* Contact */
+  .contact-row {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    font-size: 0.85rem;
+  }
+  .contact-label {
+    color: var(--text-sub);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    flex-shrink: 0;
+  }
+  .contact-email {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: #ccc;
+    cursor: pointer;
+    transition: text-decoration-color 0.2s, color 0.2s;
+  }
+  .contact-email:hover { text-decoration-color: var(--text-main); }
+  .contact-email.is-copied { color: var(--text-sub); }
+
+</style>
+
+<script>
+  // Trigger expand
+  function toggle(el: HTMLElement) {
+    const content = el.nextElementSibling;
+    if (content && content.classList.contains('content')) {
+      content.classList.toggle('is-open');
+    }
+  }
+  document.querySelectorAll<HTMLElement>('.trigger').forEach(el => {
+    el.addEventListener('click', (e) => { toggle(el); e.stopPropagation(); });
+  });
+
+  // メールアドレスをクリックでコピー
+  document.querySelectorAll<HTMLElement>('.contact-email').forEach(el => {
+    const copy = () => {
+      const email = el.dataset.email ?? '';
+      navigator.clipboard.writeText(email).then(() => {
+        const orig = el.textContent;
+        el.textContent = 'copied!';
+        el.classList.add('is-copied');
+        setTimeout(() => {
+          el.textContent = orig;
+          el.classList.remove('is-copied');
+        }, 2000);
+      });
+    };
+    el.addEventListener('click', copy);
+    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') copy(); });
+  });
+</script>

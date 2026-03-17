@@ -1,0 +1,77 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getWorks } from "../library/microcms";
+
+const worksRes = await getWorks({ orders: "-publishedAt", limit: 4 });
+const recentWorks = worksRes.contents;
+---
+
+<Layout title="onmk">
+  <div class="container">
+    <section class="recently-works">
+      <span class="section-title">Recently Works</span>
+      <div class="recent-grid">
+        {recentWorks.map((work) => (
+          <a href={`/works/${work.id}`} class="recent-item">
+            <div class="recent-thumb">
+              {work.images?.[0]
+                ? <img src={`${work.images[0].url}?w=800`} alt={work.title} />
+                : <div class="recent-thumb-empty" />
+              }
+            </div>
+            <div class="recent-info">
+              <span class="recent-year">{new Date(work.publishedAt).getFullYear()}</span>
+              <span style="font-weight:500">{work.title}</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<style>
+  .section-title {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    display: block;
+  }
+  .recent-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+  .recent-item { text-decoration: none; color: var(--text-main); }
+  .recent-thumb {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+  .recent-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .recent-item:hover .recent-thumb img { transform: scale(1.05); }
+  .recent-thumb-empty { width: 100%; height: 100%; background-color: #111; }
+  .recent-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    letter-spacing: 0.01em;
+  }
+  .recent-year {
+    font-size: 0.65rem;
+    color: var(--text-sub);
+    font-style: italic;
+  }
+  @media (max-width: 768px) {
+    .recent-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
