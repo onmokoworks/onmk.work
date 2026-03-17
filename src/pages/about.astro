@@ -141,6 +141,9 @@ import Layout from "../layouts/Layout.astro";
     vertical-align: bottom;
   }
   .content.is-open { max-width: 1000px; opacity: 1; margin: 0 4px; }
+  @media (max-width: 768px) {
+    .content.is-open { white-space: normal; }
+  }
   .external-link {
     color: var(--text-main);
     font-weight: 400;
