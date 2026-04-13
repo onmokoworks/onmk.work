@@ -131,32 +131,21 @@ import Layout from "../layouts/Layout.astro";
   }
   .trigger:hover { text-decoration-color: var(--accent); color: var(--text-sub); }
   .no-break { white-space: nowrap; }
-  .content-block.is-open {
-    display: inline;
-    white-space: normal;
-    overflow: visible;
-  }
   /* 畳み: 外の句点を表示、開き: content内の句点を表示して外を隠す */
   .period-fallback { }
   [data-has-period].is-open + .period-fallback { display: none; }
   .content {
-    display: inline;
-    max-width: 0;
-    opacity: 0;
-    overflow: hidden;
-    white-space: nowrap;
-    transition: max-width 0.5s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+    display: none;
     color: var(--text-sub);
     font-weight: 500;
   }
-  .content:not(.is-open) {
-    display: inline-block;
-    max-width: 0;
-    vertical-align: bottom;
+  .content.is-open {
+    display: inline;
+    animation: fadeIn 0.3s ease;
   }
-  .content.is-open { max-width: 1000px; opacity: 1; white-space: normal; overflow: visible; }
-  @media (max-width: 768px) {
-    .content.is-open { white-space: normal; }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
   .external-link {
     color: var(--text-main);
@@ -258,6 +247,5 @@ import Layout from "../layouts/Layout.astro";
     });
   }
 
-  init();
   document.addEventListener('astro:page-load', init);
 </script>
