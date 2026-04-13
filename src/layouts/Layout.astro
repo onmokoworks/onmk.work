@@ -94,8 +94,12 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
 </style>
 
 <script>
-  const navBar = document.querySelector('.nav-bar');
-  window.addEventListener('scroll', () => {
-    navBar?.classList.toggle('is-shrunk', window.scrollY > 40);
-  }, { passive: true });
+  function initNav() {
+    const navBar = document.querySelector('.nav-bar');
+    window.addEventListener('scroll', () => {
+      navBar?.classList.toggle('is-shrunk', window.scrollY > 40);
+    }, { passive: true });
+  }
+  initNav();
+  document.addEventListener('astro:page-load', initNav);
 </script>

@@ -227,32 +227,37 @@ import Layout from "../layouts/Layout.astro";
 </style>
 
 <script>
-  // Trigger expand
-  function toggle(el: HTMLElement) {
-    const content = el.nextElementSibling;
-    if (content && content.classList.contains('content')) {
-      content.classList.toggle('is-open');
+  function init() {
+    // Trigger expand
+    function toggle(el: HTMLElement) {
+      const content = el.nextElementSibling;
+      if (content && content.classList.contains('content')) {
+        content.classList.toggle('is-open');
+      }
     }
-  }
-  document.querySelectorAll<HTMLElement>('.trigger').forEach(el => {
-    el.addEventListener('click', (e) => { toggle(el); e.stopPropagation(); });
-  });
+    document.querySelectorAll<HTMLElement>('.trigger').forEach(el => {
+      el.addEventListener('click', (e) => { toggle(el); e.stopPropagation(); });
+    });
 
-  // メールアドレスをクリックでコピー
-  document.querySelectorAll<HTMLElement>('.contact-email').forEach(el => {
-    const copy = () => {
-      const email = el.dataset.email ?? '';
-      navigator.clipboard.writeText(email).then(() => {
-        const orig = el.textContent;
-        el.textContent = 'copied!';
-        el.classList.add('is-copied');
-        setTimeout(() => {
-          el.textContent = orig;
-          el.classList.remove('is-copied');
-        }, 2000);
-      });
-    };
-    el.addEventListener('click', copy);
-    el.addEventListener('keydown', (e) => { if (e.key === 'Enter') copy(); });
-  });
+    // メールアドレスをクリックでコピー
+    document.querySelectorAll<HTMLElement>('.contact-email').forEach(el => {
+      const copy = () => {
+        const email = el.dataset.email ?? '';
+        navigator.clipboard.writeText(email).then(() => {
+          const orig = el.textContent;
+          el.textContent = 'copied!';
+          el.classList.add('is-copied');
+          setTimeout(() => {
+            el.textContent = orig;
+            el.classList.remove('is-copied');
+          }, 2000);
+        });
+      };
+      el.addEventListener('click', copy);
+      el.addEventListener('keydown', (e) => { if (e.key === 'Enter') copy(); });
+    });
+  }
+
+  init();
+  document.addEventListener('astro:page-load', init);
 </script>
