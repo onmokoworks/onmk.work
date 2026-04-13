@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { ViewTransitions } from "astro:transitions";
 
 interface Props {
   title?: string;
@@ -18,6 +19,14 @@ const { title = "onmk", hideNav = false, hideFooter = false } = Astro.props;
     <title>{title}</title>
     <link rel="icon" href="https://images.microcms-assets.io/assets/7e9fc87adf964e50b35455f8944b5a5a/f35d72c6aa904e59b1b5021aabb70eb7/icon.jpg" />
     <meta name="theme-color" content="#b1b7d1" />
+    <ViewTransitions />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BCX22M8SVE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-BCX22M8SVE');
+    </script>
   </head>
   <body>
     {!hideNav && (
