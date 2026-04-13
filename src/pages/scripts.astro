@@ -1,0 +1,125 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getScripts, getScriptsPage } from "../library/microcms";
+
+let pageTitle = "Scripts / Plugins";
+let pageDescription = "";
+try {
+  const page = await getScriptsPage();
+  pageTitle = page.title;
+  pageDescription = page.description ?? "";
+} catch {
+  // API未作成時はデフォルト値
+}
+
+let scripts: { title: string; description?: string; tool?: string; url: string }[] = [];
+try {
+  const res = await getScripts({ orders: "-publishedAt", limit: 100 });
+  scripts = res.contents.map((item) => ({
+    title: item.title,
+    description: item.description,
+    tool: item.tool,
+    url: item.url,
+  }));
+} catch {
+  // API未作成時はダミーで表示
+  scripts = [
+    { title: "Sample Script A", description: "スクリプトの説明文がここに入ります。", tool: "After Effects", url: "https://example.com" },
+    { title: "Sample Plugin B", description: "プラグインの説明文がここに入ります。", tool: "Blender", url: "https://example.com" },
+  ];
+}
+---
+
+<Layout title={`${pageTitle} | onmk`}>
+  <div class="container">
+    <span class="section-title">{pageTitle}</span>
+    {pageDescription && <p class="page-desc">{pageDescription}</p>}
+
+    <div class="scripts-list">
+      {scripts.map((item) => (
+        <a href={item.url} target="_blank" rel="noopener" class="script-card">
+          <div class="script-body">
+            <span class="script-tool">{item.tool}</span>
+            <span class="script-name">{item.title}</span>
+            {item.description && <span class="script-desc" set:html={item.description}></span>}
+          </div>
+          <span class="script-arrow">&rarr;</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .section-title {
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    display: block;
+  }
+
+  .page-desc {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+    line-height: 1.6;
+    margin-bottom: 30px;
+  }
+
+  .scripts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .script-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 0;
+    border-bottom: 1px solid #e5e5e5;
+    text-decoration: none;
+    color: var(--text-main);
+    transition: opacity 0.2s;
+  }
+  .script-card:hover {
+    opacity: 0.5;
+  }
+
+  .script-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .script-tool {
+    font-size: 0.6rem;
+    color: var(--text-sub);
+    letter-spacing: 0.08em;
+  }
+
+  .script-name {
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  .script-desc {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    line-height: 1.6;
+  }
+
+  .script-arrow {
+    font-size: 1rem;
+    color: var(--text-sub);
+    flex-shrink: 0;
+    margin-left: 24px;
+    transition: transform 0.2s;
+  }
+  .script-card:hover .script-arrow {
+    transform: translateX(4px);
+  }
+</style>

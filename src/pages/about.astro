@@ -30,8 +30,7 @@ import Layout from "../layouts/Layout.astro";
         </span>
         は
         <span class="trigger">映像作家</span>
-        <span class="content">（で、主に3DCGやモーショングラフィックスを用いた映像制作をしている）</span>
-        。
+        <span class="content" data-has-period>（<span class="no-break"><span class="trigger">で</span><span class="content content-block">ある。と名乗らないと、自己紹介が湾曲してしまうため、適切な肩書きが見当たらない。実際に請け負う仕事の範囲として、</span></span>主に3DCGやモーショングラフィックスを用いた映像制作をしている）。</span><span class="period-fallback">。</span>
         <br />
         また、
         <span class="trigger">複数のグループ</span>
@@ -45,8 +44,6 @@ import Layout from "../layouts/Layout.astro";
       </div>
     </div>
 
-    <hr />
-
     <div class="about-section">
       <span class="label">Contact</span>
       <div class="contact-row">
@@ -59,6 +56,10 @@ import Layout from "../layouts/Layout.astro";
           title="クリックでコピー"
         >hakumeilab(at)gmail.com</span>
       </div>
+    </div>
+
+    <div class="log-link-section">
+      <a href="/log" class="log-link">log</a>
     </div>
 
   </div>
@@ -129,18 +130,31 @@ import Layout from "../layouts/Layout.astro";
     transition: color 0.2s;
   }
   .trigger:hover { text-decoration-color: var(--accent); color: var(--text-sub); }
+  .no-break { white-space: nowrap; }
+  .content-block.is-open {
+    display: inline;
+    white-space: normal;
+    overflow: visible;
+  }
+  /* 畳み: 外の句点を表示、開き: content内の句点を表示して外を隠す */
+  .period-fallback { }
+  [data-has-period].is-open + .period-fallback { display: none; }
   .content {
-    display: inline-block;
+    display: inline;
     max-width: 0;
     opacity: 0;
     overflow: hidden;
     white-space: nowrap;
-    transition: all 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+    transition: max-width 0.5s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.5s cubic-bezier(0.2, 1, 0.3, 1);
     color: var(--text-sub);
     font-weight: 500;
+  }
+  .content:not(.is-open) {
+    display: inline-block;
+    max-width: 0;
     vertical-align: bottom;
   }
-  .content.is-open { max-width: 1000px; opacity: 1; margin: 0 4px; }
+  .content.is-open { max-width: 1000px; opacity: 1; white-space: normal; overflow: visible; }
   @media (max-width: 768px) {
     .content.is-open { white-space: normal; }
   }
@@ -192,6 +206,23 @@ import Layout from "../layouts/Layout.astro";
   }
   .contact-email:hover { text-decoration-color: var(--text-main); }
   .contact-email.is-copied { color: var(--text-sub); }
+
+  /* Log link */
+  .log-link-section {
+    margin-top: 120px;
+    padding-top: 40px;
+    margin-bottom: -40px;
+    border-top: 0.1px solid #e5e5e5;
+  }
+  .log-link {
+    font-size: 0.65rem;
+    color: var(--text-sub);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    opacity: 0.35;
+    transition: opacity 0.2s;
+  }
+  .log-link:hover { opacity: 1; }
 
 </style>
 

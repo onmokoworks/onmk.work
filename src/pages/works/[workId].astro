@@ -3,14 +3,28 @@ import Layout from "../../layouts/Layout.astro";
 import { getWorks, getWorkDetail } from "../../library/microcms";
 
 export async function getStaticPaths() {
-  const response = await getWorks({ fields: ["id"], limit: 100 });
-  return response.contents.map((work) => ({
-    params: { workId: work.id },
-  }));
+  const response = await getWorks({ fields: ["id", "title"], limit: 100 });
+  return response.contents
+    .filter((work) => !/^log-\d{8}$/.test(work.title))
+    .map((work) => ({
+      params: { workId: work.id },
+    }));
 }
 
 const { workId } = Astro.params;
 const work = await getWorkDetail(workId as string);
+
+// YouTube URL → embed URL
+const youtubeUrl = work["url-Youtube"];
+let embedUrl = "";
+if (youtubeUrl) {
+  const match = youtubeUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^&?/]+)/);
+  if (match) {
+    embedUrl = `https://www.youtube.com/embed/${match[1]}`;
+  }
+}
+
+const galleryImages = (work.images ?? []).slice(1);
 ---
 
 <Layout title={`${work.title} | onmk`}>
@@ -18,26 +32,110 @@ const work = await getWorkDetail(workId as string);
     <a href="/works" class="back">← works</a>
 
     <article class="work-detail">
-      {work.images?.[0] && !work.description && (
-        <div class="image-wrap">
-          <img src={`${work.images[0].url}?w=1200`} alt={work.title} />
+      <div class="work-meta">
+        {work.year && <span class="work-year">{work.year}</span>}
+        <h1 class="work-title">{work.title}</h1>
+        {work.tag && work.tag.length > 0 && (
+          <div class="work-tags">
+            {work.tag.map(t => <span class="work-tag">{t.title}</span>)}
+          </div>
+        )}
+      </div>
+
+      {embedUrl && (
+        <div class="embed-wrap">
+          <iframe src={embedUrl} allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
         </div>
       )}
 
-      <div class="work-meta">
-        <h1 class="work-title">{work.title}</h1>
-        <div class="work-sub">
-          {work.tag && <span class="work-tag">{work.tag.title}</span>}
-          {work.year && <span class="work-year">{work.year}</span>}
+      {galleryImages.length > 0 && (
+        <div class="gallery">
+          {galleryImages.map((img, i) => (
+            <div class="gallery-item" data-index={i}>
+              <img src={`${img.url}?w=800`} alt="" loading="lazy" />
+            </div>
+          ))}
         </div>
-      </div>
+      )}
 
       {work.description && (
-        <div class="work-description" set:html={work.description} />
+        <div class="work-description" set:html={work.description}></div>
+      )}
+
+      {work.credit && (
+        <div class="work-credit" set:html={work.credit}></div>
       )}
     </article>
   </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lb-close">&times;</button>
+    <button class="lb-arrow lb-prev" id="lb-prev">&#8249;</button>
+    <button class="lb-arrow lb-next" id="lb-next">&#8250;</button>
+    <img class="lb-img" id="lb-img" alt="" />
+    <span class="lb-counter" id="lb-counter"></span>
+  </div>
 </Layout>
+
+<script>
+  const galleryItems = document.querySelectorAll<HTMLElement>('.gallery-item');
+  const lightbox = document.getElementById('lightbox')!;
+  const lbImg = document.getElementById('lb-img') as HTMLImageElement;
+  const lbClose = document.getElementById('lb-close')!;
+  const lbPrev = document.getElementById('lb-prev')!;
+  const lbNext = document.getElementById('lb-next')!;
+  const lbCounter = document.getElementById('lb-counter')!;
+
+  const urls: string[] = [];
+  galleryItems.forEach(item => {
+    const img = item.querySelector('img');
+    if (img) {
+      // Store high-res URL
+      urls.push(img.src.replace('?w=800', '?w=1600'));
+    }
+  });
+
+  let current = 0;
+  const total = urls.length;
+
+  function show(index: number) {
+    current = ((index % total) + total) % total; // loop
+    lbImg.src = urls[current];
+    lbCounter.textContent = `${current + 1} / ${total}`;
+  }
+
+  function open(index: number) {
+    show(index);
+    lightbox.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function close() {
+    lightbox.classList.remove('is-open');
+    document.body.style.overflow = '';
+    lbImg.src = '';
+  }
+
+  galleryItems.forEach((item, i) => {
+    item.addEventListener('click', () => open(i));
+  });
+
+  lbClose.addEventListener('click', close);
+  lbPrev.addEventListener('click', () => show(current - 1));
+  lbNext.addEventListener('click', () => show(current + 1));
+
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) close();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('is-open')) return;
+    if (e.key === 'Escape') close();
+    if (e.key === 'ArrowLeft') show(current - 1);
+    if (e.key === 'ArrowRight') show(current + 1);
+  });
+</script>
 
 <style>
   .container { max-width: 680px; padding-top: 40px; }
@@ -53,62 +151,72 @@ const work = await getWorkDetail(workId as string);
   }
   .back:hover { color: var(--text-main); }
 
-  /* Video */
-  .video-wrap {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background-color: #000;
-    margin-bottom: 24px;
-  }
-  .video-wrap iframe {
-    width: 100%; height: 100%;
-    display: block;
-  }
-
-  /* Fallback image */
-  .image-wrap {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background-color: #000;
-    margin-bottom: 24px;
-    overflow: hidden;
-  }
-  .image-wrap img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-  }
-
-  /* Meta */
+  /* Meta - stacked layout */
   .work-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 16px;
-    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .work-year {
+    display: block;
+    font-size: 0.55rem;
+    color: var(--text-sub);
+    font-style: normal;
+    margin-bottom: 6px;
   }
   .work-title {
     font-size: 1.1rem;
     font-weight: 500;
     letter-spacing: 0.01em;
     line-height: 1.4;
+    margin-bottom: 10px;
   }
-  .work-sub {
+  .work-tags {
     display: flex;
-    gap: 12px;
-    flex-shrink: 0;
-    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   .work-tag {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: var(--text-sub);
     letter-spacing: 0.05em;
   }
-  .work-year {
-    font-size: 0.7rem;
-    color: var(--text-sub);
-    font-style: italic;
+
+  /* Embed */
+  .embed-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    margin-bottom: 24px;
+  }
+  .embed-wrap iframe {
+    width: 100%; height: 100%;
+    display: block;
+    border: none;
   }
 
+  /* Gallery */
+  .gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .gallery-item {
+    cursor: zoom-in;
+    overflow: hidden;
+  }
+  .gallery-item img {
+    width: 100%;
+    display: block;
+    transition: opacity 0.2s;
+  }
+  .gallery-item:hover img {
+    opacity: 0.85;
+  }
+  @media (max-width: 480px) {
+    .gallery { grid-template-columns: 1fr; }
+  }
+
+  /* Description */
   .work-description {
     font-size: 0.85rem;
     line-height: 1.8;
@@ -123,5 +231,80 @@ const work = await getWorkDetail(workId as string);
   }
   .work-description :global(p) {
     margin-bottom: 12px;
+  }
+
+  /* Credit */
+  .work-credit {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 0.1px solid #e5e5e5;
+    font-size: 0.75rem;
+    line-height: 1.8;
+    color: var(--text-sub);
+  }
+  .work-credit :global(p) {
+    margin-bottom: 4px;
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0,0,0,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .lightbox.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .lb-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+  }
+  .lb-close {
+    position: absolute;
+    top: 16px; right: 20px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+    line-height: 1;
+  }
+  .lb-close:hover { opacity: 1; }
+  .lb-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 3rem;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity 0.15s;
+    padding: 16px;
+    line-height: 1;
+  }
+  .lb-arrow:hover { opacity: 1; }
+  .lb-prev { left: 8px; }
+  .lb-next { right: 8px; }
+  .lb-counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255,255,255,0.5);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
   }
 </style>

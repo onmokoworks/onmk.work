@@ -1,0 +1,492 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { getLogEntries } from "../library/microcms";
+
+let images: { url: string }[] = [];
+try {
+  const res = await getLogEntries({ limit: 100, orders: "-publishedAt" });
+  images = res.contents.flatMap((entry) =>
+    (entry.images ?? []).map((img) => ({ url: img.url }))
+  );
+} catch {
+  // フィルタ不一致やAPI未設定時はダミーで表示
+}
+
+if (images.length === 0) {
+  images = Array.from({ length: 20 }, (_, i) => ({
+    url: `https://picsum.photos/seed/${String.fromCharCode(97 + (i % 26))}${Math.floor(i / 26)}/400/${300 + (i * 47) % 400}`,
+  }));
+}
+---
+
+<Layout title="log | onmk" hideNav hideFooter>
+  <!-- Parody header -->
+  <div class="p-header">
+    <div class="p-header-inner">
+      <a href="/" class="p-logo" title="back to onmk">
+        <div class="p-logo-circle">
+          <span class="p-logo-letter">L</span>
+        </div>
+      </a>
+      <div class="p-nav-links">
+        <span class="p-nav-item p-nav-active">Home</span>
+      </div>
+      <div class="p-search">
+        <svg class="p-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <span class="p-search-text">Search</span>
+      </div>
+      <div class="p-header-right">
+        <div class="p-avatar">
+          <img src="https://images.microcms-assets.io/assets/7e9fc87adf964e50b35455f8944b5a5a/f35d72c6aa904e59b1b5021aabb70eb7/icon.jpg" alt="avatar" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <img class="lightbox-img" id="lightbox-img" alt="" />
+  </div>
+
+  <!-- Masonry feed -->
+  <div class="p-feed">
+    <div class="masonry" id="masonry"></div>
+    <div class="p-loading" id="loading">
+      <div class="p-spinner"></div>
+    </div>
+  </div>
+</Layout>
+
+<script define:vars={{ imageUrls: images.map(i => i.url) }}>
+  const masonryEl = document.getElementById('masonry');
+  const loading = document.getElementById('loading');
+  // Random font for logo letter
+  const googleFonts = [
+    'Playfair Display', 'Lobster', 'Pacifico', 'Oswald',
+    'Abril Fatface', 'Righteous', 'Permanent Marker', 'Caveat',
+    'Satisfy', 'Sacramento', 'Monoton', 'Bungee Shade',
+    'Press Start 2P', 'Silkscreen', 'Rubik Mono One',
+    'Cinzel', 'Anton', 'Poetsen One', 'Pixelify Sans',
+  ];
+  const localFonts = [
+    'Georgia', 'Times New Roman', 'Courier New', 'Impact',
+    'Comic Sans MS', 'Trebuchet MS', 'Palatino', 'Garamond',
+    'Brush Script MT', 'Lucida Console', 'Copperplate',
+    'Papyrus', 'Didot', 'Futura', 'Optima', 'Baskerville',
+    'American Typewriter', 'Rockwell', 'Snell Roundhand',
+  ];
+  const allFonts = [
+    ...googleFonts.map(f => ({ name: f, type: 'google' })),
+    ...localFonts.map(f => ({ name: f, type: 'local' })),
+  ];
+  const picked = allFonts[Math.floor(Math.random() * allFonts.length)];
+  if (picked.type === 'google') {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(picked.name)}&text=L&display=swap`;
+    document.head.appendChild(link);
+  }
+  const letter = document.querySelector('.p-logo-letter');
+  if (letter) {
+    letter.style.fontFamily = `"${picked.name}", sans-serif`;
+  }
+
+  // Also try to detect a random local font from the user's system
+  if (picked.type === 'local' && document.fonts) {
+    document.fonts.ready.then(() => {
+      const available = localFonts.filter(f => document.fonts.check(`16px "${f}"`));
+      if (available.length > 0) {
+        const localPick = available[Math.floor(Math.random() * available.length)];
+        if (letter) letter.style.fontFamily = `"${localPick}", sans-serif`;
+      }
+    });
+  }
+
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const allUrls = imageUrls;
+
+  // Lightbox
+  function openLightbox(url) {
+    lightboxImg.src = url + '?w=1600';
+    lightbox.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    lightbox.classList.remove('is-open');
+    document.body.style.overflow = '';
+    lightboxImg.src = '';
+  }
+  lightbox.addEventListener('click', closeLightbox);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // Column management - append to shortest column to avoid reflow
+  let columns = [];
+  let columnHeights = [];
+
+  function getColumnCount() {
+    const w = window.innerWidth;
+    if (w <= 600) return 2;
+    if (w <= 900) return 3;
+    if (w <= 1200) return 4;
+    return 5;
+  }
+
+  function rebuildColumns() {
+    const count = getColumnCount();
+    if (columns.length === count) return;
+
+    // Collect existing images
+    const existingPins = Array.from(masonryEl.querySelectorAll('.pin'));
+
+    masonryEl.innerHTML = '';
+    columns = [];
+    columnHeights = [];
+
+    for (let i = 0; i < count; i++) {
+      const col = document.createElement('div');
+      col.className = 'masonry-col';
+      masonryEl.appendChild(col);
+      columns.push(col);
+      columnHeights.push(0);
+    }
+
+    // Redistribute existing pins
+    existingPins.forEach(pin => addPinToShortest(pin));
+  }
+
+  function getShortestColumn() {
+    let minIdx = 0;
+    for (let i = 1; i < columnHeights.length; i++) {
+      if (columnHeights[i] < columnHeights[minIdx]) minIdx = i;
+    }
+    return minIdx;
+  }
+
+  function addPinToShortest(pin) {
+    const idx = getShortestColumn();
+    columns[idx].appendChild(pin);
+    // Estimate height from image aspect or use a default
+    const img = pin.querySelector('img');
+    if (img && img.naturalHeight) {
+      columnHeights[idx] += img.naturalHeight / img.naturalWidth;
+    } else {
+      columnHeights[idx] += 1;
+    }
+  }
+
+  function createPin(url) {
+    const pin = document.createElement('div');
+    pin.className = 'pin';
+    pin.innerHTML = `
+      <div class="pin-image">
+        <img src="${url}?w=600" alt="" loading="lazy" />
+        <div class="pin-overlay">
+          <button class="pin-save">Save</button>
+          <div class="pin-actions">
+            <button class="pin-action-btn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>`;
+    const img = pin.querySelector('img');
+    img.addEventListener('load', () => {
+      img.classList.add('is-loaded');
+      const idx = Array.from(columns).findIndex(col => col.contains(pin));
+      if (idx >= 0 && img.naturalWidth) {
+        columnHeights[idx] += (img.naturalHeight / img.naturalWidth) - 1;
+      }
+    }, { once: true });
+    // Click to open lightbox
+    pin.querySelector('.pin-image').addEventListener('click', (e) => {
+      if (e.target.closest('.pin-overlay button')) return; // ignore Save / action clicks
+      openLightbox(url);
+    });
+    return pin;
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function loadMore() {
+    // Stop observing while loading
+    observer.unobserve(loading);
+
+    const batch = shuffle(allUrls).slice(0, 8);
+    let loaded = 0;
+
+    batch.forEach(url => {
+      const pin = createPin(url);
+      const img = pin.querySelector('img');
+      const onDone = () => {
+        loaded++;
+        // Resume observer only after all images in batch have loaded
+        if (loaded >= batch.length) {
+          observer.observe(loading);
+        }
+      };
+      img.addEventListener('load', onDone, { once: true });
+      img.addEventListener('error', onDone, { once: true });
+      addPinToShortest(pin);
+    });
+  }
+
+  // Init
+  rebuildColumns();
+
+  // Load initial batch (shuffle + repeat if few images)
+  const initialBatch = allUrls.length < 10
+    ? shuffle([...allUrls, ...allUrls, ...allUrls, ...allUrls, ...allUrls]).slice(0, 20)
+    : shuffle(allUrls);
+  initialBatch.forEach(url => {
+    const pin = createPin(url);
+    addPinToShortest(pin);
+  });
+
+  // Infinite scroll
+  const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) loadMore();
+  }, { rootMargin: '400px' });
+  observer.observe(loading);
+
+  // Handle resize
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(rebuildColumns, 200);
+  });
+</script>
+
+<style>
+  /* Override: no site nav padding */
+  :global(body) { padding-top: 0 !important; }
+
+  /* Pinterest-parody header */
+  .p-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 56px;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    z-index: 1100;
+    display: flex;
+    justify-content: center;
+  }
+  .p-header-inner {
+    width: 100%;
+    max-width: 1260px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .p-logo {
+    flex-shrink: 0;
+    width: 40px; height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-decoration: none;
+  }
+  .p-logo:hover { background: #f0f0f0; }
+  .p-logo-circle {
+    width: 32px; height: 32px;
+    background: #e60023;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .p-logo-letter {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .p-nav-links { display: flex; gap: 4px; flex-shrink: 0; }
+  .p-nav-item {
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-main);
+    transition: background 0.15s;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+  .p-nav-item:hover { background: #f0f0f0; }
+  .p-nav-active { background: #111; color: #fff; }
+  .p-nav-active:hover { background: #333; }
+
+  .p-search {
+    flex: 1;
+    height: 40px;
+    background: #efefef;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+    cursor: text;
+  }
+  .p-search-icon { width: 16px; height: 16px; color: #767676; flex-shrink: 0; }
+  .p-search-text {
+    font-size: 0.9rem;
+    color: #767676;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  }
+
+  .p-header-right { display: flex; align-items: center; flex-shrink: 0; }
+  .p-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .p-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Feed */
+  .p-feed {
+    max-width: 1260px;
+    margin: 0 auto;
+    padding: 72px 16px 40px;
+  }
+
+  /* Masonry - explicit columns */
+  .masonry {
+    display: flex;
+    gap: 16px;
+  }
+  :global(.masonry-col) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  :global(.pin) {
+    break-inside: avoid;
+  }
+  :global(.pin-image) {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: zoom-in;
+  }
+  :global(.pin-image img) {
+    width: 100%;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  :global(.pin-image img.is-loaded) { opacity: 1; }
+
+  /* Hover overlay */
+  :global(.pin-overlay) {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 0.15s;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px;
+    pointer-events: none;
+  }
+  :global(.pin:hover .pin-overlay) { opacity: 1; pointer-events: auto; }
+
+  :global(.pin-save) {
+    align-self: flex-end;
+    background: #e60023;
+    color: #fff;
+    border: none;
+    border-radius: 24px;
+    padding: 8px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: background 0.15s;
+  }
+  :global(.pin-save:hover) { background: #ad081b; }
+
+  :global(.pin-actions) { align-self: flex-end; display: flex; gap: 8px; }
+  :global(.pin-action-btn) {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  :global(.pin-action-btn svg) { width: 16px; height: 16px; }
+  :global(.pin-action-btn:hover) { background: #fff; }
+
+  /* Loading spinner */
+  .p-loading {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
+  .p-spinner {
+    width: 24px; height: 24px;
+    border: 3px solid #e5e5e5;
+    border-top-color: #e60023;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .lightbox.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .lightbox-img {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+  }
+
+  @media (max-width: 600px) {
+    .masonry { gap: 8px; }
+    :global(.masonry-col) { gap: 8px; }
+    .p-nav-links { display: none; }
+    .p-feed { padding-top: 64px; }
+  }
+</style>

@@ -3,9 +3,11 @@ import "../styles/global.css";
 
 interface Props {
   title?: string;
+  hideNav?: boolean;
+  hideFooter?: boolean;
 }
 
-const { title = "onmk" } = Astro.props;
+const { title = "onmk", hideNav = false, hideFooter = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,26 +20,31 @@ const { title = "onmk" } = Astro.props;
     <meta name="theme-color" content="#b1b7d1" />
   </head>
   <body>
-    <nav class="nav-bar">
-      <div class="nav-container">
-        <a href="/" class="nav-icon">
-          <img src="https://i.gyazo.com/b65650558543ca07d173b5dc840e2ed8.png" alt="icon" />
-        </a>
-        <div class="nav-links">
-          <a href="/works" class="nav-link">works</a>
-          <a href="/about" class="nav-link">about</a>
+    {!hideNav && (
+      <nav class="nav-bar">
+        <div class="nav-container">
+          <a href="/" class="nav-icon">
+            <img src="https://i.gyazo.com/b65650558543ca07d173b5dc840e2ed8.png" alt="icon" />
+          </a>
+          <div class="nav-links">
+            <a href="/works" class="nav-link">works</a>
+            <a href="/scripts" class="nav-link">scripts</a>
+            <a href="/about" class="nav-link">about</a>
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    )}
 
     <slot />
 
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <span>Some Rights Reserved. © 2026 onmk</span>
-        <a href="/site" class="footer-link">このサイトについて</a>
-      </div>
-    </footer>
+    {!hideFooter && (
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <span>Some Rights Reserved. © 2026 onmk</span>
+          <a href="/site" class="footer-link">このサイトについて</a>
+        </div>
+      </footer>
+    )}
   </body>
 </html>
 

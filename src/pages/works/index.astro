@@ -31,7 +31,7 @@ const tags = tagsRes.contents;
         <a
           href={`/works/${work.id}`}
           class="work-item"
-          data-tags={work.tag ? work.tag.id : ""}
+          data-tags={work.tag ? work.tag.map(t => t.id).join(",") : ""}
         >
           <div class="work-thumb">
             {work.images?.[0]
@@ -156,9 +156,9 @@ const tags = tagsRes.contents;
     letter-spacing: 0.01em;
   }
   .work-year {
-    font-size: 0.65rem;
+    font-size: 0.55rem;
     color: var(--text-sub);
-    font-style: italic;
+    font-style: normal;
   }
   .work-title {
     font-size: 0.8rem;
@@ -198,7 +198,7 @@ const tags = tagsRes.contents;
   // アニメーションなし（初期表示用）
   function showFilter(tag: string) {
     workItems.forEach(item => {
-      const matches = tag === 'all' || item.dataset.tags === tag;
+      const matches = tag === 'all' || (item.dataset.tags ?? '').split(',').includes(tag);
       item.classList.toggle('is-hidden', !matches);
     });
   }
@@ -212,7 +212,7 @@ const tags = tagsRes.contents;
     setTimeout(() => {
       // 2. display切り替え（opacity:0 の状態なのでリフローが見えない）
       workItems.forEach(item => {
-        const matches = tag === 'all' || item.dataset.tags === tag;
+        const matches = tag === 'all' || (item.dataset.tags ?? '').split(',').includes(tag);
         item.classList.remove('is-out');
         if (matches) {
           item.classList.remove('is-hidden');
