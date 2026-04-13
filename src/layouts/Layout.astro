@@ -6,9 +6,10 @@ interface Props {
   title?: string;
   hideNav?: boolean;
   hideFooter?: boolean;
+  noindex?: boolean;
 }
 
-const { title = "onmk", hideNav = false, hideFooter = false } = Astro.props;
+const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,6 +19,7 @@ const { title = "onmk", hideNav = false, hideFooter = false } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
     <link rel="icon" href="https://images.microcms-assets.io/assets/7e9fc87adf964e50b35455f8944b5a5a/f35d72c6aa904e59b1b5021aabb70eb7/icon.jpg" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#b1b7d1" />
     <ViewTransitions />
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BCX22M8SVE"></script>
