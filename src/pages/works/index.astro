@@ -13,17 +13,11 @@ const tags = tagsRes.contents;
 
 <Layout title="works | onmk">
   <div class="container">
-    <div class="tag-filter">
-      <button class="tag-btn tag-btn--all is-active" data-tag="all">all</button>
-      {tags.length > 0 && (
-        <div class="tag-submenu">
-          <div class="tag-submenu-inner">
-            {tags.map((tag) => (
-              <button class="tag-item" data-tag={tag.id}>{tag.title}</button>
-            ))}
-          </div>
-        </div>
-      )}
+    <div class="tag-filter" aria-label="Filter works by tag">
+      <a href="/works" class="tag-link" data-tag="all">all</a>
+      {tags.map((tag) => (
+        <a href={`/works?tag=${tag.id}`} class="tag-link" data-tag={tag.id}>{tag.title}</a>
+      ))}
     </div>
 
     <section class="works-grid">
@@ -55,68 +49,41 @@ const tags = tagsRes.contents;
   /* Tag Filter */
   .tag-filter {
     display: flex;
-    flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
-    gap: 6px;
+    gap: 14px;
     margin-bottom: 40px;
   }
 
-  /* ALL ボタン: 少し太めのボーダー */
-  .tag-btn {
-    background: none;
-    border: 1.5px solid var(--text-main);
-    border-radius: 999px;
-    padding: 5px 16px;
+  .tag-link {
+    text-decoration: none;
+    padding: 5px 0;
     font-size: 0.7rem;
-    font-family: var(--font-family);
     letter-spacing: 0.08em;
-    cursor: pointer;
-    color: var(--text-main);
-    flex-shrink: 0;
-  }
-
-  /* クリッピング用の外側ラッパー */
-  .tag-submenu {
-    overflow: hidden;
-    max-width: 0;
-    transition: max-width 0.5s cubic-bezier(0.2, 1, 0.3, 1);
-  }
-
-  /* ボーダー・角丸を持つ内側コンテナ (ここがクリッピングされる) */
-  .tag-submenu-inner {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 999px;
-    padding: 0 6px;
-    white-space: nowrap;
-  }
-
-  /* 個別タグ: ボーダーなし */
-  .tag-item {
-    background: none;
-    border: none;
-    border-radius: 999px;
-    padding: 5px 10px;
-    font-size: 0.62rem;
-    font-family: var(--font-family);
-    letter-spacing: 0.08em;
-    cursor: pointer;
     color: var(--text-sub);
     white-space: nowrap;
-    flex-shrink: 0;
-    transition: color 0.2s;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s, background-color 0.2s;
   }
-  .tag-item:hover,
-  .tag-item.is-active {
+  .tag-link:hover {
     color: var(--text-main);
+    border-color: #cfcfcf;
   }
-
-  /* フィルター全体ホバー or タグ選択中 → 展開 */
-  .tag-filter:hover .tag-submenu,
-  .tag-filter:focus-within .tag-submenu,
-  .tag-filter.has-tag .tag-submenu {
-    max-width: 800px;
+  .tag-link[data-tag="all"] {
+    border: 1px solid #d7d7d7;
+    border-radius: 999px;
+    padding: 5px 16px;
+    border-bottom-color: #d7d7d7;
+  }
+  .tag-link[data-tag="all"]:hover {
+    border-color: #bdbdbd;
+  }
+  .tag-link.is-active {
+    color: var(--text-main);
+    border-color: var(--text-main);
+  }
+  .tag-link[data-tag="all"].is-active {
+    background-color: #f6f6f6;
   }
 
   /* Works Grid */
@@ -171,40 +138,47 @@ const tags = tagsRes.contents;
 </style>
 
 <script>
-  const tagFilter = document.querySelector<HTMLElement>('.tag-filter');
-  const tagBtns = document.querySelectorAll<HTMLElement>('[data-tag]');
-  const workItems = document.querySelectorAll<HTMLElement>('.work-item');
   const FADE = 200;
 
-  // 初期表示: アニメーションなしで即時適用
-  let activeTag = new URLSearchParams(location.search).get('tag') ?? 'all';
-  showFilter(activeTag);
-  tagBtns.forEach(btn => btn.classList.toggle('is-active', btn.dataset.tag === activeTag));
-  tagFilter?.classList.toggle('has-tag', activeTag !== 'all');
+  function initWorksTagFilter() {
+    const tagLinks = document.querySelectorAll<HTMLAnchorElement>('.tag-link');
+    const workItems = document.querySelectorAll<HTMLElement>('.work-item');
+    let activeTag = new URLSearchParams(location.search).get('tag') ?? 'all';
 
-  tagBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      activeTag = btn.dataset.tag ?? 'all';
-      tagBtns.forEach(b => b.classList.toggle('is-active', b.dataset.tag === activeTag));
-      tagFilter?.classList.toggle('has-tag', activeTag !== 'all');
-      animateFilter(activeTag);
-      const url = new URL(location.href);
-      if (activeTag === 'all') url.searchParams.delete('tag');
-      else url.searchParams.set('tag', activeTag);
-      history.replaceState(null, '', url);
+    showFilter(activeTag, workItems);
+    syncActiveState(activeTag, tagLinks);
+
+    tagLinks.forEach(link => {
+      if (link.dataset.bound === "true") return;
+      link.dataset.bound = "true";
+
+      link.addEventListener('click', (event) => {
+        event.preventDefault();
+        activeTag = link.dataset.tag ?? 'all';
+        syncActiveState(activeTag, tagLinks);
+        animateFilter(activeTag, workItems);
+        const url = new URL(location.href);
+        if (activeTag === 'all') url.searchParams.delete('tag');
+        else url.searchParams.set('tag', activeTag);
+        history.replaceState(null, '', url);
+      });
     });
-  });
+  }
 
   // アニメーションなし（初期表示用）
-  function showFilter(tag: string) {
+  function showFilter(tag: string, workItems: NodeListOf<HTMLElement>) {
     workItems.forEach(item => {
       const matches = tag === 'all' || (item.dataset.tags ?? '').split(',').includes(tag);
       item.classList.toggle('is-hidden', !matches);
     });
   }
 
+  function syncActiveState(tag: string, tagLinks: NodeListOf<HTMLAnchorElement>) {
+    tagLinks.forEach(link => link.classList.toggle('is-active', link.dataset.tag === tag));
+  }
+
   // フェードアウト → リフロー → フェードイン
-  function animateFilter(tag: string) {
+  function animateFilter(tag: string, workItems: NodeListOf<HTMLElement>) {
     // 1. 表示中アイテムをフェードアウト
     const visible = Array.from(workItems).filter(i => !i.classList.contains('is-hidden'));
     visible.forEach(i => i.classList.add('is-out'));
@@ -228,4 +202,7 @@ const tags = tagsRes.contents;
       }));
     }, FADE);
   }
+
+  document.addEventListener('astro:page-load', initWorksTagFilter);
+  initWorksTagFilter();
 </script>

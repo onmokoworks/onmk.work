@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="about | onmk">
-  <div class="container">
+  <div class="container about-page">
 
     <div class="about-section profile">
       <p class="profile-name">おーん/onmk</p>
@@ -46,6 +46,16 @@ import Layout from "../layouts/Layout.astro";
 
     <div class="about-section">
       <span class="label">Contact</span>
+      <div class="contact-row">
+        <span class="contact-label">onmk</span>
+        <span
+          class="contact-email"
+          data-email="onmokoworks@gmail.com"
+          role="button"
+          tabindex="0"
+          title="クリックでコピー"
+        >onmokoworks(at)gmail.com</span>
+      </div>
       <div class="contact-row">
         <span class="contact-label">hakumei</span>
         <span
@@ -179,7 +189,9 @@ import Layout from "../layouts/Layout.astro";
     align-items: baseline;
     gap: 12px;
     font-size: 0.85rem;
+    margin-bottom: 10px;
   }
+  .contact-row:last-child { margin-bottom: 0; }
   .contact-label {
     color: var(--text-sub);
     font-size: 0.75rem;
@@ -199,8 +211,8 @@ import Layout from "../layouts/Layout.astro";
   /* Log link */
   .log-link-section {
     margin-top: 120px;
-    padding-top: 40px;
-    margin-bottom: -40px;
+    padding: 40px 0;
+    margin-bottom: -100px;
     border-top: 0.1px solid #e5e5e5;
   }
   .log-link {
@@ -212,6 +224,10 @@ import Layout from "../layouts/Layout.astro";
     transition: opacity 0.2s;
   }
   .log-link:hover { opacity: 1; }
+
+  :global(.site-footer) {
+    margin-top: 0;
+  }
 
 </style>
 

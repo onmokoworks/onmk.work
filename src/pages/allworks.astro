@@ -1,0 +1,85 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="制作の一覧 | onmk" hideNav hideFooter noindex>
+  <div class="production-page">
+    <a href="/" class="back-link">top</a>
+    <div class="production-text">
+      <div class="production-line production-line--title">商業制作</div>
+      <div class="production-line production-line--section">MusicVideo</div>
+      <div class="production-line">インターネット侵略中 / ぱすはに</div>
+      <div class="production-line">歌うたいのバラッド / covered by 長瀬有花</div>
+      <div class="production-line">sweetdevil / covered by 茨むあん</div>
+      <div class="production-line">真的没喝多 / covered by If</div>
+      <div class="production-line">ネオンライト・グルーヴ / rukaku</div>
+      <div class="production-line">幽玄アルゴリズム / rukaku</div>
+      <div class="production-line">* this game does not exist * / litmus* x Ester ※一部3DCG・コンポジット</div>
+      <div class="production-line production-line--space"></div>
+      <div class="production-line production-line--section">背景映像演出</div>
+      <div class="production-line">にじさんじフェス2022 月ノ美兎&星川サラ&不破湊&ChroNoiRステージ</div>
+      <div class="production-line">にじさんじ 5th Anniversary LIVE 「SYMPHONIA」</div>
+      <div class="production-line">ROF-MAO 1st Live ｢New street, New world」</div>
+      <div class="production-line">さんばか 5th Anniversary LIVE 〜３！参！SUN！〜</div>
+      <div class="production-line production-line--space"></div>
+      <div class="production-line production-line--section">リリックモーション演出</div>
+      <div class="production-line">Ethyria’s First 3D Live Concert</div>
+      <div class="production-line">3Dでどーーーんっ！！これが最強な倉持だぁぁぁ！！！</div>
+      <div class="production-line">ゲストたくさん！！重大発表あり！！なハッピー誕生日3Dライブ！！！！</div>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .production-page {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 56px 40px 72px;
+  }
+
+  .production-text {
+    font-size: 0.9rem;
+    line-height: 1.9;
+    letter-spacing: 0.01em;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-bottom: 28px;
+    text-decoration: none;
+    color: var(--text-sub);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--text-main);
+    border-color: #cfcfcf;
+  }
+
+  .production-line {
+    white-space: pre-wrap;
+  }
+
+  .production-line--title {
+    font-size: 1.02rem;
+    margin-bottom: 8px;
+  }
+
+  .production-line--section {
+    font-size: 0.98rem;
+    margin-bottom: 4px;
+  }
+
+  .production-line--space {
+    height: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .production-page {
+      padding: 40px 20px 56px;
+    }
+  }
+</style>

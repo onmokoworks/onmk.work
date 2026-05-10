@@ -37,7 +37,9 @@ const galleryImages = (work.images ?? []).slice(1);
         <h1 class="work-title">{work.title}</h1>
         {work.tag && work.tag.length > 0 && (
           <div class="work-tags">
-            {work.tag.map(t => <span class="work-tag">{t.title}</span>)}
+            {work.tag.map(t => (
+              <a href={`/works?tag=${t.id}`} class="work-tag">{t.title}</a>
+            ))}
           </div>
         )}
       </div>
@@ -172,14 +174,21 @@ const galleryImages = (work.images ?? []).slice(1);
   .work-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 14px;
     align-items: baseline;
   }
   .work-tag {
+    text-decoration: none;
     font-size: 0.65rem;
     color: var(--text-sub);
     letter-spacing: 0.05em;
     line-height: 1;
+    border-bottom: 1px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .work-tag:hover {
+    color: var(--text-main);
+    border-color: #cfcfcf;
   }
 
   /* Embed */

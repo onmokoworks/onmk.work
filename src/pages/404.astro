@@ -1,0 +1,68 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const gifSrc = "/assets/404.gif";
+---
+
+<Layout title="onmk" noindex>
+  <div class="not-found-shell">
+    <div class="container not-found-content">
+      <div class="gif-frame">
+        <img src={gifSrc} alt="404 animation" class="gif-image" />
+      </div>
+      <p class="description">
+        お探しのページは見つかりませんでした。
+      </p>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .not-found-shell {
+    min-height: calc(100vh - var(--nav-height));
+    display: grid;
+    place-items: center;
+  }
+
+  .not-found-content {
+    min-height: calc(100vh - var(--nav-height));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    text-align: center;
+  }
+
+  .gif-frame {
+    width: min(100%, 420px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .gif-image {
+    display: block;
+    width: 100%;
+    max-width: 420px;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .description {
+    margin-top: 18px;
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: var(--text-sub);
+  }
+
+  @media (max-width: 768px) {
+    .not-found-content {
+      padding: 40px 20px;
+    }
+
+    .description {
+      font-size: 0.88rem;
+    }
+  }
+</style>
