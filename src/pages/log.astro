@@ -1,4 +1,4 @@
----
+﻿---
 import Layout from "../layouts/Layout.astro";
 import { getLogEntries } from "../library/microcms";
 
@@ -9,7 +9,7 @@ try {
     (entry.images ?? []).map((img) => ({ url: img.url }))
   );
 } catch {
-  // フィルタ不一致やAPI未設定時はダミーで表示
+  // 繝輔ぅ繝ｫ繧ｿ荳堺ｸ閾ｴ繧БPI譛ｪ險ｭ螳壽凾縺ｯ繝繝溘・縺ｧ陦ｨ遉ｺ
 }
 
 if (images.length === 0) {
@@ -66,6 +66,9 @@ if (images.length === 0) {
 <script define:vars={{ imageUrls: images.map(i => i.url) }}>
   const masonryEl = document.getElementById('masonry');
   const loading = document.getElementById('loading');
+  const loadSentinel = document.getElementById('load-sentinel');
+  let isLoadingMore = false;
+  let lastLoadAt = 0;
   // Random font for logo letter
   const googleFonts = [
     'Playfair Display', 'Lobster', 'Pacifico', 'Oswald',
@@ -217,7 +220,7 @@ if (images.length === 0) {
     pin.className = 'pin';
     pin.innerHTML = `
       <div class="pin-image">
-        <img src="${url}?w=600" alt="" loading="lazy" />
+        <img src="${url}?w=600" alt="" />
         <div class="pin-overlay">
           <button class="pin-save">Save</button>
           <div class="pin-actions">
@@ -252,21 +255,58 @@ if (images.length === 0) {
     return a;
   }
 
+  let lastLoadTime = 0;
+  let loadCooldown = 500; // 500ms minimum between loads
+
   function loadMore() {
+    // Prevent duplicate loads and rapid-fire
+    if (isLoadingMore) return;
+    const now = Date.now();
+    if (now - lastLoadTime < loadCooldown) return;
+
+    isLoadingMore = true;
+    lastLoadTime = now;
+
     // Stop observing while loading
     observer.unobserve(loading);
+    loading.hidden = false;
 
     const batch = shuffle(allUrls).slice(0, 8);
+    if (batch.length === 0) {
+      // No more images to load
+      isLoadingMore = false;
+      loading.hidden = true;
+      observer.observe(loading);
+      return;
+    }
+
     let loaded = 0;
+    let loadTimeout = setTimeout(() => {
+      // Fallback: if images don't load within 5s, resume anyway
+      completeLoad();
+    }, 5000);
+
+    const completeLoad = () => {
+      clearTimeout(loadTimeout);
+      isLoadingMore = false;
+      loading.hidden = true;
+      // Defer re-observation to next tick to avoid immediate re-trigger
+      requestAnimationFrame(() => {
+        observer.observe(loading);
+      });
+    };
 
     batch.forEach(url => {
       const pin = createPin(url);
       const img = pin.querySelector('img');
+      let done = false;
       const onDone = () => {
+        if (done) return; // Guard against multiple fires
+        done = true;
         loaded++;
-        // Resume observer only after all images in batch have loaded
+        // Resume observer only after all images in batch have loaded or timed out
         if (loaded >= batch.length) {
-          observer.observe(loading);
+          completeLoad();
         }
       };
       img.addEventListener('load', onDone, { once: true });
@@ -286,12 +326,16 @@ if (images.length === 0) {
     const pin = createPin(url);
     addPinToShortest(pin);
   });
+  loading.hidden = true;
 
   // Infinite scroll
   const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting) loadMore();
-  }, { rootMargin: '400px' });
-  observer.observe(loading);
+    const entry = entries[0];
+    if (!entry.isIntersecting || isLoadingMore) return;
+    if (Date.now() - lastLoadAt < 500) return;
+    loadMore();
+  }, { rootMargin: '200px' });
+  observer.observe(loadSentinel);
 
   // Handle resize
   let resizeTimer;
@@ -520,6 +564,10 @@ if (images.length === 0) {
     display: flex;
     justify-content: center;
     padding: 40px 0;
+    pointer-events: none;
+  }
+  .p-load-sentinel {
+    height: 1px;
   }
   .p-spinner {
     width: 24px; height: 24px;
@@ -563,3 +611,7 @@ if (images.length === 0) {
     .p-feed { padding-top: 64px; }
   }
 </style>
+
+
+
+

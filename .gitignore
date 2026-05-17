@@ -10,3 +10,9 @@ node_modules/
 
 # OS
 .DS_Store
+
+gif_project
+
+.env.local
+.runtime/
+dev-server.log

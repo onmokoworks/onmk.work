@@ -1,4 +1,4 @@
----
+﻿---
 import Layout from "../layouts/Layout.astro";
 ---
 
@@ -131,6 +131,8 @@ import Layout from "../layouts/Layout.astro";
     line-height: 1.8;
     font-size: 0.95rem;
     letter-spacing: 0.01em;
+    word-break: break-word;
+    overflow-wrap: break-word;
   }
   .trigger {
     cursor: pointer;
@@ -139,9 +141,13 @@ import Layout from "../layouts/Layout.astro";
     text-underline-offset: 4px;
     text-decoration-color: #ddd;
     transition: color 0.2s;
+    display: inline;
   }
   .trigger:hover { text-decoration-color: var(--accent); color: var(--text-sub); }
-  .no-break { white-space: nowrap; }
+  .no-break { white-space: normal; word-break: break-word; }
+  @media (min-width: 768px) {
+    .no-break { white-space: nowrap; word-break: normal; }
+  }
   /* 畳み: 外の句点を表示、開き: content内の句点を表示して外を隠す */
   .period-fallback { }
   [data-has-period].is-open + .period-fallback { display: none; }
@@ -266,3 +272,5 @@ import Layout from "../layouts/Layout.astro";
 
   document.addEventListener('astro:page-load', init);
 </script>
+
+

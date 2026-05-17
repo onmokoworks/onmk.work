@@ -1,21 +1,39 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
-const gifSrc = "/assets/404.gif";
+const notFoundAnimationSources = [
+  "/assets/404/001-otadesign.png",
+  "/assets/404/002-glitch.png",
+  "/assets/404/003-pixels.png",
+];
 ---
 
 <Layout title="onmk" noindex>
   <div class="not-found-shell">
     <div class="container not-found-content">
-      <div class="gif-frame">
-        <img src={gifSrc} alt="404 animation" class="gif-image" />
+      <div class="not-found-visual">
+        <img
+          src={notFoundAnimationSources[0]}
+          alt=""
+          class="not-found-animation"
+          data-404-animation
+          loading="eager"
+          decoding="async" />
       </div>
       <p class="description">
-        お探しのページは見つかりませんでした。
+        &#12362;&#25506;&#12375;&#12398;&#12506;&#12540;&#12472;&#12399;&#35211;&#12388;&#12363;&#12426;&#12414;&#12379;&#12435;&#12391;&#12375;&#12383;&#12290;
       </p>
     </div>
   </div>
 </Layout>
+
+<script define:vars={{ notFoundAnimationSources }}>
+  const animation = document.querySelector("[data-404-animation]");
+  if (animation instanceof HTMLImageElement && notFoundAnimationSources.length > 1) {
+    const index = Math.floor(Math.random() * notFoundAnimationSources.length);
+    animation.src = notFoundAnimationSources[index];
+  }
+</script>
 
 <style>
   .not-found-shell {
@@ -34,19 +52,21 @@ const gifSrc = "/assets/404.gif";
     text-align: center;
   }
 
-  .gif-frame {
-    width: min(100%, 420px);
+  .not-found-visual {
+    width: min(76vw, 560px);
+    max-width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
   }
 
-  .gif-image {
+  .not-found-animation {
     display: block;
     width: 100%;
-    max-width: 420px;
     height: auto;
+    aspect-ratio: 1 / 1;
     object-fit: contain;
+    image-rendering: auto;
   }
 
   .description {
@@ -59,6 +79,10 @@ const gifSrc = "/assets/404.gif";
   @media (max-width: 768px) {
     .not-found-content {
       padding: 40px 20px;
+    }
+
+    .not-found-visual {
+      width: min(82vw, 420px);
     }
 
     .description {
