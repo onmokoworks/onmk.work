@@ -1,6 +1,6 @@
 ﻿---
 import Layout from "../layouts/Layout.astro";
-import { getScripts, getScriptsPage } from "../library/microcms";
+import { getTools, getToolsPage } from "../library/microcms";
 
 type ScriptCard = {
   id: string;
@@ -27,7 +27,7 @@ function stripHtml(html?: string) {
 let pageTitle = "Tools";
 let pageDescription = "";
 try {
-  const page = await getScriptsPage();
+  const page = await getToolsPage();
   pageTitle = page.title;
   pageDescription = page.description ?? "";
 } catch {
@@ -36,7 +36,7 @@ try {
 
 let scripts: ScriptCard[] = [];
 try {
-  const res = await getScripts({ orders: "-publishedAt", limit: 100 });
+  const res = await getTools({ orders: "-publishedAt", limit: 100 });
   scripts = res.contents.map((item) => ({
     id: item.id,
     slug: item.slug ?? item.id,
@@ -304,4 +304,5 @@ const tagTitles = Array.from(new Set(scripts.flatMap((item) => item.tags)));
   document.addEventListener('astro:page-load', initScriptsTagFilter);
   initScriptsTagFilter();
 </script>
+
 

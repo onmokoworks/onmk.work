@@ -1,6 +1,6 @@
 ﻿---
 import Layout from "../../layouts/Layout.astro";
-import { getScripts, getScriptBySlug } from "../../library/microcms";
+import { getTools, getToolBySlug } from "../../library/microcms";
 
 function splitTags(tool?: string) {
   return (tool ?? "")
@@ -10,14 +10,14 @@ function splitTags(tool?: string) {
 }
 
 export async function getStaticPaths() {
-  const response = await getScripts({ fields: ["id", "slug"], limit: 100 });
+  const response = await getTools({ fields: ["id", "slug"], limit: 100 });
   return response.contents.map((script) => ({
     params: { scriptSlug: script.slug ?? script.id },
   }));
 }
 
 const { scriptSlug } = Astro.params;
-const script = await getScriptBySlug(scriptSlug as string);
+const script = await getToolBySlug(scriptSlug as string);
 const tags = splitTags(script.tool);
 const scriptUrl = script.url?.trim();
 ---
@@ -203,4 +203,5 @@ const scriptUrl = script.url?.trim();
     }
   }
 </style>
+
 

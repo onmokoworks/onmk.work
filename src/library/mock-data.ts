@@ -70,7 +70,7 @@ export const mockWorks = [
   },
 ];
 
-export const mockScripts = [
+export const mockTools = [
   {
     id: 'ae-helper',
     title: 'AE Helper Script',
@@ -101,8 +101,8 @@ export const mockScripts = [
   },
 ];
 
-export const mockScriptsPage = {
-  id: 'scripts-page',
+export const mockToolsPage = {
+  id: 'tools-page',
   title: 'Tools',
   description: 'microCMS の認証がないローカル環境でも見た目調整を進めるためのダミー表示です。',
   createdAt: '2026-01-10T00:00:00.000Z',
@@ -125,3 +125,4 @@ export const mockLogEntries = [
     revisedAt: '2026-01-15T00:00:00.000Z',
   },
 ];
+

@@ -1,6 +1,6 @@
 ﻿import type { MicroCMSQueries, MicroCMSListContent, MicroCMSImage, MicroCMSObjectContent } from "microcms-js-sdk";
 import { createClient } from "microcms-js-sdk";
-import { mockLogEntries, mockScripts, mockScriptsPage, mockTags, mockWorks } from "./mock-data";
+import { mockLogEntries, mockTags, mockTools, mockToolsPage, mockWorks } from "./mock-data";
 
 const serviceDomain = import.meta.env.MICROCMS_SERVICE_DOMAIN;
 const apiKey = import.meta.env.MICROCMS_API_KEY;
@@ -28,7 +28,7 @@ export type Work = {
   credit?: string;
 } & MicroCMSListContent;
 
-export type Script = {
+export type Tool = {
   title: string;
   slug?: string;
   thumbnail?: MicroCMSImage;
@@ -38,7 +38,7 @@ export type Script = {
   url: string;
 } & MicroCMSListContent;
 
-export type ScriptsPage = {
+export type ToolsPage = {
   title: string;
   description?: string;
 } & MicroCMSObjectContent;
@@ -82,27 +82,35 @@ export const getWorks = async (queries?: MicroCMSQueries) => {
   return await getListFallback<Work>(mockWorks as Work[], queries);
 };
 
-export const getScripts = async (queries?: MicroCMSQueries) => {
+export const getTools = async (queries?: MicroCMSQueries) => {
   if (client) {
-    return await client.getList<Script>({ endpoint: "scripts", queries });
+    try {
+      return await client.getList<Tool>({ endpoint: "tools", queries });
+    } catch {
+      return await client.getList<Tool>({ endpoint: "scripts", queries });
+    }
   }
-  return await getListFallback<Script>(mockScripts as Script[], queries);
+  return await getListFallback<Tool>(mockTools as Tool[], queries);
 };
 
-export const getScriptBySlug = async (slug: string) => {
-  const response = await getScripts({ orders: "-publishedAt", limit: 100 });
-  const item = response.contents.find((script) => (script.slug ?? script.id) === slug);
+export const getToolBySlug = async (slug: string) => {
+  const response = await getTools({ orders: "-publishedAt", limit: 100 });
+  const item = response.contents.find((tool) => (tool.slug ?? tool.id) === slug);
   if (!item) {
-    throw new Error(`Unknown script slug: ${slug}`);
+    throw new Error(`Unknown tool slug: ${slug}`);
   }
   return item;
 };
 
-export const getScriptsPage = async (queries?: MicroCMSQueries) => {
+export const getToolsPage = async (queries?: MicroCMSQueries) => {
   if (client) {
-    return await client.getObject<ScriptsPage>({ endpoint: "scripts-page", queries });
+    try {
+      return await client.getObject<ToolsPage>({ endpoint: "tools-page", queries });
+    } catch {
+      return await client.getObject<ToolsPage>({ endpoint: "scripts-page", queries });
+    }
   }
-  return mockScriptsPage as ScriptsPage;
+  return mockToolsPage as ToolsPage;
 };
 
 export const getLogEntries = async (queries?: MicroCMSQueries) => {
@@ -129,3 +137,13 @@ export const getWorkDetail = async (contentId: string, queries?: MicroCMSQueries
 };
 
 export const isUsingMockMicrocms = !hasMicrocmsCredentials;
+
+
+export type Script = Tool;
+export type ScriptsPage = ToolsPage;
+export const getScripts = getTools;
+export const getScriptBySlug = getToolBySlug;
+export const getScriptsPage = getToolsPage;
+
+
+
