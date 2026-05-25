@@ -41,6 +41,34 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
             <a href="/works" class="nav-link">works</a>
             <a href="/tools" class="nav-link">tools</a>
             <a href="/about" class="nav-link">about</a>
+            <div class="theme-selector">
+              <button id="theme-toggle" class="theme-toggle" aria-label="Select theme" aria-haspopup="true" aria-expanded="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+                <span class="dropdown-arrow">▼</span>
+              </button>
+              <div id="theme-menu" class="theme-menu" hidden>
+                <button class="theme-option" data-theme="light">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                  </svg>
+                  Light
+                </button>
+                <button class="theme-option" data-theme="dark">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                  Dark
+                </button>
+                <button class="theme-option" data-theme="flashlight">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3 7h7l-5.5 4 2 6.5-6.5-5-6.5 5 2-6.5-5.5-4h7z"/>
+                  </svg>
+                  Flashlight
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </nav>
@@ -64,7 +92,9 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
     display: flex;
     justify-content: center;
     margin-top: 80px;
-    border-top: 0.1px solid #e5e5e5;
+    border-top: 0.1px solid var(--border-color);
+    position: relative;
+    z-index: 1001;
   }
   .footer-inner {
     width: 100%;
@@ -83,6 +113,84 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
     transition: color 0.2s;
   }
   .footer-link:hover { color: var(--text-main); }
+
+  .theme-selector {
+    position: relative;
+    display: inline-block;
+  }
+
+  .theme-toggle {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 0.75rem;
+    cursor: pointer;
+    padding: 0 8px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: opacity 0.2s ease-out;
+    border-radius: 6px;
+  }
+  .theme-toggle:hover { opacity: 0.7; }
+
+  .theme-toggle svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .dropdown-arrow {
+    font-size: 0.65rem;
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.2s ease;
+  }
+
+  .theme-toggle[aria-expanded="true"] .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .theme-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 4px;
+    min-width: 140px;
+    z-index: 1001;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .theme-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: var(--text-main);
+    font-size: 0.8rem;
+    padding: 8px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.15s ease;
+    text-align: left;
+    font-family: var(--font-family);
+  }
+  .theme-option:hover {
+    background: var(--border-color);
+  }
+  .theme-option svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
   @media (max-width: 768px) {
     .footer-inner {
       padding: 40px 20px 60px;
@@ -94,13 +202,169 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
 </style>
 
 <script>
+  const THEME_STORAGE_KEY = 'onmk-theme';
+
+  function initTheme() {
+    const html = document.documentElement;
+
+    // Get saved theme or default to light
+    let currentTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
+
+    // If no saved preference, check OS preference
+    if (!localStorage.getItem(THEME_STORAGE_KEY)) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      currentTheme = prefersDark ? 'dark' : 'light';
+    }
+
+    html.setAttribute('data-theme', currentTheme);
+  }
+
+  function setTheme(theme) {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', theme);
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    closeThemeMenu();
+
+    // Initialize flashlight if switching to flashlight mode
+    if (theme === 'flashlight') {
+      initFlashlight();
+    } else {
+      removeFlashlight();
+    }
+  }
+
+  function toggleThemeMenu() {
+    const menu = document.getElementById('theme-menu');
+    if (!menu) return;
+
+    const isHidden = menu.hasAttribute('hidden');
+    if (isHidden) {
+      menu.removeAttribute('hidden');
+      const button = document.getElementById('theme-toggle');
+      if (button) button.setAttribute('aria-expanded', 'true');
+    } else {
+      closeThemeMenu();
+    }
+  }
+
+  function closeThemeMenu() {
+    const menu = document.getElementById('theme-menu');
+    const button = document.getElementById('theme-toggle');
+    if (menu) menu.setAttribute('hidden', '');
+    if (button) button.setAttribute('aria-expanded', 'false');
+  }
+
+  function initFlashlight() {
+    let overlay = document.getElementById('flashlight-overlay');
+    let spotlight = document.getElementById('flashlight-spotlight');
+
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'flashlight-overlay';
+      overlay.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(circle 120px at var(--spotlight-x, 50%) var(--spotlight-y, 50%), transparent 0%, rgba(0,0,0,0.9) 15%, rgba(0,0,0,0.99) 40%);
+        pointer-events: none;
+        z-index: 998;
+      `;
+      document.body.appendChild(overlay);
+    }
+
+    if (!spotlight) {
+      spotlight = document.createElement('div');
+      spotlight.id = 'flashlight-spotlight';
+      spotlight.style.cssText = `
+        position: fixed;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,240,180,0.3) 0%, rgba(255,240,180,0.3) 15%, rgba(255,240,180,0.25) 40%, rgba(255,220,140,0.1) 55%, rgba(255,160,70,0.02) 70%, transparent 85%);
+        pointer-events: none;
+        z-index: 1005;
+        display: none;
+        mix-blend-mode: screen;
+        filter: brightness(1.25);
+        box-shadow: 0 0 160px rgba(255,180,80,0.6), inset 0 0 130px rgba(255,240,180,0.5);
+      `;
+      document.body.appendChild(spotlight);
+    }
+
+    const updateSpotlight = (x, y) => {
+      spotlight.style.display = 'block';
+      spotlight.style.left = (x - 300) + 'px';
+      spotlight.style.top = (y - 300) + 'px';
+
+      // Update overlay gradient center
+      overlay.style.setProperty('--spotlight-x', x + 'px');
+      overlay.style.setProperty('--spotlight-y', y + 'px');
+    };
+
+    document.addEventListener('mousemove', (e) => {
+      updateSpotlight(e.clientX, e.clientY);
+    }, { passive: true });
+
+    document.addEventListener('touchmove', (e) => {
+      if (e.touches.length > 0) {
+        updateSpotlight(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    document.addEventListener('touchend', () => {
+      spotlight.style.display = 'none';
+    }, { passive: true });
+  }
+
+  function removeFlashlight() {
+    const spotlight = document.getElementById('flashlight-spotlight');
+    const overlay = document.getElementById('flashlight-overlay');
+    if (spotlight) {
+      spotlight.remove();
+    }
+    if (overlay) {
+      overlay.remove();
+    }
+  }
+
   function initNav() {
     const navBar = document.querySelector('.nav-bar');
     window.addEventListener('scroll', () => {
       navBar?.classList.toggle('is-shrunk', window.scrollY > 40);
     }, { passive: true });
   }
-  document.addEventListener('astro:page-load', initNav);
+
+  function initThemeToggle() {
+    const button = document.getElementById('theme-toggle');
+    const menu = document.getElementById('theme-menu');
+    const options = document.querySelectorAll('.theme-option');
+
+    if (button) {
+      button.addEventListener('click', toggleThemeMenu);
+    }
+
+    options.forEach(option => {
+      option.addEventListener('click', (e) => {
+        const theme = option.dataset.theme;
+        if (theme) setTheme(theme);
+      });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.theme-selector')) {
+        closeThemeMenu();
+      }
+    });
+  }
+
+  function init() {
+    initTheme();
+    initNav();
+    initThemeToggle();
+  }
+
+  document.addEventListener('astro:page-load', init);
+  init();
 </script>
 
 

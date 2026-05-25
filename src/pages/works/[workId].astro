@@ -188,14 +188,14 @@ const galleryImages = (work.images ?? []).slice(1);
   }
   .work-tag:hover {
     color: var(--text-main);
-    border-color: #cfcfcf;
+    border-color: var(--border-color);
   }
 
   /* Embed */
   .embed-wrap {
     width: 100%;
     aspect-ratio: 16 / 9;
-    background-color: #000;
+    background-color: var(--accent);
     margin-bottom: 24px;
   }
   .embed-wrap iframe {
@@ -248,7 +248,7 @@ const galleryImages = (work.images ?? []).slice(1);
   .work-credit {
     margin-top: 40px;
     padding-top: 24px;
-    border-top: 0.1px solid #e5e5e5;
+    border-top: 0.1px solid var(--border-color);
     font-size: 0.75rem;
     line-height: 1.8;
     color: var(--text-sub);
@@ -262,7 +262,7 @@ const galleryImages = (work.images ?? []).slice(1);
     position: fixed;
     inset: 0;
     z-index: 2000;
-    background: rgba(0,0,0,0.9);
+    background: rgba(0, 0, 0, 0.92);
     display: flex;
     align-items: center;
     justify-content: center;

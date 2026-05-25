@@ -121,7 +121,7 @@ const sections: ListingSection[] = [
 <style>
   :global(html),
   :global(body) {
-    background: #fff;
+    background: var(--bg-color);
   }
 
   .apache-index {
@@ -129,8 +129,8 @@ const sections: ListingSection[] = [
     margin-top: calc(-1 * var(--nav-height));
     padding: 10px 20px 14px;
     overflow-x: visible;
-    background: #fff;
-    color: #000;
+    background: var(--bg-color);
+    color: var(--text-main);
     font-family: "Courier New", Courier, monospace;
     font-size: 14px;
     line-height: 1.15;
@@ -147,8 +147,8 @@ const sections: ListingSection[] = [
     width: 100%;
     max-width: 1040px;
     border-collapse: collapse;
-    border-top: 1px solid #aaa;
-    border-bottom: 1px solid #aaa;
+    border-top: 1px solid var(--text-sub);
+    border-bottom: 1px solid var(--text-sub);
   }
 
   th,
@@ -162,7 +162,7 @@ const sections: ListingSection[] = [
   thead th {
     padding-top: 5px;
     padding-bottom: 5px;
-    border-bottom: 1px solid #aaa;
+    border-bottom: 1px solid var(--text-sub);
   }
 
   .icon {
