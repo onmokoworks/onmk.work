@@ -41,34 +41,6 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
             <a href="/works" class="nav-link">works</a>
             <a href="/tools" class="nav-link">tools</a>
             <a href="/about" class="nav-link">about</a>
-            <div class="theme-selector">
-              <button id="theme-toggle" class="theme-toggle" aria-label="Select theme" aria-haspopup="true" aria-expanded="false">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                </svg>
-                <span class="dropdown-arrow">▼</span>
-              </button>
-              <div id="theme-menu" class="theme-menu" hidden>
-                <button class="theme-option" data-theme="light">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                  </svg>
-                  Light
-                </button>
-                <button class="theme-option" data-theme="dark">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                  </svg>
-                  Dark
-                </button>
-                <button class="theme-option" data-theme="flashlight">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 2l3 7h7l-5.5 4 2 6.5-6.5-5-6.5 5 2-6.5-5.5-4h7z"/>
-                  </svg>
-                  Flashlight
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </nav>
@@ -203,34 +175,41 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
 
 <script>
   const THEME_STORAGE_KEY = 'onmk-theme';
+  let systemThemeListenerBound = false;
 
-  function initTheme() {
-    const html = document.documentElement;
-
-    // Get saved theme or default to light
-    let currentTheme = localStorage.getItem(THEME_STORAGE_KEY) || 'light';
-
-    // If no saved preference, check OS preference
-    if (!localStorage.getItem(THEME_STORAGE_KEY)) {
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      currentTheme = prefersDark ? 'dark' : 'light';
-    }
-
-    html.setAttribute('data-theme', currentTheme);
+  function getSystemTheme() {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
-  function setTheme(theme) {
+  function applyTheme(theme) {
     const html = document.documentElement;
     html.setAttribute('data-theme', theme);
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
-    closeThemeMenu();
 
-    // Initialize flashlight if switching to flashlight mode
     if (theme === 'flashlight') {
       initFlashlight();
     } else {
       removeFlashlight();
     }
+  }
+
+  function initTheme() {
+    applyTheme(getSystemTheme());
+
+    if (systemThemeListenerBound) return;
+
+    const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const updateSystemTheme = () => applyTheme(getSystemTheme());
+    if (systemThemeQuery.addEventListener) {
+      systemThemeQuery.addEventListener('change', updateSystemTheme);
+    } else {
+      systemThemeQuery.addListener(updateSystemTheme);
+    }
+    systemThemeListenerBound = true;
+  }
+
+  function setTheme(theme) {
+    applyTheme(theme);
+    closeThemeMenu();
   }
 
   function toggleThemeMenu() {
@@ -360,7 +339,6 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
   function init() {
     initTheme();
     initNav();
-    initThemeToggle();
   }
 
   document.addEventListener('astro:page-load', init);

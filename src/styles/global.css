@@ -64,7 +64,6 @@ body {
     top: 0; left: 0; width: 100%; height: var(--nav-height);
     z-index: 1000;
     background-color: var(--nav-bg);
-    border-bottom: 0.1px solid var(--border-color);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     display: flex; justify-content: center;

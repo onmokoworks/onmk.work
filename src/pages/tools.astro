@@ -235,7 +235,8 @@ const tagTitles = Array.from(new Set(scripts.flatMap((item) => item.tags)));
 
   @media (max-width: 680px) {
     .scripts-grid {
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 22px 14px;
     }
   }
 </style>
