@@ -1,293 +1,162 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import allworksSource from "../data/allworks.md?raw";
 
-type ListingEntry = {
-  kind: "dir" | "file";
-  marker: "" | "├" | "└";
+type WorkEntry = {
   name: string;
   href: string;
-  modified: string;
-  size: string;
+  year: string;
   description?: string;
 };
 
-type ListingSection = {
+type WorkSection = {
   name: string;
-  href: string;
-  modified: string;
-  size: string;
-  children: ListingEntry[];
+  children: WorkEntry[];
 };
 
-const sections: ListingSection[] = [
-  {
-    name: "商業制作",
-    href: "/allworks/commercial/",
-    modified: "2026-05-17",
-    size: "-",
-    children: [
-      { kind: "dir", marker: "├", name: "MusicVideo", href: "/allworks/commercial/music-video/", modified: "2026-05-17", size: "-" },
-      { kind: "file", marker: "├", name: "インターネット侵略中 / ぱすはに", href: "#", modified: "2024", size: "4K" },
-      { kind: "file", marker: "├", name: "歌うたいのバラッド / covered by 長瀬有花", href: "#", modified: "2024", size: "4K" },
-      { kind: "file", marker: "├", name: "sweetdevil / covered by 茨むあん", href: "#", modified: "2024", size: "4K" },
-      { kind: "file", marker: "├", name: "真的没喝多 / covered by If", href: "#", modified: "2024", size: "4K" },
-      { kind: "file", marker: "├", name: "ネオンライト・グルーヴ / rukaku", href: "#", modified: "2024", size: "4K" },
-      { kind: "file", marker: "├", name: "幽玄アルゴリズム / rukaku", href: "#", modified: "2024", size: "4K" },
-      { kind: "file", marker: "└", name: "* this game does not exist * / litmus* x Ester", href: "#", modified: "2024", size: "5K", description: "一部3DCG・コンポジット" },
-    ],
-  },
-  {
-    name: "背景映像演出",
-    href: "/allworks/background/",
-    modified: "2026-05-17",
-    size: "-",
-    children: [
-      { kind: "file", marker: "├", name: "にじさんじフェス2022 月ノ美兎&星川サラ&不破湊&ChroNoiRステージ", href: "#", modified: "2022", size: "6K" },
-      { kind: "file", marker: "├", name: "にじさんじ 5th Anniversary LIVE 「SYMPHONIA」", href: "#", modified: "2024", size: "6K" },
-      { kind: "file", marker: "├", name: "ROF-MAO 1st Live ｢New street, New world」", href: "#", modified: "2024", size: "6K" },
-      { kind: "file", marker: "└", name: "さんばか 5th Anniversary LIVE 〜３！参！SUN！〜", href: "#", modified: "2024", size: "5K" },
-    ],
-  },
-  {
-    name: "リリックモーション演出",
-    href: "/allworks/lyric-motion/",
-    modified: "2026-05-17",
-    size: "-",
-    children: [
-      { kind: "file", marker: "├", name: "Ethyria's First 3D Live Concert", href: "#", modified: "2024", size: "5K" },
-      { kind: "file", marker: "├", name: "3Dでどーーーんっ！！これが最強な倉持だぁぁぁ！！！", href: "#", modified: "2024", size: "4K" },
-      { kind: "file", marker: "└", name: "ゲストたくさん！！重大発表あり！！なハッピー誕生日3Dライブ！！！！", href: "#", modified: "2024", size: "5K" },
-    ],
-  },
-];
+function parseLink(value: string) {
+  const match = value.match(/^\[(.+)\]\((.+)\)$/);
+  if (!match) return { name: value, href: "#" };
+  return { name: match[1], href: match[2] };
+}
+
+function parseAllWorks(source: string): WorkSection[] {
+  const sections: WorkSection[] = [];
+
+  for (const rawLine of source.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line) continue;
+
+    const heading = line.match(/^##\s+(.+)$/);
+    if (heading) {
+      sections.push({ name: heading[1].trim(), children: [] });
+      continue;
+    }
+
+    if (!line.startsWith("- ")) continue;
+    const current = sections.at(-1);
+    if (!current) continue;
+
+    const [year = "", title = "", description] = line
+      .slice(2)
+      .split("|")
+      .map((value) => value.trim());
+    if (!title) continue;
+
+    current.children.push({
+      ...parseLink(title),
+      year,
+      description,
+    });
+  }
+
+  return sections;
+}
+
+const sections = parseAllWorks(allworksSource);
 ---
 
-<Layout title="Index of /allworks/" hideNav hideFooter noindex>
-  <main class="apache-index">
-    <h1>Index of /allworks/</h1>
+<Layout title="all works | onmk" hideNav hideFooter>
+  <main class="allworks-page">
+    <h1>All Works</h1>
 
-    <table class="listing" aria-label="Index of /allworks/">
-      <thead>
-        <tr>
-          <th class="icon"></th>
-          <th class="name"><a href="?C=N;O=D">Name</a></th>
-          <th class="modified"><a href="?C=M;O=A">Last modified</a></th>
-          <th class="size"><a href="?C=S;O=A">Size</a></th>
-          <th class="description"><a href="?C=D;O=A">Description</a></th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="parent-row">
-          <td class="icon"><img src="/assets/apache-parent.svg" alt="" /></td>
-          <td class="name"><a href="/">Parent Directory</a></td>
-          <td class="modified">-</td>
-          <td class="size">-</td>
-          <td class="description"></td>
-        </tr>
+    <div class="work-list" aria-label="All works">
+      {sections.map((section) => (
+        <section class="work-section">
+          <h2>{section.name}</h2>
 
-        {sections.map((section) => (
-          <>
-            <tr class="section-row">
-              <td class="icon"><img src="/assets/apache-folder.svg" alt="" /></td>
-              <td class="name"><a href={section.href}>{section.name}/</a></td>
-              <td class="modified">{section.modified}</td>
-              <td class="size">{section.size}</td>
-              <td class="description"></td>
-            </tr>
-            {section.children.map((entry) => (
-              <tr>
-                <td class="icon"><img src={entry.kind === "dir" ? "/assets/apache-folder.svg" : "/assets/apache-file.svg"} alt="" /></td>
-                <td class="name child-name">
-                  <span class="tree">{entry.marker}</span>
-                  <a href={entry.href}>{entry.kind === "dir" ? `${entry.name}/` : entry.name}</a>
-                </td>
-                <td class="modified">{entry.modified}</td>
-                <td class="size">{entry.size}</td>
-                <td class="description">{entry.description ?? "-"}</td>
-              </tr>
-            ))}
-          </>
-        ))}
-      </tbody>
-    </table>
-
-    <address>
-      Apache/2.4.18 (pseudo) Server at onmk.work, onmk<br />
-      onmokoworks(at)gmail.com
-    </address>
+          {section.children.map((entry) => (
+            <div class="work-row">
+              <a href={entry.href}>{entry.name}</a>
+              <span class="work-meta">
+                {entry.year}
+                {entry.description && ` / ${entry.description}`}
+              </span>
+            </div>
+          ))}
+        </section>
+      ))}
+    </div>
   </main>
 </Layout>
 
 <style>
-  :global(html),
-  :global(body) {
-    background: var(--bg-color);
-  }
-
-  .apache-index {
-    min-height: 100vh;
-    margin-top: calc(-1 * var(--nav-height));
-    padding: 10px 20px 14px;
-    overflow-x: visible;
-    background: var(--bg-color);
-    color: var(--text-main);
-    font-family: "Courier New", Courier, monospace;
-    font-size: 14px;
-    line-height: 1.15;
+  .allworks-page {
+    padding-top: 40px;
+    max-width: 760px;
   }
 
   h1 {
-    margin: 0 0 12px;
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 22px;
-    font-weight: 400;
+    margin: 0 0 34px;
+    font-size: 1.15rem;
+    font-weight: 500;
+    line-height: 1.4;
   }
 
-  .listing {
-    width: 100%;
-    max-width: 1040px;
-    border-collapse: collapse;
-    border-top: 1px solid var(--text-sub);
-    border-bottom: 1px solid var(--text-sub);
+  .work-list {
+    display: flex;
+    flex-direction: column;
+    gap: 34px;
   }
 
-  th,
-  td {
-    padding: 2px 7px 2px 0;
-    text-align: left;
-    vertical-align: top;
-    font-weight: 400;
+  .work-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  thead th {
-    padding-top: 5px;
-    padding-bottom: 5px;
-    border-bottom: 1px solid var(--text-sub);
+  h2 {
+    margin: 0 0 4px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    line-height: 1.5;
   }
 
-  .icon {
-    width: 26px;
-    min-width: 26px;
-    padding-right: 4px;
+  .work-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
+    align-items: baseline;
+    padding-left: 1.2em;
+    font-size: 0.78rem;
+    line-height: 1.7;
   }
 
-  .icon img {
-    display: block;
-    width: 20px;
-    height: 22px;
-    image-rendering: pixelated;
-  }
-
-  .name {
+  .work-row a {
     min-width: 0;
-    overflow-wrap: anywhere;
-    word-break: normal;
   }
 
-  .modified {
-    width: 9em;
+  .work-meta {
+    color: var(--text-sub);
+    font-size: 0.68rem;
     white-space: nowrap;
-  }
-
-  .size {
-    width: 3.5em;
-    text-align: right;
-    white-space: nowrap;
-  }
-
-  .description {
-    width: 15em;
-  }
-
-  .parent-row td,
-  .section-row td {
-    padding-top: 8px;
-  }
-
-  .tree {
-    display: inline-block;
-    min-width: 1.4em;
-    color: #000;
-    white-space: pre;
   }
 
   a {
-    color: #00e;
-    text-decoration: underline;
+    color: inherit;
+    text-decoration: none;
   }
 
-  a:visited {
-    color: #551a8b;
-  }
-
-  address {
-    max-width: 1040px;
-    margin-top: 8px;
-    padding-top: 6px;
-    border-top: 1px solid #aaa;
-    font-style: italic;
+  a:hover {
+    color: var(--text-sub);
   }
 
   @media (max-width: 640px) {
-    .apache-index {
-      padding: 8px 10px 12px;
-      font-size: 12px;
-    }
-
     h1 {
-      margin-bottom: 10px;
-      font-size: 18px;
+      margin-bottom: 28px;
     }
 
-    th,
-    td {
-      padding-top: 2px;
-      padding-bottom: 2px;
+    .work-list {
+      gap: 30px;
     }
 
-    .icon {
-      width: 22px;
-      min-width: 22px;
+    .work-row {
+      grid-template-columns: 1fr;
+      gap: 1px;
     }
 
-    .icon img {
-      width: 18px;
-      height: 20px;
-    }
-
-    .modified,
-    .description {
-      display: none;
-    }
-
-    .size {
-      width: 2.8em;
-      padding-right: 0;
-      font-size: 11px;
-    }
-
-    .tree {
-      min-width: 1em;
-    }
-
-    address {
-      font-size: 11px;
-    }
-  }
-
-  @media (max-width: 390px) {
-    .apache-index {
-      padding-right: 8px;
-      padding-left: 8px;
-      font-size: 11px;
-    }
-
-    h1 {
-      font-size: 16px;
-    }
-
-    .size {
-      display: none;
+    .work-meta {
+      white-space: normal;
     }
   }
 </style>

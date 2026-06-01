@@ -70,8 +70,144 @@ const recentWorks = worksRes.contents;
     color: var(--text-sub);
     font-style: normal;
   }
+  :global(.idle-backdrop) {
+    position: fixed;
+    inset: 0;
+    z-index: 1999;
+    display: none;
+    pointer-events: none;
+    background: #fff;
+  }
+  :global(html[data-theme="dark"] .idle-backdrop),
+  :global(html[data-theme="flashlight"] .idle-backdrop) {
+    background: #000;
+  }
+  :global(.idle-backdrop.is-active) {
+    display: block;
+  }
+  :global(.idle-logo) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 2000;
+    display: none;
+    pointer-events: none;
+    color: var(--text-main);
+    font-size: clamp(1.4rem, 5vw, 3.2rem);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1;
+    opacity: 0.82;
+    will-change: transform;
+  }
+  :global(.idle-logo.is-active) {
+    display: block;
+  }
   @media (max-width: 768px) {
     .recent-grid { grid-template-columns: 1fr; }
   }
 </style>
 
+<script>
+  const IDLE_DELAY = 45000;
+  const SPEED = 1.15;
+
+  function initIdleLogo() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let backdrop = document.getElementById('idle-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'idle-backdrop';
+      backdrop.className = 'idle-backdrop';
+      document.body.appendChild(backdrop);
+    }
+
+    let logo = document.getElementById('idle-logo');
+    if (!logo) {
+      logo = document.createElement('div');
+      logo.id = 'idle-logo';
+      logo.className = 'idle-logo';
+      logo.textContent = 'onmk';
+      document.body.appendChild(logo);
+    }
+
+    let idleTimer = 0;
+    let animationFrame = 0;
+    let active = false;
+    let x = 24;
+    let y = 24;
+    let dx = SPEED;
+    let dy = SPEED;
+
+    const resetPosition = () => {
+      const rect = logo.getBoundingClientRect();
+      x = Math.max(16, Math.random() * Math.max(1, window.innerWidth - rect.width - 32));
+      y = Math.max(16, Math.random() * Math.max(1, window.innerHeight - rect.height - 32));
+      dx = Math.random() > 0.5 ? SPEED : -SPEED;
+      dy = Math.random() > 0.5 ? SPEED : -SPEED;
+      logo.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    };
+
+    const tick = () => {
+      if (!active) return;
+
+      const rect = logo.getBoundingClientRect();
+      const maxX = Math.max(0, window.innerWidth - rect.width);
+      const maxY = Math.max(0, window.innerHeight - rect.height);
+
+      x += dx;
+      y += dy;
+
+      if (x <= 0 || x >= maxX) {
+        dx *= -1;
+        x = Math.max(0, Math.min(x, maxX));
+      }
+      if (y <= 0 || y >= maxY) {
+        dy *= -1;
+        y = Math.max(0, Math.min(y, maxY));
+      }
+
+      logo.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      animationFrame = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (active) return;
+      active = true;
+      backdrop.classList.add('is-active');
+      logo.classList.add('is-active');
+      resetPosition();
+      animationFrame = requestAnimationFrame(tick);
+    };
+
+    const stop = () => {
+      active = false;
+      backdrop.classList.remove('is-active');
+      logo.classList.remove('is-active');
+      if (animationFrame) cancelAnimationFrame(animationFrame);
+      animationFrame = 0;
+    };
+
+    const schedule = () => {
+      stop();
+      if (idleTimer) window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(start, IDLE_DELAY);
+    };
+
+    ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach((eventName) => {
+      window.addEventListener(eventName, schedule, { passive: true });
+    });
+
+    window.addEventListener('resize', schedule, { passive: true });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else schedule();
+    });
+
+    schedule();
+  }
+
+  document.addEventListener('astro:page-load', initIdleLogo);
+  initIdleLogo();
+</script>
