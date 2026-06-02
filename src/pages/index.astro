@@ -70,27 +70,35 @@ const recentWorks = worksRes.contents;
     color: var(--text-sub);
     font-style: normal;
   }
-  :global(.idle-backdrop) {
+  :global(.idle-screen) {
     position: fixed;
     inset: 0;
     z-index: 1999;
     display: none;
+    overflow: hidden;
     pointer-events: none;
+  }
+  :global(.idle-screen.is-active) {
+    display: block;
+  }
+  :global(html.is-idle-screen),
+  :global(html.is-idle-screen body) {
+    overflow: hidden;
+  }
+  :global(.idle-backdrop) {
+    position: absolute;
+    inset: 0;
     background: #fff;
   }
   :global(html[data-theme="dark"] .idle-backdrop),
   :global(html[data-theme="flashlight"] .idle-backdrop) {
     background: #000;
   }
-  :global(.idle-backdrop.is-active) {
-    display: block;
-  }
   :global(.idle-logo) {
-    position: fixed;
+    position: absolute;
     left: 0;
     top: 0;
-    z-index: 2000;
-    display: none;
+    z-index: 1;
     pointer-events: none;
     color: var(--text-main);
     font-size: clamp(1.4rem, 5vw, 3.2rem);
@@ -99,9 +107,6 @@ const recentWorks = worksRes.contents;
     line-height: 1;
     opacity: 0.82;
     will-change: transform;
-  }
-  :global(.idle-logo.is-active) {
-    display: block;
   }
   @media (max-width: 768px) {
     .recent-grid { grid-template-columns: 1fr; }
@@ -114,14 +119,23 @@ const recentWorks = worksRes.contents;
 
   function initIdleLogo() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (window.__onmkIdleCleanup) window.__onmkIdleCleanup();
+
+    let screen = document.getElementById('idle-screen');
+    if (!screen) {
+      screen = document.createElement('div');
+      screen.id = 'idle-screen';
+      screen.className = 'idle-screen';
+      document.body.appendChild(screen);
+    }
 
     let backdrop = document.getElementById('idle-backdrop');
     if (!backdrop) {
       backdrop = document.createElement('div');
       backdrop.id = 'idle-backdrop';
       backdrop.className = 'idle-backdrop';
-      document.body.appendChild(backdrop);
     }
+    screen.appendChild(backdrop);
 
     let logo = document.getElementById('idle-logo');
     if (!logo) {
@@ -129,8 +143,8 @@ const recentWorks = worksRes.contents;
       logo.id = 'idle-logo';
       logo.className = 'idle-logo';
       logo.textContent = 'onmk';
-      document.body.appendChild(logo);
     }
+    screen.appendChild(logo);
 
     let idleTimer = 0;
     let animationFrame = 0;
@@ -142,8 +156,8 @@ const recentWorks = worksRes.contents;
 
     const resetPosition = () => {
       const rect = logo.getBoundingClientRect();
-      x = Math.max(16, Math.random() * Math.max(1, window.innerWidth - rect.width - 32));
-      y = Math.max(16, Math.random() * Math.max(1, window.innerHeight - rect.height - 32));
+      x = Math.max(16, Math.random() * Math.max(1, screen.clientWidth - rect.width - 32));
+      y = Math.max(16, Math.random() * Math.max(1, screen.clientHeight - rect.height - 32));
       dx = Math.random() > 0.5 ? SPEED : -SPEED;
       dy = Math.random() > 0.5 ? SPEED : -SPEED;
       logo.style.transform = `translate3d(${x}px, ${y}px, 0)`;
@@ -153,8 +167,8 @@ const recentWorks = worksRes.contents;
       if (!active) return;
 
       const rect = logo.getBoundingClientRect();
-      const maxX = Math.max(0, window.innerWidth - rect.width);
-      const maxY = Math.max(0, window.innerHeight - rect.height);
+      const maxX = Math.max(0, screen.clientWidth - rect.width);
+      const maxY = Math.max(0, screen.clientHeight - rect.height);
 
       x += dx;
       y += dy;
@@ -175,16 +189,16 @@ const recentWorks = worksRes.contents;
     const start = () => {
       if (active) return;
       active = true;
-      backdrop.classList.add('is-active');
-      logo.classList.add('is-active');
+      screen.classList.add('is-active');
+      document.documentElement.classList.add('is-idle-screen');
       resetPosition();
       animationFrame = requestAnimationFrame(tick);
     };
 
     const stop = () => {
       active = false;
-      backdrop.classList.remove('is-active');
-      logo.classList.remove('is-active');
+      screen.classList.remove('is-active');
+      document.documentElement.classList.remove('is-idle-screen');
       if (animationFrame) cancelAnimationFrame(animationFrame);
       animationFrame = 0;
     };
@@ -195,15 +209,28 @@ const recentWorks = worksRes.contents;
       idleTimer = window.setTimeout(start, IDLE_DELAY);
     };
 
-    ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'].forEach((eventName) => {
+    const activityEvents = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart'];
+    const handleVisibilityChange = () => {
+      if (document.hidden) stop();
+      else schedule();
+    };
+
+    activityEvents.forEach((eventName) => {
       window.addEventListener(eventName, schedule, { passive: true });
     });
 
     window.addEventListener('resize', schedule, { passive: true });
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) stop();
-      else schedule();
-    });
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    window.__onmkIdleCleanup = () => {
+      stop();
+      if (idleTimer) window.clearTimeout(idleTimer);
+      activityEvents.forEach((eventName) => {
+        window.removeEventListener(eventName, schedule);
+      });
+      window.removeEventListener('resize', schedule);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
 
     schedule();
   }
