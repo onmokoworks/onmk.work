@@ -125,6 +125,14 @@ import Layout from "../layouts/Layout.astro";
     color: var(--text-main);
     text-decoration-color: var(--text-main);
   }
+  :global(html[data-theme="dark"]) .profile-link {
+    color: #ddd;
+    text-decoration-color: var(--text-sub);
+  }
+  :global(html[data-theme="dark"]) .profile-link:hover {
+    color: var(--text-main);
+    text-decoration-color: #ddd;
+  }
 
   /* Self-intro triggers */
   .about-text {
