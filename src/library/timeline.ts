@@ -3,7 +3,7 @@
 // to an empty list so a single broken source never breaks the build.
 
 import { getBlogPosts, getTools, getWorks, type BlogPost, type Tool, type Work } from "./microcms";
-import { getGithubReleases, getGithubRepos } from "./github";
+import { getGithubActivity } from "./github";
 
 export type TimelineKind = "work" | "tool" | "blog" | "repo" | "release";
 
@@ -80,14 +80,14 @@ function blogToEntries(posts: BlogPost[]): TimelineEntry[] {
 }
 
 export async function getTimeline(): Promise<TimelineYear[]> {
-  const [worksRes, toolsRes, blogRes, repos] = await Promise.all([
+  const [worksRes, toolsRes, blogRes, github] = await Promise.all([
     safe(getWorks({ orders: "-publishedAt", limit: 100 }), { contents: [] as Work[] } as any),
     safe(getTools({ orders: "-publishedAt", limit: 100 }), { contents: [] as Tool[] } as any),
     safe(getBlogPosts({ orders: "-publishedAt", limit: 100 }), { contents: [] as BlogPost[] } as any),
-    safe(getGithubRepos(), []),
+    safe(getGithubActivity(), { repos: [], releases: [] }),
   ]);
 
-  const releases = await safe(getGithubReleases(repos), []);
+  const { repos, releases } = github;
 
   const entries: TimelineEntry[] = [
     ...worksToEntries(worksRes.contents),

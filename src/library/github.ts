@@ -4,8 +4,19 @@
 // (60/hr unauthenticated -> 5000/hr authenticated). All fetches are
 // wrapped so that any failure (rate limit, network, missing repo)
 // degrades to an empty result instead of breaking the site build.
+//
+// Results are cached to .runtime/github-cache.json with a TTL so that
+// the dev server (which re-renders on every request) does not burn the
+// unauthenticated 60/hr budget. On a failed fetch (e.g. rate limited)
+// the last-good cache is reused regardless of age.
+
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join } from "node:path";
 
 const GITHUB_USER = "onmokoworks";
+
+const CACHE_PATH = join(process.cwd(), ".runtime", "github-cache.json");
+const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
 
 // Repos to hide from the timeline (e.g. this site itself, throwaways).
 const EXCLUDE_REPOS = new Set<string>(["onmk.work"]);
@@ -82,6 +93,54 @@ export async function getGithubRepos(): Promise<GithubRepo[]> {
       createdAt: r.created_at,
       language: r.language ?? undefined,
     }));
+}
+
+export interface GithubActivity {
+  repos: GithubRepo[];
+  releases: GithubRelease[];
+}
+
+interface GithubCache extends GithubActivity {
+  fetchedAt: number;
+}
+
+function readCache(): GithubCache | null {
+  try {
+    if (!existsSync(CACHE_PATH)) return null;
+    return JSON.parse(readFileSync(CACHE_PATH, "utf8")) as GithubCache;
+  } catch {
+    return null;
+  }
+}
+
+function writeCache(activity: GithubActivity) {
+  try {
+    mkdirSync(dirname(CACHE_PATH), { recursive: true });
+    writeFileSync(CACHE_PATH, JSON.stringify({ ...activity, fetchedAt: Date.now() }));
+  } catch {
+    // Cache is a best-effort optimization; ignore write failures.
+  }
+}
+
+// Single entry point used by the timeline. Reuses a fresh cache without
+// touching the API, fetches when stale, and falls back to any stale cache
+// if the network/rate limit fails.
+export async function getGithubActivity(): Promise<GithubActivity> {
+  const cache = readCache();
+  if (cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
+    return { repos: cache.repos, releases: cache.releases };
+  }
+
+  const repos = await getGithubRepos();
+  if (repos.length === 0) {
+    // Fetch failed or the account has no repos; prefer stale cache.
+    return cache ? { repos: cache.repos, releases: cache.releases } : { repos: [], releases: [] };
+  }
+
+  const releases = await getGithubReleases(repos);
+  const activity = { repos, releases };
+  writeCache(activity);
+  return activity;
 }
 
 export async function getGithubReleases(repos: GithubRepo[]): Promise<GithubRelease[]> {
