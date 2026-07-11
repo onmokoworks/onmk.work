@@ -111,6 +111,33 @@ export const mockToolsPage = {
   revisedAt: '2026-01-10T00:00:00.000Z',
 };
 
+export const mockBlogPosts = [
+  {
+    id: 'building-onmk-timeline',
+    title: 'トップにアクティビティのタイムラインを置いた',
+    slug: 'building-onmk-timeline',
+    excerpt: 'GitHubの新規リポジトリやworks、リリースを時系列にまとめてトップに表示するようにした話。',
+    body: '<p>ローカル確認用のダミー記事です。microCMS の blog エンドポイントを作ると、この位置に実際の記事が入ります。</p><p>works / tools と同じ要領で、body は microCMS のリッチエディタ想定です。</p>',
+    tag: [mockTags[1]],
+    createdAt: '2026-07-10T00:00:00.000Z',
+    updatedAt: '2026-07-10T00:00:00.000Z',
+    publishedAt: '2026-07-10T00:00:00.000Z',
+    revisedAt: '2026-07-10T00:00:00.000Z',
+  },
+  {
+    id: 'notes-on-ae-plugins',
+    title: 'AEプラグインをRustで書き始めたメモ',
+    slug: 'notes-on-ae-plugins',
+    excerpt: 'テンプレートを整えたら量産できるようになってきた。',
+    body: '<p>2件目のダミー記事です。タイムライン上での blog エントリの見え方を確認するために置いています。</p>',
+    tag: [mockTags[0]],
+    createdAt: '2026-05-20T00:00:00.000Z',
+    updatedAt: '2026-05-20T00:00:00.000Z',
+    publishedAt: '2026-05-20T00:00:00.000Z',
+    revisedAt: '2026-05-20T00:00:00.000Z',
+  },
+];
+
 export const mockLogEntries = [
   {
     id: 'log-001',

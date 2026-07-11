@@ -1,0 +1,164 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getBlogPosts, getBlogPostBySlug } from "../../library/microcms";
+
+export async function getStaticPaths() {
+  try {
+    const response = await getBlogPosts({ fields: ["id", "slug"], limit: 100 });
+    return response.contents.map((post) => ({
+      params: { slug: post.slug ?? post.id },
+    }));
+  } catch {
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+const post = await getBlogPostBySlug(slug as string);
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+---
+
+<Layout title={`${post.title} | onmk`}>
+  <div class="container">
+    <a href="/blog" class="back">← blog</a>
+
+    <article class="blog-detail">
+      <header class="blog-head">
+        <span class="blog-date">{fmtDate(post.publishedAt)}</span>
+        <h1 class="blog-title">{post.title}</h1>
+        {post.tag && post.tag.length > 0 && (
+          <div class="blog-tags">
+            {post.tag.map((t) => <span class="blog-tag">{t.title}</span>)}
+          </div>
+        )}
+      </header>
+
+      {post.eyecatch && (
+        <div class="blog-eyecatch">
+          <img src={`${post.eyecatch.url}?w=1200`} alt="" />
+        </div>
+      )}
+
+      {post.body && <div class="blog-body" set:html={post.body}></div>}
+    </article>
+  </div>
+</Layout>
+
+<style>
+  .container { max-width: 680px; padding-top: 40px; }
+
+  .back {
+    display: inline-block;
+    font-size: 0.75rem;
+    color: var(--text-sub);
+    text-decoration: none;
+    letter-spacing: 0.05em;
+    margin-bottom: 40px;
+    transition: color 0.2s;
+  }
+  .back:hover { color: var(--text-main); }
+
+  .blog-head { margin-bottom: 28px; }
+  .blog-date {
+    display: block;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+    margin-bottom: 8px;
+  }
+  .blog-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .blog-tag {
+    font-size: 0.6rem;
+    color: var(--text-sub);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .blog-eyecatch {
+    margin-bottom: 28px;
+  }
+  .blog-eyecatch img {
+    width: 100%;
+    display: block;
+  }
+
+  .blog-body {
+    font-size: 0.9rem;
+    line-height: 1.9;
+    color: var(--text-main);
+  }
+  .blog-body :global(p) { margin-bottom: 18px; }
+  .blog-body :global(h2) {
+    font-size: 1.05rem;
+    font-weight: 500;
+    margin: 40px 0 14px;
+    letter-spacing: 0.01em;
+  }
+  .blog-body :global(h3) {
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin: 32px 0 12px;
+  }
+  .blog-body :global(a) {
+    color: var(--text-main);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--border-color);
+  }
+  .blog-body :global(a:hover) { text-decoration-color: var(--text-main); }
+  .blog-body :global(img) {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 24px 0;
+  }
+  .blog-body :global(ul),
+  .blog-body :global(ol) {
+    margin: 0 0 18px 1.4em;
+  }
+  .blog-body :global(li) { margin-bottom: 6px; }
+  .blog-body :global(blockquote) {
+    margin: 0 0 18px;
+    padding-left: 16px;
+    border-left: 2px solid var(--border-color);
+    color: var(--text-sub);
+  }
+  .blog-body :global(pre) {
+    background: #f6f6f6;
+    padding: 16px;
+    border-radius: 8px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    margin-bottom: 18px;
+  }
+  html[data-theme="dark"] .blog-body :global(pre),
+  html[data-theme="flashlight"] .blog-body :global(pre) {
+    background: #161616;
+  }
+  .blog-body :global(code) {
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.85em;
+  }
+  .blog-body :global(iframe) {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
+    border: none;
+    display: block;
+    margin: 24px 0;
+  }
+</style>

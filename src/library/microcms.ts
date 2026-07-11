@@ -1,6 +1,6 @@
 ﻿import type { MicroCMSQueries, MicroCMSListContent, MicroCMSImage, MicroCMSObjectContent } from "microcms-js-sdk";
 import { createClient } from "microcms-js-sdk";
-import { mockLogEntries, mockTags, mockTools, mockToolsPage, mockWorks } from "./mock-data";
+import { mockBlogPosts, mockLogEntries, mockTags, mockTools, mockToolsPage, mockWorks } from "./mock-data";
 
 const serviceDomain = import.meta.env.MICROCMS_SERVICE_DOMAIN;
 const apiKey = import.meta.env.MICROCMS_API_KEY;
@@ -45,6 +45,15 @@ export type ToolsPage = {
 
 export type LogEntry = {
   images: MicroCMSImage[];
+} & MicroCMSListContent;
+
+export type BlogPost = {
+  title: string;
+  slug?: string;
+  body?: string;
+  excerpt?: string;
+  eyecatch?: MicroCMSImage;
+  tag?: Tag[];
 } & MicroCMSListContent;
 
 function applyQueryLimit<T>(items: T[], queries?: MicroCMSQueries) {
@@ -118,6 +127,22 @@ export const getLogEntries = async (queries?: MicroCMSQueries) => {
     return await client.getList<LogEntry>({ endpoint: "log", queries });
   }
   return await getListFallback<LogEntry>(mockLogEntries as LogEntry[], queries);
+};
+
+export const getBlogPosts = async (queries?: MicroCMSQueries) => {
+  if (client) {
+    return await client.getList<BlogPost>({ endpoint: "blog", queries });
+  }
+  return await getListFallback<BlogPost>(mockBlogPosts as BlogPost[], queries);
+};
+
+export const getBlogPostBySlug = async (slug: string) => {
+  const response = await getBlogPosts({ orders: "-publishedAt", limit: 100 });
+  const item = response.contents.find((post) => (post.slug ?? post.id) === slug);
+  if (!item) {
+    throw new Error(`Unknown blog slug: ${slug}`);
+  }
+  return item;
 };
 
 export const getWorkDetail = async (contentId: string, queries?: MicroCMSQueries) => {

@@ -1,31 +1,63 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { getWorks } from "../library/microcms";
+import { getTimeline, type TimelineKind } from "../library/timeline";
 
-const worksRes = await getWorks({ orders: "-publishedAt", limit: 4 });
-const recentWorks = worksRes.contents;
+const timeline = await getTimeline();
+
+const icons: Record<TimelineKind, string> = {
+  work: '<rect x="2" y="2" width="20" height="20" rx="2.2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>',
+  tool: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  blog: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+  repo: '<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
+  release: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+};
+
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 ---
 
 <Layout title="onmk">
   <div class="container">
-    <section class="recently-works">
-      <span class="section-title">Recently Works</span>
-      <div class="recent-grid">
-        {recentWorks.map((work) => (
-          <a href={`/works/${work.id}`} class="recent-item">
-            <div class="recent-thumb">
-              {work.images?.[0]
-                ? <img src={`${work.images[0].url}?w=800`} alt={work.title} />
-                : <div class="recent-thumb-empty" />
-              }
-            </div>
-            <div class="recent-info">
-              <span class="recent-year">{new Date(work.publishedAt).getFullYear()}</span>
-              <span style="font-weight:500">{work.title}</span>
-            </div>
-          </a>
-        ))}
-      </div>
+    <section class="timeline">
+      <span class="section-title">Activity</span>
+
+      {timeline.length === 0 && (
+        <p class="tl-empty">まだ表示できる活動がありません。</p>
+      )}
+
+      {timeline.map((group) => (
+        <div class="tl-group">
+          <div class="tl-year">{group.year}</div>
+          <ol class="tl-list">
+            {group.entries.map((entry) => (
+              <li class="tl-item" data-kind={entry.kind}>
+                <a
+                  class="tl-link"
+                  href={entry.href}
+                  target={entry.external ? "_blank" : undefined}
+                  rel={entry.external ? "noopener" : undefined}
+                >
+                  <span class="tl-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={icons[entry.kind]} />
+                  </span>
+                  <span class="tl-content">
+                    <span class="tl-meta">
+                      <span class="tl-date">{fmtDate(entry.date)}</span>
+                      <span class="tl-badge">{entry.badge}</span>
+                      {entry.meta && <span class="tl-tag">{entry.meta}</span>}
+                    </span>
+                    <span class="tl-title">
+                      {entry.title}
+                      {entry.external && <span class="tl-arrow" aria-hidden="true">↗</span>}
+                    </span>
+                    {entry.summary && <span class="tl-summary">{entry.summary}</span>}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ))}
     </section>
   </div>
 </Layout>
@@ -36,40 +68,129 @@ const recentWorks = worksRes.contents;
     font-weight: 500;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
     display: block;
+    color: var(--text-sub);
   }
-  .recent-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+
+  .tl-empty {
+    font-size: 0.85rem;
+    color: var(--text-sub);
   }
-  .recent-item { text-decoration: none; color: var(--text-main); }
-  .recent-thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background-color: var(--accent);
-    margin-bottom: 12px;
-    overflow: hidden;
+
+  /* Year group */
+  .tl-group { margin-bottom: 48px; }
+  .tl-group:last-child { margin-bottom: 0; }
+  .tl-year {
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-style: italic;
+    color: var(--text-main);
+    letter-spacing: 0.04em;
+    padding-bottom: 14px;
+    margin-bottom: 8px;
+    border-bottom: 0.1px solid var(--border-color);
   }
-  .recent-thumb img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-  }
-  .recent-item:hover .recent-thumb img { transform: scale(1.05); }
-  .recent-thumb-empty { width: 100%; height: 100%; background-color: var(--text-main); opacity: 0.2; }
-  .recent-info {
+
+  .tl-list {
+    list-style: none;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    letter-spacing: 0.01em;
   }
-  .recent-year {
-    font-size: 0.55rem;
+
+  .tl-item { position: relative; }
+
+  .tl-link {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 14px;
+    padding: 16px 8px;
+    margin: 0 -8px;
+    text-decoration: none;
+    color: var(--text-main);
+    border-radius: 8px;
+    transition: background-color 0.18s ease;
+  }
+  .tl-link:hover { background-color: rgba(0, 0, 0, 0.03); }
+  html[data-theme="dark"] .tl-link:hover,
+  html[data-theme="flashlight"] .tl-link:hover { background-color: rgba(255, 255, 255, 0.04); }
+
+  .tl-icon {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 0.1px solid var(--border-color);
     color: var(--text-sub);
-    font-style: normal;
+    margin-top: 1px;
   }
+  .tl-icon svg { width: 14px; height: 14px; }
+  .tl-item[data-kind="blog"] .tl-icon,
+  .tl-item[data-kind="work"] .tl-icon { color: var(--text-main); }
+
+  .tl-content {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  .tl-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+  }
+  .tl-date { font-variant-numeric: tabular-nums; }
+  .tl-badge { color: var(--text-sub); }
+  .tl-tag {
+    color: var(--text-sub);
+    opacity: 0.7;
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+  .tl-tag::before { content: "· "; }
+
+  .tl-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    word-break: break-word;
+  }
+  .tl-link:hover .tl-title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--border-color);
+  }
+  .tl-arrow {
+    font-size: 0.7rem;
+    color: var(--text-sub);
+    margin-left: 4px;
+    display: inline-block;
+  }
+
+  .tl-summary {
+    font-size: 0.75rem;
+    line-height: 1.65;
+    color: var(--text-sub);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @media (max-width: 768px) {
+    .tl-link { grid-template-columns: 24px 1fr; gap: 12px; }
+    .tl-icon { width: 24px; height: 24px; }
+    .tl-icon svg { width: 12px; height: 12px; }
+  }
+
+  /* --- Idle logo screen (kept from previous home) --- */
   :global(.idle-screen) {
     position: fixed;
     inset: 0;
@@ -107,9 +228,6 @@ const recentWorks = worksRes.contents;
     line-height: 1;
     opacity: 0.82;
     will-change: transform;
-  }
-  @media (max-width: 768px) {
-    .recent-grid { grid-template-columns: 1fr; }
   }
 </style>
 
