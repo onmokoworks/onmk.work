@@ -18,6 +18,12 @@ const fmtDate = (iso: string) =>
 
 <Layout title="onmk">
   <div class="container">
+    <section class="intro">
+      <p class="intro-name">おーん / onmk</p>
+      <p class="intro-text">映像作家。主に3DCGやモーショングラフィックスを用いた映像制作をしています。</p>
+      <a href="/about" class="intro-more">about →</a>
+    </section>
+
     <section class="timeline">
       <span class="section-title">Activity</span>
 
@@ -63,6 +69,33 @@ const fmtDate = (iso: string) =>
 </Layout>
 
 <style>
+  /* Self-intro */
+  .intro {
+    margin-bottom: 56px;
+  }
+  .intro-name {
+    font-size: 1rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    margin-bottom: 10px;
+  }
+  .intro-text {
+    font-size: 0.85rem;
+    line-height: 1.8;
+    color: var(--text-sub);
+    letter-spacing: 0.01em;
+    margin-bottom: 14px;
+  }
+  .intro-more {
+    display: inline-block;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--text-sub);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .intro-more:hover { color: var(--text-main); }
+
   .section-title {
     font-size: 0.65rem;
     font-weight: 500;
@@ -82,9 +115,8 @@ const fmtDate = (iso: string) =>
   .tl-group { margin-bottom: 48px; }
   .tl-group:last-child { margin-bottom: 0; }
   .tl-year {
-    font-size: 0.95rem;
-    font-weight: 500;
-    font-style: italic;
+    font-size: 0.8rem;
+    font-weight: 700;
     color: var(--text-main);
     letter-spacing: 0.04em;
     padding-bottom: 14px;
@@ -99,8 +131,21 @@ const fmtDate = (iso: string) =>
   }
 
   .tl-item { position: relative; }
+  /* Connector line running down the icon column between entries */
+  .tl-item:not(:last-child)::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: 31px;
+    bottom: -31px;
+    border-left: 0.1px solid var(--border-color);
+    z-index: 0;
+    pointer-events: none;
+  }
 
   .tl-link {
+    position: relative;
+    z-index: 1;
     display: grid;
     grid-template-columns: 28px 1fr;
     gap: 14px;
@@ -116,12 +161,15 @@ const fmtDate = (iso: string) =>
   html[data-theme="flashlight"] .tl-link:hover { background-color: rgba(255, 255, 255, 0.04); }
 
   .tl-icon {
+    position: relative;
+    z-index: 1;
     width: 28px;
     height: 28px;
     display: grid;
     place-items: center;
     border-radius: 50%;
     border: 0.1px solid var(--border-color);
+    background: var(--bg-color);
     color: var(--text-sub);
     margin-top: 1px;
   }
@@ -188,6 +236,7 @@ const fmtDate = (iso: string) =>
     .tl-link { grid-template-columns: 24px 1fr; gap: 12px; }
     .tl-icon { width: 24px; height: 24px; }
     .tl-icon svg { width: 12px; height: 12px; }
+    .tl-item:not(:last-child)::before { left: 12px; top: 29px; bottom: -29px; }
   }
 
   /* --- Idle logo screen (kept from previous home) --- */
@@ -236,8 +285,19 @@ const fmtDate = (iso: string) =>
   const SPEED = 1.15;
 
   function initIdleLogo() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // The astro:page-load listener persists across client-side navigation,
+    // so this runs on every page. The idle "DVD" logo is home-only: on any
+    // other page, tear down and remove any leftover screen, then bail.
     if (window.__onmkIdleCleanup) window.__onmkIdleCleanup();
+    const path = window.location.pathname;
+    const isHome = path === '/' || path === '/index.html';
+    if (!isHome) {
+      const leftover = document.getElementById('idle-screen');
+      if (leftover) leftover.remove();
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     let screen = document.getElementById('idle-screen');
     if (!screen) {
