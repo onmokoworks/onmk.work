@@ -17,8 +17,14 @@ const GITHUB_USER = "onmokoworks";
 
 const CACHE_PATH = join(process.cwd(), ".runtime", "github-cache.json");
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
+const CACHE_VERSION = 3; // bump when the fetch/filter shape changes to invalidate old caches
 
-// Repos to hide from the timeline (e.g. this site itself, throwaways).
+// Allowlist: a repo only appears on the timeline when it carries this
+// GitHub topic. Toggle visibility from the repo's About > Topics on
+// GitHub — no code change or redeploy config needed.
+const SHOWCASE_TOPIC = "onmk-show";
+
+// Repos to hide even if tagged (e.g. this site itself, throwaways).
 const EXCLUDE_REPOS = new Set<string>(["onmk.work"]);
 
 export interface GithubRepo {
@@ -27,6 +33,7 @@ export interface GithubRepo {
   description?: string;
   createdAt: string;
   language?: string;
+  thumbnail?: string; // first non-badge image found in the repo README
 }
 
 export interface GithubRelease {
@@ -66,6 +73,7 @@ type RawRepo = {
   language: string | null;
   fork: boolean;
   archived: boolean;
+  topics?: string[];
 };
 
 type RawRelease = {
@@ -78,14 +86,70 @@ type RawRelease = {
   body: string | null;
 };
 
-export async function getGithubRepos(): Promise<GithubRepo[]> {
+// Pull the first "real" image out of a repo README to use as its thumbnail.
+// Badges (shields.io, CI status, coverage, svg) are skipped, and relative /
+// GitHub-blob paths are resolved to raw.githubusercontent.com URLs.
+const README_IMG_RE = /!\[[^\]]*\]\(\s*<?([^)>\s]+)>?[^)]*\)|<img[^>]+\bsrc\s*=\s*["']([^"']+)["']/gi;
+
+function isBadgeUrl(u: string): boolean {
+  return /shields\.io|badgen\.net|badge|\.svg(?:$|[?#])|actions\/workflows|codecov|coveralls|circleci|travis|appveyor|sonarcloud|deepsource|visitor|hits\./i.test(
+    u,
+  );
+}
+
+function resolveReadmeImage(url: string, readmeRawUrl: string): string | undefined {
+  const gh = url.match(/^https?:\/\/github\.com\/([^/]+)\/([^/]+)\/(?:blob|raw)\/(.+)$/i);
+  if (gh) return `https://raw.githubusercontent.com/${gh[1]}/${gh[2]}/${gh[3]}`;
+  if (/^https?:\/\//i.test(url)) return url;
+  try {
+    return new URL(url, readmeRawUrl).href;
+  } catch {
+    return undefined;
+  }
+}
+
+function firstReadmeImage(markdown: string, readmeRawUrl: string): string | undefined {
+  README_IMG_RE.lastIndex = 0;
+  let m: RegExpExecArray | null;
+  while ((m = README_IMG_RE.exec(markdown))) {
+    const raw = (m[1] || m[2] || "").trim();
+    if (!raw || raw.startsWith("data:") || isBadgeUrl(raw)) continue;
+    const resolved = resolveReadmeImage(raw, readmeRawUrl);
+    if (resolved) return resolved;
+  }
+  return undefined;
+}
+
+async function getRepoReadmeImage(repo: string): Promise<string | undefined> {
+  const meta = await ghFetch<{ content?: string; download_url?: string }>(
+    `https://api.github.com/repos/${GITHUB_USER}/${repo}/readme`,
+  );
+  if (!meta?.content || !meta.download_url) return undefined;
+  try {
+    const markdown = Buffer.from(meta.content, "base64").toString("utf8");
+    return firstReadmeImage(markdown, meta.download_url);
+  } catch {
+    return undefined;
+  }
+}
+
+// Returns null when the API call itself failed (network/rate limit) so the
+// caller can fall back to cache; an empty array means "fetched fine, nothing
+// tagged with the showcase topic".
+export async function getGithubRepos(): Promise<GithubRepo[] | null> {
   const raw = await ghFetch<RawRepo[]>(
     `https://api.github.com/users/${GITHUB_USER}/repos?sort=created&direction=desc&per_page=100`,
   );
-  if (!raw) return [];
+  if (!raw) return null;
 
-  return raw
-    .filter((r) => !r.fork && !r.archived && !EXCLUDE_REPOS.has(r.name))
+  const repos = raw
+    .filter(
+      (r) =>
+        !r.fork &&
+        !r.archived &&
+        !EXCLUDE_REPOS.has(r.name) &&
+        (r.topics ?? []).includes(SHOWCASE_TOPIC),
+    )
     .map((r) => ({
       name: r.name,
       htmlUrl: r.html_url,
@@ -93,6 +157,11 @@ export async function getGithubRepos(): Promise<GithubRepo[]> {
       createdAt: r.created_at,
       language: r.language ?? undefined,
     }));
+
+  // Attach README thumbnails (one extra call per allowlisted repo).
+  return Promise.all(
+    repos.map(async (r) => ({ ...r, thumbnail: await getRepoReadmeImage(r.name) })),
+  );
 }
 
 export interface GithubActivity {
@@ -102,12 +171,15 @@ export interface GithubActivity {
 
 interface GithubCache extends GithubActivity {
   fetchedAt: number;
+  version?: number;
 }
 
 function readCache(): GithubCache | null {
   try {
     if (!existsSync(CACHE_PATH)) return null;
-    return JSON.parse(readFileSync(CACHE_PATH, "utf8")) as GithubCache;
+    const cache = JSON.parse(readFileSync(CACHE_PATH, "utf8")) as GithubCache;
+    if (cache.version !== CACHE_VERSION) return null; // stale schema, refetch
+    return cache;
   } catch {
     return null;
   }
@@ -116,7 +188,10 @@ function readCache(): GithubCache | null {
 function writeCache(activity: GithubActivity) {
   try {
     mkdirSync(dirname(CACHE_PATH), { recursive: true });
-    writeFileSync(CACHE_PATH, JSON.stringify({ ...activity, fetchedAt: Date.now() }));
+    writeFileSync(
+      CACHE_PATH,
+      JSON.stringify({ ...activity, version: CACHE_VERSION, fetchedAt: Date.now() }),
+    );
   } catch {
     // Cache is a best-effort optimization; ignore write failures.
   }
@@ -124,7 +199,8 @@ function writeCache(activity: GithubActivity) {
 
 // Single entry point used by the timeline. Reuses a fresh cache without
 // touching the API, fetches when stale, and falls back to any stale cache
-// if the network/rate limit fails.
+// if the network/rate limit fails. The same 30-minute freshness window is
+// used in development so navigating back to the timeline stays responsive.
 export async function getGithubActivity(): Promise<GithubActivity> {
   const cache = readCache();
   if (cache && Date.now() - cache.fetchedAt < CACHE_TTL_MS) {
@@ -132,12 +208,13 @@ export async function getGithubActivity(): Promise<GithubActivity> {
   }
 
   const repos = await getGithubRepos();
-  if (repos.length === 0) {
-    // Fetch failed or the account has no repos; prefer stale cache.
+  if (repos === null) {
+    // The fetch itself failed; prefer stale cache over showing nothing.
     return cache ? { repos: cache.repos, releases: cache.releases } : { repos: [], releases: [] };
   }
 
-  const releases = await getGithubReleases(repos);
+  // repos may legitimately be empty (nothing tagged yet); cache that too.
+  const releases = repos.length > 0 ? await getGithubReleases(repos) : [];
   const activity = { repos, releases };
   writeCache(activity);
   return activity;

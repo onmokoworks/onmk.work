@@ -2,7 +2,7 @@
 // changelog. Each source is fetched independently and failures degrade
 // to an empty list so a single broken source never breaks the build.
 
-import { getBlogPosts, getTools, getWorks, type BlogPost, type Tool, type Work } from "./microcms";
+import { getBlogPosts, getWorks, type BlogPost, type Work } from "./microcms";
 import { getGithubActivity } from "./github";
 
 export type TimelineKind = "work" | "tool" | "blog" | "repo" | "release";
@@ -17,6 +17,13 @@ export interface TimelineEntry {
   external: boolean;
   badge: string; // human label shown next to the date
   meta?: string; // small trailing detail (release tag, language, ...)
+  thumbnail?: string; // image URL when the source has one (works/tools/blog)
+  emojiCode?: string; // per-entry Twemoji override
+}
+
+// microCMS image assets accept resize query params.
+function thumb(url?: string) {
+  return url ? `${url}?w=720&h=450&fit=crop` : undefined;
 }
 
 export interface TimelineYear {
@@ -50,19 +57,10 @@ function worksToEntries(works: Work[]): TimelineEntry[] {
     href: `/works/${work.id}`,
     external: false,
     badge: "Work",
-  }));
-}
-
-function toolsToEntries(tools: Tool[]): TimelineEntry[] {
-  return tools.map((tool) => ({
-    id: `tool-${tool.id}`,
-    kind: "tool",
-    date: tool.publishedAt,
-    title: tool.title,
-    summary: tool.summary ? clamp(tool.summary) : undefined,
-    href: `/tools/${tool.slug ?? tool.id}`,
-    external: false,
-    badge: "Tool",
+    thumbnail: thumb(work.images?.[0]?.url),
+    emojiCode: work.tag?.some((tag) => tag.title.trim().toLowerCase() === "book design")
+      ? "1f4d6"
+      : undefined,
   }));
 }
 
@@ -76,13 +74,13 @@ function blogToEntries(posts: BlogPost[]): TimelineEntry[] {
     href: `/blog/${post.slug ?? post.id}`,
     external: false,
     badge: "Blog",
+    thumbnail: thumb(post.eyecatch?.url),
   }));
 }
 
 export async function getTimeline(): Promise<TimelineYear[]> {
-  const [worksRes, toolsRes, blogRes, github] = await Promise.all([
+  const [worksRes, blogRes, github] = await Promise.all([
     safe(getWorks({ orders: "-publishedAt", limit: 100 }), { contents: [] as Work[] } as any),
-    safe(getTools({ orders: "-publishedAt", limit: 100 }), { contents: [] as Tool[] } as any),
     safe(getBlogPosts({ orders: "-publishedAt", limit: 100 }), { contents: [] as BlogPost[] } as any),
     safe(getGithubActivity(), { repos: [], releases: [] }),
   ]);
@@ -91,7 +89,6 @@ export async function getTimeline(): Promise<TimelineYear[]> {
 
   const entries: TimelineEntry[] = [
     ...worksToEntries(worksRes.contents),
-    ...toolsToEntries(toolsRes.contents),
     ...blogToEntries(blogRes.contents),
     ...repos.map((repo) => ({
       id: `repo-${repo.name}`,
@@ -102,7 +99,7 @@ export async function getTimeline(): Promise<TimelineYear[]> {
       href: repo.htmlUrl,
       external: true,
       badge: "Repository",
-      meta: repo.language,
+      thumbnail: repo.thumbnail,
     })),
     ...releases.map((rel) => ({
       id: `release-${rel.repo}-${rel.tagName}`,
