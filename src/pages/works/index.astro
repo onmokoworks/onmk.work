@@ -107,11 +107,12 @@ const tags = tagsRes.contents;
     overflow: hidden;
   }
   .work-thumb img {
+    display: block;
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform 0.4s ease;
+    transition: opacity 0.25s ease;
   }
-  .work-item:hover .work-thumb img { transform: scale(1.05); }
+  .work-item:hover .work-thumb img { opacity: 0.82; }
   .work-thumb-empty { width: 100%; height: 100%; background-color: var(--text-main); opacity: 0.2; }
 
   .work-info {

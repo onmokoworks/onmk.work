@@ -4,16 +4,24 @@ import { getTimeline, type TimelineKind } from "../library/timeline";
 
 const timeline = await getTimeline();
 
-const icons: Record<TimelineKind, string> = {
-  work: '<rect x="2" y="2" width="20" height="20" rx="2.2"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>',
-  tool: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
-  blog: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
-  repo: '<line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/>',
-  release: '<path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>',
+// Twemoji codepoints per kind (SVGs vendored in /public/emoji/). Repos use
+// the GitHub mark below instead of an emoji.
+const emojiCode: Partial<Record<TimelineKind, string>> = {
+  work: "1f3ac", // 🎬
+  blog: "1f4dd", // 📝
+  release: "1f680", // 🚀
 };
 
-const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+// GitHub mark (filled) — used for repository entries.
+const githubMark =
+  '<path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>';
+
+const fmtDate = (iso: string) => {
+  const d = new Date(iso);
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  return `${mm}.${dd}`;
+};
 ---
 
 <Layout title="onmk">
@@ -25,7 +33,7 @@ const fmtDate = (iso: string) =>
     </section>
 
     <section class="timeline">
-      <span class="section-title">Activity</span>
+      <span class="section-title">直近の活動</span>
 
       {timeline.length === 0 && (
         <p class="tl-empty">まだ表示できる活動がありません。</p>
@@ -44,7 +52,11 @@ const fmtDate = (iso: string) =>
                   rel={entry.external ? "noopener" : undefined}
                 >
                   <span class="tl-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={icons[entry.kind]} />
+                    {entry.kind === "repo" ? (
+                      <svg viewBox="0 0 24 24" fill="currentColor" set:html={githubMark} />
+                    ) : (
+                      <img class="tl-emoji" src={`/emoji/${entry.emojiCode ?? emojiCode[entry.kind]}.svg`} alt="" loading="lazy" />
+                    )}
                   </span>
                   <span class="tl-content">
                     <span class="tl-meta">
@@ -57,6 +69,11 @@ const fmtDate = (iso: string) =>
                       {entry.external && <span class="tl-arrow" aria-hidden="true">↗</span>}
                     </span>
                     {entry.summary && <span class="tl-summary">{entry.summary}</span>}
+                    {entry.thumbnail && (
+                      <span class="tl-thumb">
+                        <img src={entry.thumbnail} alt="" loading="lazy" />
+                      </span>
+                    )}
                   </span>
                 </a>
               </li>
@@ -174,6 +191,12 @@ const fmtDate = (iso: string) =>
     margin-top: 1px;
   }
   .tl-icon svg { width: 14px; height: 14px; }
+  .tl-icon .tl-emoji {
+    width: 16px;
+    height: 16px;
+    display: block;
+    filter: grayscale(1);
+  }
   .tl-item[data-kind="blog"] .tl-icon,
   .tl-item[data-kind="work"] .tl-icon { color: var(--text-main); }
 
@@ -222,6 +245,26 @@ const fmtDate = (iso: string) =>
     display: inline-block;
   }
 
+  .tl-thumb {
+    display: block;
+    width: 100%;
+    max-width: 360px;
+    aspect-ratio: 16 / 10;
+    margin-top: 12px;
+    overflow: hidden;
+    border-radius: 8px;
+    background: var(--border-color);
+    border: 0.1px solid var(--border-color);
+  }
+  .tl-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .tl-link:hover .tl-thumb img { transform: scale(1.04); }
+
   .tl-summary {
     font-size: 0.75rem;
     line-height: 1.65;
@@ -236,6 +279,7 @@ const fmtDate = (iso: string) =>
     .tl-link { grid-template-columns: 24px 1fr; gap: 12px; }
     .tl-icon { width: 24px; height: 24px; }
     .tl-icon svg { width: 12px; height: 12px; }
+    .tl-icon .tl-emoji { width: 14px; height: 14px; }
     .tl-item:not(:last-child)::before { left: 12px; top: 29px; bottom: -29px; }
   }
 
