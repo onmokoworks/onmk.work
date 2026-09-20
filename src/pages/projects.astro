@@ -24,11 +24,10 @@ function stripHtml(html?: string) {
   return (html ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-let pageTitle = "Tools";
+const pageTitle = "Projects";
 let pageDescription = "";
 try {
   const page = await getToolsPage();
-  pageTitle = page.title;
   pageDescription = page.description ?? "";
 } catch {
   // Fallback when microCMS is unavailable.
@@ -62,17 +61,17 @@ const tagTitles = Array.from(new Set(scripts.flatMap((item) => item.tags)));
       </div>
     )}
 
-    <div class="tag-filter" aria-label="Filter tools by tag">
-      <a href="/tools" class="tag-link" data-tag="all">all</a>
+    <div class="tag-filter" aria-label="Filter projects by tag">
+      <a href="/projects" class="tag-link" data-tag="all">all</a>
       {tagTitles.map((tag) => (
-        <a href={`/tools?tag=${encodeURIComponent(tag)}`} class="tag-link" data-tag={tag}>{tag}</a>
+        <a href={`/projects?tag=${encodeURIComponent(tag)}`} class="tag-link" data-tag={tag}>{tag}</a>
       ))}
     </div>
 
     <section class="scripts-grid">
       {scripts.map((item) => (
         <a
-          href={`/tools/${item.slug}`}
+          href={`/projects/${item.slug}`}
           class="script-item"
           data-tags={item.tags.join(",")}
         >

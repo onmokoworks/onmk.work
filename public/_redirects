@@ -1,0 +1,2 @@
+/tools /projects 301
+/tools/* /projects/:splat 301

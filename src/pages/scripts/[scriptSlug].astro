@@ -9,5 +9,5 @@ export async function getStaticPaths() {
 }
 
 const { scriptSlug } = Astro.params;
-return Astro.redirect(`/tools/${scriptSlug ?? ''}`, 308);
+return Astro.redirect(`/projects/${scriptSlug ?? ''}`, 308);
 ---
