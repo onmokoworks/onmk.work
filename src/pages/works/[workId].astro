@@ -25,6 +25,7 @@ if (youtubeUrl) {
 }
 
 const galleryImages = (work.images ?? []).slice(1);
+const thumbnail = !embedUrl ? work.images?.[0] : undefined;
 ---
 
 <Layout title={`${work.title} | onmk`}>
@@ -47,6 +48,12 @@ const galleryImages = (work.images ?? []).slice(1);
       {embedUrl && (
         <div class="embed-wrap">
           <iframe src={embedUrl} allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+        </div>
+      )}
+
+      {thumbnail && (
+        <div class="work-thumbnail gallery-item">
+          <img src={`${thumbnail.url}?w=1200`} alt={work.title} />
         </div>
       )}
 
@@ -94,7 +101,7 @@ const galleryImages = (work.images ?? []).slice(1);
     const img = item.querySelector('img');
     if (img) {
       // Store high-res URL
-      urls.push(img.src.replace('?w=800', '?w=1600'));
+      urls.push(img.src.replace(/\?w=\d+/, '?w=1600'));
     }
   });
 
@@ -202,6 +209,15 @@ const galleryImages = (work.images ?? []).slice(1);
     width: 100%; height: 100%;
     display: block;
     border: none;
+  }
+
+  .work-thumbnail {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+  .work-thumbnail img {
+    width: 100%;
+    display: block;
   }
 
   /* Gallery */
