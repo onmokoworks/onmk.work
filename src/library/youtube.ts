@@ -28,3 +28,14 @@ export function getYouTubeThumbnails(videoUrl?: string) {
     fallback: `${base}/hqdefault.jpg`,
   };
 }
+
+export function shouldUseYouTubeThumbnail(imageUrl?: string) {
+  if (!imageUrl) return true;
+
+  try {
+    const filename = decodeURIComponent(new URL(imageUrl).pathname.split("/").pop() ?? "");
+    return /^videoframe[_-]/i.test(filename);
+  } catch {
+    return false;
+  }
+}

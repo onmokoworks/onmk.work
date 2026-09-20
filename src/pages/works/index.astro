@@ -1,7 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getWorks, getTags } from "../../library/microcms";
-import { getYouTubeThumbnails } from "../../library/youtube";
+import { getYouTubeThumbnails, shouldUseYouTubeThumbnail } from "../../library/youtube";
 
 const [worksRes, tagsRes] = await Promise.all([
   getWorks({ orders: "-publishedAt", limit: 100 }),
@@ -24,8 +24,12 @@ const tags = tagsRes.contents;
     <section class="works-grid">
       {works.map((work) => {
         const youtubeThumbnail = getYouTubeThumbnails(work["url-Youtube"]);
-        const thumbnailUrl = youtubeThumbnail?.primary
-          ?? (work.images?.[0]?.url ? `${work.images[0].url}?w=800` : undefined);
+        const uploadedThumbnail = work.images?.[0]?.url;
+        const useYouTubeThumbnail = Boolean(youtubeThumbnail)
+          && shouldUseYouTubeThumbnail(uploadedThumbnail);
+        const thumbnailUrl = useYouTubeThumbnail
+          ? youtubeThumbnail?.primary
+          : uploadedThumbnail ? `${uploadedThumbnail}?w=800` : undefined;
 
         return (
         <a
@@ -37,7 +41,7 @@ const tags = tagsRes.contents;
             {thumbnailUrl
               ? <img
                   src={thumbnailUrl}
-                  data-fallback-src={youtubeThumbnail?.fallback}
+                  data-fallback-src={useYouTubeThumbnail ? youtubeThumbnail?.fallback : undefined}
                   alt={work.title}
                 />
               : <div class="work-thumb-empty" />

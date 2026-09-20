@@ -3,7 +3,7 @@
 // to an empty list so a single broken source never breaks the build.
 
 import { getBlogPosts, getWorks, type BlogPost, type Work } from "./microcms";
-import { getYouTubeThumbnails } from "./youtube";
+import { getYouTubeThumbnails, shouldUseYouTubeThumbnail } from "./youtube";
 
 export type TimelineKind = "work" | "tool" | "blog";
 
@@ -51,6 +51,9 @@ async function safe<T>(promise: Promise<T>, fallback: T): Promise<T> {
 function worksToEntries(works: Work[]): TimelineEntry[] {
   return works.map((work) => {
     const youtubeThumbnail = getYouTubeThumbnails(work["url-Youtube"]);
+    const uploadedThumbnail = work.images?.[0]?.url;
+    const useYouTubeThumbnail = Boolean(youtubeThumbnail)
+      && shouldUseYouTubeThumbnail(uploadedThumbnail);
     return {
     id: `work-${work.id}`,
     kind: "work",
@@ -60,8 +63,8 @@ function worksToEntries(works: Work[]): TimelineEntry[] {
     href: `/works/${work.id}`,
     external: false,
     badge: "Work",
-    thumbnail: youtubeThumbnail?.primary ?? thumb(work.images?.[0]?.url),
-    thumbnailFallback: youtubeThumbnail?.fallback,
+    thumbnail: useYouTubeThumbnail ? youtubeThumbnail?.primary : thumb(uploadedThumbnail),
+    thumbnailFallback: useYouTubeThumbnail ? youtubeThumbnail?.fallback : undefined,
     emojiCode: work.tag?.some((tag) => tag.title.trim().toLowerCase() === "book design")
       ? "1f4d6"
       : undefined,
