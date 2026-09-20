@@ -3,9 +3,8 @@
 // to an empty list so a single broken source never breaks the build.
 
 import { getBlogPosts, getWorks, type BlogPost, type Work } from "./microcms";
-import { getGithubActivity } from "./github";
 
-export type TimelineKind = "work" | "tool" | "blog" | "repo" | "release";
+export type TimelineKind = "work" | "tool" | "blog";
 
 export interface TimelineEntry {
   id: string;
@@ -79,38 +78,14 @@ function blogToEntries(posts: BlogPost[]): TimelineEntry[] {
 }
 
 export async function getTimeline(): Promise<TimelineYear[]> {
-  const [worksRes, blogRes, github] = await Promise.all([
+  const [worksRes, blogRes] = await Promise.all([
     safe(getWorks({ orders: "-publishedAt", limit: 100 }), { contents: [] as Work[] } as any),
     safe(getBlogPosts({ orders: "-publishedAt", limit: 100 }), { contents: [] as BlogPost[] } as any),
-    safe(getGithubActivity(), { repos: [], releases: [] }),
   ]);
-
-  const { repos, releases } = github;
 
   const entries: TimelineEntry[] = [
     ...worksToEntries(worksRes.contents),
     ...blogToEntries(blogRes.contents),
-    ...repos.map((repo) => ({
-      id: `repo-${repo.name}`,
-      kind: "repo" as const,
-      date: repo.createdAt,
-      title: repo.name,
-      summary: repo.description ? clamp(repo.description) : undefined,
-      href: repo.htmlUrl,
-      external: true,
-      badge: "Repository",
-      thumbnail: repo.thumbnail,
-    })),
-    ...releases.map((rel) => ({
-      id: `release-${rel.repo}-${rel.tagName}`,
-      kind: "release" as const,
-      date: rel.publishedAt,
-      title: `${rel.repo} ${rel.tagName}`,
-      summary: rel.body ? clamp(stripHtml(rel.body)) : undefined,
-      href: rel.htmlUrl,
-      external: true,
-      badge: "Release",
-    })),
   ].filter((entry) => Boolean(entry.date));
 
   entries.sort((a, b) => b.date.localeCompare(a.date));
