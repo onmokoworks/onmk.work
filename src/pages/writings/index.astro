@@ -19,9 +19,9 @@ const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 ---
 
-<Layout title="blog | onmk">
+<Layout title="writings | onmk">
   <div class="container">
-    <span class="section-title">Blog</span>
+    <span class="section-title">Writings</span>
 
     {posts.length === 0 ? (
       <p class="blog-empty">まだ記事がありません。</p>
@@ -29,7 +29,7 @@ const fmtDate = (iso: string) =>
       <ol class="blog-list">
         {posts.map((post) => (
           <li class="blog-item">
-            <a href={`/blog/${post.slug ?? post.id}`} class="blog-link">
+            <a href={`/writings/${post.slug ?? post.id}`} class="blog-link">
               <span class="blog-date">{fmtDate(post.publishedAt)}</span>
               <span class="blog-title">{post.title}</span>
               {(post.excerpt || post.body) && (

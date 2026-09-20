@@ -1,2 +1,4 @@
 /tools /projects 301
 /tools/* /projects/:splat 301
+/blog /writings 301
+/blog/* /writings/:splat 301

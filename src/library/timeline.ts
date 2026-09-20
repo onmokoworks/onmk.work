@@ -70,9 +70,9 @@ function blogToEntries(posts: BlogPost[]): TimelineEntry[] {
     date: post.publishedAt,
     title: post.title,
     summary: post.excerpt ? clamp(post.excerpt) : post.body ? clamp(stripHtml(post.body)) : undefined,
-    href: `/blog/${post.slug ?? post.id}`,
+    href: `/writings/${post.slug ?? post.id}`,
     external: false,
-    badge: "Blog",
+    badge: "Writing",
     thumbnail: thumb(post.eyecatch?.url),
   }));
 }
