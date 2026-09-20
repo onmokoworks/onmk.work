@@ -142,8 +142,18 @@ import Layout from "../layouts/Layout.astro";
     letter-spacing: 0.08em;
   }
   .profile-link-github {
-    text-decoration-line: line-through;
-    text-decoration-color: #d00000;
+    position: relative;
+    display: inline-block;
+  }
+  .profile-link-github::after {
+    content: "";
+    position: absolute;
+    left: -2px;
+    right: -2px;
+    top: 52%;
+    height: 1px;
+    background: #d00000;
+    pointer-events: none;
   }
   :global(html[data-theme="dark"]) .profile-link {
     color: #ddd;
