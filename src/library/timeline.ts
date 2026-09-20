@@ -60,8 +60,8 @@ function worksToEntries(works: Work[]): TimelineEntry[] {
     href: `/works/${work.id}`,
     external: false,
     badge: "Work",
-    thumbnail: thumb(work.images?.[0]?.url) ?? youtubeThumbnail?.primary,
-    thumbnailFallback: work.images?.[0]?.url ? undefined : youtubeThumbnail?.fallback,
+    thumbnail: youtubeThumbnail?.primary ?? thumb(work.images?.[0]?.url),
+    thumbnailFallback: youtubeThumbnail?.fallback,
     emojiCode: work.tag?.some((tag) => tag.title.trim().toLowerCase() === "book design")
       ? "1f4d6"
       : undefined,

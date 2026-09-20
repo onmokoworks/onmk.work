@@ -24,9 +24,8 @@ const tags = tagsRes.contents;
     <section class="works-grid">
       {works.map((work) => {
         const youtubeThumbnail = getYouTubeThumbnails(work["url-Youtube"]);
-        const thumbnailUrl = work.images?.[0]?.url
-          ? `${work.images[0].url}?w=800`
-          : youtubeThumbnail?.primary;
+        const thumbnailUrl = youtubeThumbnail?.primary
+          ?? (work.images?.[0]?.url ? `${work.images[0].url}?w=800` : undefined);
 
         return (
         <a
@@ -38,7 +37,7 @@ const tags = tagsRes.contents;
             {thumbnailUrl
               ? <img
                   src={thumbnailUrl}
-                  data-fallback-src={work.images?.[0] ? undefined : youtubeThumbnail?.fallback}
+                  data-fallback-src={youtubeThumbnail?.fallback}
                   alt={work.title}
                 />
               : <div class="work-thumb-empty" />
