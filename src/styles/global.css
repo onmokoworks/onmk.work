@@ -77,7 +77,8 @@ body {
 }
 .nav-icon {
     width: 24px; height: 24px; cursor: pointer;
-    border-radius: 6px;
+    border-radius: 7px;
+    corner-shape: squircle;
     overflow: hidden;
     transition: transform 0.2s ease-out;
 }

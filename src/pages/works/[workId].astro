@@ -211,9 +211,12 @@ const thumbnail = !embedUrl ? work.images?.[0] : undefined;
     border: none;
   }
 
-  .work-thumbnail {
+  .work-thumbnail.gallery-item {
     width: 100%;
     margin-bottom: 24px;
+    border-radius: 28px;
+    corner-shape: squircle;
+    overflow: hidden;
   }
   .work-thumbnail img {
     width: 100%;
@@ -229,6 +232,8 @@ const thumbnail = !embedUrl ? work.images?.[0] : undefined;
   }
   .gallery-item {
     cursor: zoom-in;
+    border-radius: 16px;
+    corner-shape: squircle;
     overflow: hidden;
   }
   .gallery-item img {
