@@ -286,6 +286,38 @@ const thumbnail = !embedUrl ? work.images?.[0] : undefined;
   .work-credit-body :global(p) {
     margin-bottom: 4px;
   }
+  .work-credit-body :global(p:empty) {
+    display: none;
+  }
+  .work-credit-body :global(ul),
+  .work-credit-body :global(ol) {
+    margin: 4px 0 16px;
+  }
+  .work-credit-body :global(ul) {
+    list-style: none;
+    padding-left: 14px;
+  }
+  .work-credit-body :global(ol) {
+    padding-left: 24px;
+  }
+  .work-credit-body :global(li) {
+    margin-bottom: 2px;
+    padding-left: 4px;
+  }
+  .work-credit-body :global(ul > li) {
+    position: relative;
+  }
+  .work-credit-body :global(ul > li::before) {
+    content: "–";
+    position: absolute;
+    left: -14px;
+    color: var(--text-main);
+    opacity: 0.45;
+  }
+  .work-credit-body :global(li > p) {
+    display: inline;
+    margin: 0;
+  }
 
   /* Lightbox */
   .lightbox {
