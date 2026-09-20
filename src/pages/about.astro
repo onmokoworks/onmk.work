@@ -10,7 +10,10 @@ import Layout from "../layouts/Layout.astro";
       <div class="profile-links">
         <a href="https://x.com/onmokoworks" target="_blank" rel="noopener" class="profile-link">X</a>
         <a href="https://www.instagram.com/onmokoworks/" target="_blank" rel="noopener" class="profile-link">Instagram</a>
-        <a href="https://github.com/onmokoworks" target="_blank" rel="noopener" class="profile-link">GitHub</a>
+        <span class="profile-link-suspended">
+          <span class="profile-link-status">停止中</span>
+          <a href="https://github.com/onmokoworks" target="_blank" rel="noopener" class="profile-link profile-link-github">GitHub</a>
+        </span>
         <a href="https://annict.com/@onmk" target="_blank" rel="noopener" class="profile-link">Annict</a>
       </div>
       <div class="profile-icon">
@@ -124,6 +127,23 @@ import Layout from "../layouts/Layout.astro";
   .profile-link:hover {
     color: var(--text-main);
     text-decoration-color: var(--text-main);
+  }
+  .profile-link-suspended {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    margin-top: -11px;
+  }
+  .profile-link-status {
+    color: #d00000;
+    font-size: 0.55rem;
+    line-height: 1;
+    letter-spacing: 0.08em;
+  }
+  .profile-link-github {
+    text-decoration-line: line-through;
+    text-decoration-color: #d00000;
   }
   :global(html[data-theme="dark"]) .profile-link {
     color: #ddd;
