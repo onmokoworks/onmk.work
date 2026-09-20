@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getWorks, getWorkDetail } from "../../library/microcms";
+import { getYouTubeVideoId } from "../../library/youtube";
 
 export async function getStaticPaths() {
   const response = await getWorks({ fields: ["id", "title"], limit: 100 });
@@ -17,12 +18,8 @@ const work = await getWorkDetail(workId as string);
 // YouTube URL → embed URL
 const youtubeUrl = work["url-Youtube"];
 let embedUrl = "";
-if (youtubeUrl) {
-  const match = youtubeUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([^&?/]+)/);
-  if (match) {
-    embedUrl = `https://www.youtube.com/embed/${match[1]}`;
-  }
-}
+const youtubeVideoId = getYouTubeVideoId(youtubeUrl);
+if (youtubeVideoId) embedUrl = `https://www.youtube.com/embed/${youtubeVideoId}`;
 
 const galleryImages = (work.images ?? []).slice(1);
 const thumbnail = !embedUrl ? work.images?.[0] : undefined;

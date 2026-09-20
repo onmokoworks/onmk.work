@@ -60,7 +60,7 @@ const fmtDate = (iso: string) => {
                     {entry.summary && <span class="tl-summary">{entry.summary}</span>}
                     {entry.thumbnail && (
                       <span class="tl-thumb">
-                        <img src={entry.thumbnail} alt="" loading="lazy" />
+                        <img src={entry.thumbnail} data-fallback-src={entry.thumbnailFallback} alt="" loading="lazy" />
                       </span>
                     )}
                   </span>
@@ -268,3 +268,18 @@ const fmtDate = (iso: string) => {
   }
 
 </style>
+
+<script>
+  function initThumbnailFallbacks() {
+    document.querySelectorAll<HTMLImageElement>('img[data-fallback-src]').forEach(img => {
+      if (img.dataset.fallbackBound === 'true') return;
+      img.dataset.fallbackBound = 'true';
+      img.addEventListener('error', () => {
+        if (img.dataset.fallbackSrc) img.src = img.dataset.fallbackSrc;
+      }, { once: true });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initThumbnailFallbacks);
+  initThumbnailFallbacks();
+</script>

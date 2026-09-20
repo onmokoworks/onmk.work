@@ -3,6 +3,7 @@
 // to an empty list so a single broken source never breaks the build.
 
 import { getBlogPosts, getWorks, type BlogPost, type Work } from "./microcms";
+import { getYouTubeThumbnails } from "./youtube";
 
 export type TimelineKind = "work" | "tool" | "blog";
 
@@ -17,6 +18,7 @@ export interface TimelineEntry {
   badge: string; // human label shown next to the date
   meta?: string; // small trailing detail (release tag, language, ...)
   thumbnail?: string; // image URL when the source has one (works/tools/blog)
+  thumbnailFallback?: string; // fallback when a YouTube max-resolution image is unavailable
   emojiCode?: string; // per-entry Twemoji override
 }
 
@@ -47,7 +49,9 @@ async function safe<T>(promise: Promise<T>, fallback: T): Promise<T> {
 }
 
 function worksToEntries(works: Work[]): TimelineEntry[] {
-  return works.map((work) => ({
+  return works.map((work) => {
+    const youtubeThumbnail = getYouTubeThumbnails(work["url-Youtube"]);
+    return {
     id: `work-${work.id}`,
     kind: "work",
     date: work.publishedAt,
@@ -56,11 +60,13 @@ function worksToEntries(works: Work[]): TimelineEntry[] {
     href: `/works/${work.id}`,
     external: false,
     badge: "Work",
-    thumbnail: thumb(work.images?.[0]?.url),
+    thumbnail: thumb(work.images?.[0]?.url) ?? youtubeThumbnail?.primary,
+    thumbnailFallback: work.images?.[0]?.url ? undefined : youtubeThumbnail?.fallback,
     emojiCode: work.tag?.some((tag) => tag.title.trim().toLowerCase() === "book design")
       ? "1f4d6"
       : undefined,
-  }));
+    };
+  });
 }
 
 function blogToEntries(posts: BlogPost[]): TimelineEntry[] {

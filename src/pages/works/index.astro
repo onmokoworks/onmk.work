@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getWorks, getTags } from "../../library/microcms";
+import { getYouTubeThumbnails } from "../../library/youtube";
 
 const [worksRes, tagsRes] = await Promise.all([
   getWorks({ orders: "-publishedAt", limit: 100 }),
@@ -21,15 +22,25 @@ const tags = tagsRes.contents;
     </div>
 
     <section class="works-grid">
-      {works.map((work) => (
+      {works.map((work) => {
+        const youtubeThumbnail = getYouTubeThumbnails(work["url-Youtube"]);
+        const thumbnailUrl = work.images?.[0]?.url
+          ? `${work.images[0].url}?w=800`
+          : youtubeThumbnail?.primary;
+
+        return (
         <a
           href={`/works/${work.id}`}
           class="work-item"
           data-tags={work.tag ? work.tag.map(t => t.id).join(",") : ""}
         >
           <div class="work-thumb">
-            {work.images?.[0]
-              ? <img src={`${work.images[0].url}?w=800`} alt={work.title} />
+            {thumbnailUrl
+              ? <img
+                  src={thumbnailUrl}
+                  data-fallback-src={work.images?.[0] ? undefined : youtubeThumbnail?.fallback}
+                  alt={work.title}
+                />
               : <div class="work-thumb-empty" />
             }
           </div>
@@ -38,7 +49,8 @@ const tags = tagsRes.contents;
             <span class="work-title">{work.title}</span>
           </div>
         </a>
-      ))}
+        );
+      })}
     </section>
   </div>
 </Layout>
@@ -142,6 +154,14 @@ const tags = tagsRes.contents;
   const FADE = 200;
 
   function initWorksTagFilter() {
+    document.querySelectorAll<HTMLImageElement>('img[data-fallback-src]').forEach(img => {
+      if (img.dataset.fallbackBound === 'true') return;
+      img.dataset.fallbackBound = 'true';
+      img.addEventListener('error', () => {
+        if (img.dataset.fallbackSrc) img.src = img.dataset.fallbackSrc;
+      }, { once: true });
+    });
+
     const tagLinks = document.querySelectorAll<HTMLAnchorElement>('.tag-link');
     const workItems = document.querySelectorAll<HTMLElement>('.work-item');
     let activeTag = new URLSearchParams(location.search).get('tag') ?? 'all';
