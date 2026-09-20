@@ -69,7 +69,10 @@ const thumbnail = !embedUrl ? work.images?.[0] : undefined;
       )}
 
       {work.credit && (
-        <div class="work-credit" set:html={work.credit}></div>
+        <section class="work-credit">
+          <h2 class="work-credit-title">Credit</h2>
+          <div class="work-credit-body" set:html={work.credit}></div>
+        </section>
       )}
     </article>
   </div>
@@ -267,11 +270,20 @@ const thumbnail = !embedUrl ? work.images?.[0] : undefined;
     margin-top: 40px;
     padding-top: 24px;
     border-top: 0.1px solid var(--border-color);
+  }
+  .work-credit-title {
+    margin: 0 0 12px;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--text-main);
+  }
+  .work-credit-body {
     font-size: 0.75rem;
     line-height: 1.8;
     color: var(--text-sub);
   }
-  .work-credit :global(p) {
+  .work-credit-body :global(p) {
     margin-bottom: 4px;
   }
 
