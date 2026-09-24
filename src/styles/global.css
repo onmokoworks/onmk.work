@@ -63,14 +63,34 @@ body {
     position: fixed;
     top: 0; left: 0; width: 100%; height: var(--nav-height);
     z-index: 1000;
-    background-color: var(--nav-bg);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background-color: transparent;
     display: flex; justify-content: center;
     transition: height 0.35s cubic-bezier(0.2, 1, 0.3, 1);
 }
+.nav-bar::before,
+.nav-bar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    pointer-events: none;
+}
+.nav-bar::before {
+    top: 0;
+    bottom: 3px;
+    background-color: var(--bg-color);
+}
+.nav-bar::after {
+    bottom: 0;
+    height: 3px;
+    background-color: var(--nav-bg);
+    backdrop-filter: blur(12px) brightness(1.2);
+    -webkit-backdrop-filter: blur(12px) brightness(1.2);
+}
 .nav-bar.is-shrunk { height: 48px; }
 .nav-container {
+    position: relative;
+    z-index: 1;
     width: 100%; max-width: var(--content-width);
     padding: 0 40px;
     display: flex; justify-content: space-between; align-items: center;
