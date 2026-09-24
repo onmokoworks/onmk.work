@@ -4,6 +4,7 @@
 
 import { getBlogPosts, getWorks, type BlogPost, type Work } from "./microcms";
 import { getYouTubeThumbnails, shouldUseYouTubeThumbnail } from "./youtube";
+import { externalWritings } from "../data/external-writings";
 
 export type TimelineKind = "work" | "tool" | "blog";
 
@@ -24,7 +25,7 @@ export interface TimelineEntry {
 
 // microCMS image assets accept resize query params.
 function thumb(url?: string) {
-  return url ? `${url}?w=720&h=450&fit=crop` : undefined;
+  return url ? `${url}?w=720` : undefined;
 }
 
 export interface TimelineYear {
@@ -95,6 +96,17 @@ export async function getTimeline(): Promise<TimelineYear[]> {
   const entries: TimelineEntry[] = [
     ...worksToEntries(worksRes.contents),
     ...blogToEntries(blogRes.contents),
+    ...externalWritings.map((post) => ({
+      id: post.id,
+      kind: "blog" as const,
+      date: post.publishedAt,
+      title: post.title,
+      summary: post.excerpt,
+      href: post.href,
+      external: true,
+      badge: "Writing",
+      thumbnail: post.thumbnail,
+    })),
   ].filter((entry) => Boolean(entry.date));
 
   entries.sort((a, b) => b.date.localeCompare(a.date));

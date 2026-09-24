@@ -60,6 +60,7 @@ if (images.length === 0) {
     <div class="p-loading" id="loading">
       <div class="p-spinner"></div>
     </div>
+    <div class="p-load-sentinel" id="load-sentinel" aria-hidden="true"></div>
   </div>
 </Layout>
 
@@ -68,7 +69,6 @@ if (images.length === 0) {
   const loading = document.getElementById('loading');
   const loadSentinel = document.getElementById('load-sentinel');
   let isLoadingMore = false;
-  let lastLoadAt = 0;
   // Random font for logo letter
   const googleFonts = [
     'Playfair Display', 'Lobster', 'Pacifico', 'Oswald',
@@ -255,20 +255,14 @@ if (images.length === 0) {
     return a;
   }
 
-  let lastLoadTime = 0;
-  let loadCooldown = 500; // 500ms minimum between loads
-
   function loadMore() {
-    // Prevent duplicate loads and rapid-fire
+    // Prevent duplicate loads while the current batch is settling.
     if (isLoadingMore) return;
-    const now = Date.now();
-    if (now - lastLoadTime < loadCooldown) return;
 
     isLoadingMore = true;
-    lastLoadTime = now;
 
     // Stop observing while loading
-    observer.unobserve(loading);
+    observer.unobserve(loadSentinel);
     loading.hidden = false;
 
     const batch = shuffle(allUrls).slice(0, 8);
@@ -276,7 +270,7 @@ if (images.length === 0) {
       // No more images to load
       isLoadingMore = false;
       loading.hidden = true;
-      observer.observe(loading);
+      observer.observe(loadSentinel);
       return;
     }
 
@@ -292,7 +286,7 @@ if (images.length === 0) {
       loading.hidden = true;
       // Defer re-observation to next tick to avoid immediate re-trigger
       requestAnimationFrame(() => {
-        observer.observe(loading);
+        observer.observe(loadSentinel);
       });
     };
 
@@ -332,7 +326,6 @@ if (images.length === 0) {
   const observer = new IntersectionObserver((entries) => {
     const entry = entries[0];
     if (!entry.isIntersecting || isLoadingMore) return;
-    if (Date.now() - lastLoadAt < 500) return;
     loadMore();
   }, { rootMargin: '200px' });
   observer.observe(loadSentinel);

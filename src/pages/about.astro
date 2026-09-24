@@ -25,21 +25,21 @@ import Layout from "../layouts/Layout.astro";
 
     <div class="about-section">
       <div class="about-text">
-        <span class="trigger">おーん</span>
+        <button type="button" class="trigger">おーん</button>
         <span class="content">
-          （<span class="trigger">onmk</span><span class="content">　読み：おんもこ</span>）
+          （<button type="button" class="trigger">onmk</button><span class="content">　読み：おんもこ</span>）
         </span>
         は
-        <span class="trigger">映像作家</span>
-        <span class="content" data-has-period>（<span class="no-break"><span class="trigger">で</span><span class="content content-block">ある。と名乗らないと、自己紹介が湾曲してしまうため、適切な肩書きが見当たらない。実際に請け負う仕事の範囲として、</span></span>主に3DCGやモーショングラフィックスを用いた映像制作をしている）。</span><span class="period-fallback">。</span>
+        <button type="button" class="trigger">映像作家</button>
+        <span class="content" data-has-period>（<span class="no-break"><button type="button" class="trigger">で</button><span class="content content-block">ある。と名乗らないと、自己紹介が湾曲してしまうため、適切な肩書きが見当たらない。実際に請け負う仕事の範囲として、</span></span>主に3DCGやモーショングラフィックスを用いた映像制作をしている）。</span><span class="period-fallback">。</span>
         <br />
         また、
-        <span class="trigger">複数のグループ</span>
+        <button type="button" class="trigger">複数のグループ</button>
         <span class="content">
           （<a href="https://x.com/hakumei_lab" class="external-link" target="_blank" rel="noopener">hakumei</a> / .prism）
         </span>
         に所属し、
-        <span class="trigger">制作</span>
+        <button type="button" class="trigger">制作</button>
         <span class="content">（映像制作、同人活動）</span>
         をしている。
       </div>
@@ -101,8 +101,6 @@ import Layout from "../layouts/Layout.astro";
     width: 120px;
     height: 120px;
     display: block;
-    border-radius: 24px;
-    corner-shape: squircle;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
   }
@@ -145,6 +143,13 @@ import Layout from "../layouts/Layout.astro";
     overflow-wrap: break-word;
   }
   .trigger {
+    appearance: none;
+    -webkit-appearance: none;
+    border: 0;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
     cursor: pointer;
     font-weight: 500;
     text-decoration: underline;
@@ -152,6 +157,8 @@ import Layout from "../layouts/Layout.astro";
     text-decoration-color: #ddd;
     transition: color 0.2s;
     display: inline;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
   .trigger:hover { text-decoration-color: var(--accent); color: var(--text-sub); }
   .no-break { white-space: normal; word-break: break-word; }
@@ -258,11 +265,15 @@ import Layout from "../layouts/Layout.astro";
       }
     }
     document.querySelectorAll<HTMLElement>('.trigger').forEach(el => {
+      if (el.dataset.expandBound === 'true') return;
+      el.dataset.expandBound = 'true';
       el.addEventListener('click', (e) => { toggle(el); e.stopPropagation(); });
     });
 
     // メールアドレスをクリックでコピー
     document.querySelectorAll<HTMLElement>('.contact-email').forEach(el => {
+      if (el.dataset.copyBound === 'true') return;
+      el.dataset.copyBound = 'true';
       const copy = () => {
         const email = el.dataset.email ?? '';
         navigator.clipboard.writeText(email).then(() => {
@@ -281,6 +292,11 @@ import Layout from "../layouts/Layout.astro";
   }
 
   document.addEventListener('astro:page-load', init);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
 </script>
 
 
