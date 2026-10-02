@@ -4,6 +4,7 @@ dist/
 
 # env
 .env
+public/workspace/wadalab-motion/
 
 # deps
 node_modules/

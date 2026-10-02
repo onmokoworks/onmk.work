@@ -3,8 +3,11 @@
   "type": "module",
   "version": "0.0.1",
   "scripts": {
+    "predev": "node scripts/prepare-workspace.mjs",
     "dev": "astro dev",
+    "prestart": "node scripts/prepare-workspace.mjs",
     "start": "astro dev",
+    "prebuild": "node scripts/prepare-workspace.mjs",
     "build": "astro build",
     "preview": "astro preview"
   },

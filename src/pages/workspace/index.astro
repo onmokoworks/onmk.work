@@ -1,0 +1,31 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="workspace — onmk">
+  <main class="workspace">
+    <h1>workspace</h1>
+    <p class="intro">Webの実験を置いています。</p>
+    <article>
+      <a class="experiment" href="/workspace/wadalab-motion/" data-astro-reload>
+        <h2>wadalab-motion</h2>
+        <p>和田研フォントの線が、畳まれた状態から開いていく試打サイト。</p>
+        <span aria-hidden="true">↗</span>
+      </a>
+      <a class="source" href="https://github.com/onmokoworks/wadalab-motion">GitHub</a>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  .workspace { max-width: var(--content-width); margin: 0 auto; padding: 64px 40px; }
+  h1 { font-size: 1.5rem; font-weight: 400; }
+  .intro { margin-top: 12px; color: var(--text-sub); font-size: .85rem; }
+  article { margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--border-color); }
+  .experiment { display: block; position: relative; padding-right: 32px; color: var(--text-main); text-decoration: none; }
+  h2 { font-size: 1.1rem; font-weight: 400; }
+  .experiment p { margin-top: 12px; font-size: .85rem; line-height: 1.8; }
+  .experiment span { position: absolute; top: 0; right: 0; }
+  .source { display: inline-block; margin-top: 18px; color: var(--text-sub); font-size: .75rem; }
+  @media (max-width: 600px) { .workspace { padding: 40px 20px; } }
+</style>
