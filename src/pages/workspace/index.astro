@@ -2,30 +2,24 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 
-<Layout title="workspace — onmk">
+<Layout title="workspace — onmk" hideNav hideFooter>
+  <a class="home" href="/" aria-label="トップに戻る" data-astro-reload>
+    <img src="/assets/onmk-icon.jpg" alt="" width="24" height="24" />
+  </a>
   <main class="workspace">
-    <h1>workspace</h1>
-    <p class="intro">Webの実験を置いています。</p>
-    <article>
-      <a class="experiment" href="/workspace/wadalab-motion/" data-astro-reload>
-        <h2>wadalab-motion</h2>
-        <p>和田研フォントの線が、畳まれた状態から開いていく試打サイト。</p>
-        <span aria-hidden="true">↗</span>
-      </a>
-      <a class="source" href="https://github.com/onmokoworks/wadalab-motion">GitHub</a>
-    </article>
+    <ul aria-label="ディレクトリ">
+      <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/" data-astro-reload>wadalab-motion/</a></li>
+    </ul>
   </main>
 </Layout>
 
 <style>
-  .workspace { max-width: var(--content-width); margin: 0 auto; padding: 64px 40px; }
-  h1 { font-size: 1.5rem; font-weight: 400; }
-  .intro { margin-top: 12px; color: var(--text-sub); font-size: .85rem; }
-  article { margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--border-color); }
-  .experiment { display: block; position: relative; padding-right: 32px; color: var(--text-main); text-decoration: none; }
-  h2 { font-size: 1.1rem; font-weight: 400; }
-  .experiment p { margin-top: 12px; font-size: .85rem; line-height: 1.8; }
-  .experiment span { position: absolute; top: 0; right: 0; }
-  .source { display: inline-block; margin-top: 18px; color: var(--text-sub); font-size: .75rem; }
-  @media (max-width: 600px) { .workspace { padding: 40px 20px; } }
+  :global(body) { padding-top: 0; background: #fff; color: #111; }
+  .home { display: block; width: 24px; height: 24px; margin: 20px; }
+  .home img { display: block; }
+  .workspace { margin: 32px 20px; font: 14px/1.8 ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+  ul { list-style: none; }
+  li { white-space: pre; }
+  .workspace a { color: inherit; text-decoration: none; }
+  .workspace a:hover { text-decoration: underline; }
 </style>
