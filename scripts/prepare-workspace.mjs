@@ -5,7 +5,7 @@ import {execFileSync} from 'node:child_process';
 
 const root = new URL('../', import.meta.url);
 const experiments = JSON.parse(await readFile(new URL('workspace.json', root), 'utf8'));
-const files = ['index.html', 'style.css', 'app.js', 'renderer.js', 'native-renderer.js', 'fold-core.js', 'motion-config.js', 'structure.js', 'source-engine.js', 'source-vm.js', 'source-fast.js', 'source-program.json', 'source-glyphs.json', 'deletion-schedule.js', 'playback-control.js', 'SOURCE-LICENSE.txt', 'SOURCE-NOTICE.txt', 'clock.html', 'clock.css', 'clock-app.js', 'clock-core.js', 'font/ascii-outlines.json', 'font/clock-skeletons.json', 'font/LICENSE.txt'];
+const files = ['index.html', 'style.css', 'app.js', 'renderer.js', 'native-renderer.js', 'fold-core.js', 'alpha-motion.js', 'motion-config.js', 'structure.js', 'source-engine.js', 'source-vm.js', 'source-fast.js', 'source-program.json', 'source-glyphs.json', 'deletion-schedule.js', 'playback-control.js', 'SOURCE-LICENSE.txt', 'SOURCE-NOTICE.txt', 'clock.html', 'clock.css', 'clock-app.js', 'clock-core.js', 'font/ascii-outlines.json', 'font/alpha-centerlines.json', 'font/clock-skeletons.json', 'font/LICENSE.txt'];
 
 for (const [name, {repository, commit}] of Object.entries(experiments)) {
   if (!/^[a-z0-9-]+$/.test(name) || !/^[\w-]+\/[\w.-]+$/.test(repository) || !/^[a-f0-9]{40}$/.test(commit)) throw new Error('Invalid workspace source');
@@ -36,11 +36,11 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
     await writeFile(new URL('build-source.json', output), JSON.stringify({repository, commit}));
     // Exercise the packaged files before deployment, including VM arithmetic.
     const {SourceEngine} = await import(new URL('source-engine.js', output));
-    const data = await Promise.all(['source-program.json', 'source-glyphs.json', 'font/ascii-outlines.json'].map(async file => JSON.parse(await readFile(new URL(file, output), 'utf8'))));
+    const data = await Promise.all(['source-program.json', 'source-glyphs.json', 'font/ascii-outlines.json', 'font/alpha-centerlines.json'].map(async file => JSON.parse(await readFile(new URL(file, output), 'utf8'))));
     const engine = new SourceEngine(...data);
     for (const character of 'あ出羽良彰カタカナＡ') {
       const glyph = engine.make(character, 11);
-      if (!glyph.outlineOnly) engine.closeLoopPaths(glyph, .5);
+      if (!glyph.outlineOnly || engine.alpha.has(glyph.sourceCharacter)) engine.closeLoopPaths(glyph, .5);
     }
     console.log(`workspace: ${name} @ ${commit}`);
   } finally {
