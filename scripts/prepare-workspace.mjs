@@ -25,7 +25,8 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
       await mkdir(new URL('.', target), {recursive: true});
       if (/\.(html|js|css)$/.test(file)) {
         const text = await readFile(join(source, file), 'utf8');
-        await writeFile(target, text.replace(/(["'`])\/(?!\/)/g, `$1${base}`));
+        // Only asset URLs: '/' is also the Lisp VM's division operator.
+        await writeFile(target, text.replace(/(["'`])\/(?=(?:[\w-]+\/)*[\w-]+\.(?:js|css|json|txt|ttf)(?:["'`?#]))/g, `$1${base}`));
       } else await copyFile(join(source, file), target);
     }
     await copyFile(new URL('SOURCE-LICENSE.txt', output), new URL('LICENSE.txt', output));
