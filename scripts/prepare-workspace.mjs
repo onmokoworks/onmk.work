@@ -33,6 +33,14 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
     await mkdir(new URL('clock/', output), {recursive: true});
     await copyFile(new URL('clock.html', output), new URL('clock/index.html', output));
     await writeFile(new URL('build-source.json', output), JSON.stringify({repository, commit}));
+    // Exercise the packaged files before deployment, including VM arithmetic.
+    const {SourceEngine} = await import(new URL('source-engine.js', output));
+    const data = await Promise.all(['source-program.json', 'source-glyphs.json', 'font/ascii-outlines.json'].map(async file => JSON.parse(await readFile(new URL(file, output), 'utf8'))));
+    const engine = new SourceEngine(...data);
+    for (const character of 'あ出羽良彰カタカナＡ') {
+      const glyph = engine.make(character, 11);
+      if (!glyph.outlineOnly) engine.closeLoopPaths(glyph, .5);
+    }
     console.log(`workspace: ${name} @ ${commit}`);
   } finally {
     if (!resolve(temporary).startsWith(resolve(tmpdir()) + sep)) throw new Error('Unexpected temporary path');
