@@ -7,12 +7,15 @@ import Layout from '../../layouts/Layout.astro';
     <img src="/assets/onmk-icon.jpg" alt="" width="24" height="24" />
   </a>
   <main class="workspace">
+    <div class="directory-browser">
     <ul aria-label="ディレクトリ">
-      <li><details open><summary><span aria-hidden="true">- </span>wadalab-motion/</summary><ul>
+      <li><button class="folder" aria-expanded="false" aria-controls="wadalab-pages"><span aria-hidden="true">- </span>wadalab-motion/</button></li>
+    </ul>
+    <ul class="pages" id="wadalab-pages" aria-label="wadalab-motionのページ" aria-hidden="true" inert>
         <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/" data-astro-reload>index.html</a></li>
         <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/wadamotion-1/" data-astro-reload>Wadamotion-1/</a></li>
-      </ul></details></li>
     </ul>
+    </div>
   </main>
 </Layout>
 
@@ -21,26 +24,34 @@ import Layout from '../../layouts/Layout.astro';
     const directory = document.querySelector<HTMLElement>('.workspace');
     if (!directory || directory.dataset.keyboardReady) return;
     directory.dataset.keyboardReady = 'true';
-    const visibleItems = () => Array.from(directory.querySelectorAll<HTMLElement>('summary, a')).filter(item => item.getClientRects().length);
+    const folder = directory.querySelector<HTMLButtonElement>('.folder')!;
+    const pages = directory.querySelector<HTMLElement>('.pages')!;
+    const links = Array.from(pages.querySelectorAll<HTMLAnchorElement>('a'));
+    const setOpen = (open: boolean) => {
+      folder.setAttribute('aria-expanded', String(open));
+      pages.inert = !open;
+      pages.setAttribute('aria-hidden', String(!open));
+      directory.classList.toggle('folder-open', open);
+      if (!open) folder.focus({preventScroll: true});
+    };
+    folder.addEventListener('click', () => setOpen(folder.getAttribute('aria-expanded') !== 'true'));
     directory.addEventListener('keydown', (event) => {
       const keyEvent = event as KeyboardEvent;
       if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey) return;
       if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(keyEvent.key)) return;
       keyEvent.preventDefault();
-      const items = visibleItems(), current = document.activeElement as HTMLElement;
+      const current = document.activeElement as HTMLElement;
+      const items: HTMLElement[] = pages.contains(current) ? links : [folder];
       const index = Math.max(0, items.indexOf(current));
       if (keyEvent.key === 'ArrowDown' || keyEvent.key === 'ArrowUp') {
         items[(index + (keyEvent.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus({preventScroll: true});
       } else if (keyEvent.key === 'ArrowRight') {
-        const folder = current.matches('summary') ? current.parentElement as HTMLDetailsElement : null;
-        if (folder && !folder.open) folder.open = true;
-        else if (folder) folder.querySelector<HTMLElement>('a, details summary')?.focus({preventScroll: true});
+        if (current === folder) { setOpen(true); links[0]?.focus({preventScroll: true}); }
       } else {
-        const folder = current.closest('details');
-        if (folder) { folder.open = false; folder.querySelector('summary')?.focus({preventScroll: true}); }
+        setOpen(false);
       }
     });
-    visibleItems()[0]?.focus({preventScroll: true});
+    folder.focus({preventScroll: true});
   }
   initializeDirectory();
   document.addEventListener('astro:page-load', initializeDirectory);
@@ -53,10 +64,13 @@ import Layout from '../../layouts/Layout.astro';
   .workspace { min-height: 100svh; display: grid; place-items: center; padding: 64px 20px; font: 14px/1.8 ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
   ul { list-style: none; margin: 0; padding: 0; }
   li { white-space: nowrap; }
-  details > ul { padding-left: 2ch; }
-  summary { cursor: pointer; list-style: none; }
-  summary::-webkit-details-marker { display: none; }
+  .directory-browser { display: flex; align-items: flex-start; gap: 3ch; }
+  .folder { padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+  .pages { opacity: .22; transform: translateX(-6px); transition: opacity 160ms ease-out, transform 160ms ease-out; }
+  .folder-open .pages { opacity: 1; transform: translateX(0); }
   .workspace a { color: inherit; text-decoration: none; }
   .workspace a:hover { text-decoration: underline; }
-  .workspace a:focus-visible, summary:focus-visible { outline: none; text-decoration: underline; text-underline-offset: 3px; }
+  .workspace a:focus-visible, .folder:focus-visible { outline: none; text-decoration: underline; text-underline-offset: 3px; }
+  @media (max-width: 360px) { .workspace { font-size: 12px; } .directory-browser { gap: 2ch; } }
+  @media (prefers-reduced-motion: reduce) { .pages { transition: none; } }
 </style>
