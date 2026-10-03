@@ -31,6 +31,8 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
       } else await copyFile(join(source, file), target);
     }
     await copyFile(new URL('SOURCE-LICENSE.txt', output), new URL('LICENSE.txt', output));
+    await copyFile(join(source, '..', 'LICENSE'), new URL('PROJECT-LICENSE.txt', output));
+    await copyFile(join(source, 'font/wlmaru2004emoji.ttf'), new URL('font/wlmaru2004emoji.ttf', output));
     await mkdir(new URL('clock/', output), {recursive: true});
     await copyFile(new URL('clock.html', output), new URL('clock/index.html', output));
     await writeFile(new URL('build-source.json', output), JSON.stringify({repository, commit}));
