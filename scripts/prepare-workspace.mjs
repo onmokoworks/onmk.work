@@ -7,6 +7,7 @@ const root = new URL('../', import.meta.url);
 const experiments = JSON.parse(await readFile(new URL('workspace.json', root), 'utf8'));
 const files = ['index.html', 'style.css', 'app.js', 'renderer.js', 'native-renderer.js', 'fold-core.js', 'alpha-motion.js', 'motion-config.js', 'structure.js', 'source-engine.js', 'source-vm.js', 'source-fast.js', 'source-program.json', 'source-glyphs.json', 'deletion-schedule.js', 'playback-control.js', 'SOURCE-LICENSE.txt', 'SOURCE-NOTICE.txt', 'clock.html', 'clock.css', 'clock-app.js', 'clock-core.js', 'font/ascii-outlines.json', 'font/alpha-centerlines.json', 'font/clock-skeletons.json', 'font/LICENSE.txt'];
 
+files.push('wadamotion-1.html');
 for (const [name, {repository, commit}] of Object.entries(experiments)) {
   if (!/^[a-z0-9-]+$/.test(name) || !/^[\w-]+\/[\w.-]+$/.test(repository) || !/^[a-f0-9]{40}$/.test(commit)) throw new Error('Invalid workspace source');
   const temporary = await mkdtemp(join(tmpdir(), 'onmk-workspace-'));
@@ -35,6 +36,8 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
     await copyFile(join(source, 'font/wlmaru2004emoji.ttf'), new URL('font/wlmaru2004emoji.ttf', output));
     await mkdir(new URL('clock/', output), {recursive: true});
     await copyFile(new URL('clock.html', output), new URL('clock/index.html', output));
+    await mkdir(new URL('wadamotion-1/', output), {recursive: true});
+    await copyFile(new URL('wadamotion-1.html', output), new URL('wadamotion-1/index.html', output));
     await writeFile(new URL('build-source.json', output), JSON.stringify({repository, commit}));
     // Exercise the packaged files before deployment, including VM arithmetic.
     const {SourceEngine} = await import(new URL('source-engine.js', output));

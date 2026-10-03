@@ -8,10 +8,43 @@ import Layout from '../../layouts/Layout.astro';
   </a>
   <main class="workspace">
     <ul aria-label="ディレクトリ">
-      <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/" data-astro-reload>wadalab-motion/</a></li>
+      <li><details open><summary><span aria-hidden="true">- </span>wadalab-motion/</summary><ul>
+        <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/" data-astro-reload>index.html</a></li>
+        <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/wadamotion-1/" data-astro-reload>Wadamotion-1/</a></li>
+      </ul></details></li>
     </ul>
   </main>
 </Layout>
+
+<script>
+  function initializeDirectory() {
+    const directory = document.querySelector<HTMLElement>('.workspace');
+    if (!directory || directory.dataset.keyboardReady) return;
+    directory.dataset.keyboardReady = 'true';
+    const visibleItems = () => Array.from(directory.querySelectorAll<HTMLElement>('summary, a')).filter(item => item.getClientRects().length);
+    directory.addEventListener('keydown', (event) => {
+      const keyEvent = event as KeyboardEvent;
+      if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey) return;
+      if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(keyEvent.key)) return;
+      keyEvent.preventDefault();
+      const items = visibleItems(), current = document.activeElement as HTMLElement;
+      const index = Math.max(0, items.indexOf(current));
+      if (keyEvent.key === 'ArrowDown' || keyEvent.key === 'ArrowUp') {
+        items[(index + (keyEvent.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus({preventScroll: true});
+      } else if (keyEvent.key === 'ArrowRight') {
+        const folder = current.matches('summary') ? current.parentElement as HTMLDetailsElement : null;
+        if (folder && !folder.open) folder.open = true;
+        else if (folder) folder.querySelector<HTMLElement>('a, details summary')?.focus({preventScroll: true});
+      } else {
+        const folder = current.closest('details');
+        if (folder) { folder.open = false; folder.querySelector('summary')?.focus({preventScroll: true}); }
+      }
+    });
+    visibleItems()[0]?.focus({preventScroll: true});
+  }
+  initializeDirectory();
+  document.addEventListener('astro:page-load', initializeDirectory);
+</script>
 
 <style>
   :global(body.workspace-page) { padding-top: 0; background: #fff; color: #111; }
@@ -19,7 +52,11 @@ import Layout from '../../layouts/Layout.astro';
   .home img { display: block; }
   .workspace { min-height: 100svh; display: grid; place-items: center; padding: 64px 20px; font: 14px/1.8 ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
   ul { list-style: none; margin: 0; padding: 0; }
-  li { white-space: pre; }
+  li { white-space: nowrap; }
+  details > ul { padding-left: 2ch; }
+  summary { cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
   .workspace a { color: inherit; text-decoration: none; }
   .workspace a:hover { text-decoration: underline; }
+  .workspace a:focus-visible, summary:focus-visible { outline: none; text-decoration: underline; text-underline-offset: 3px; }
 </style>
