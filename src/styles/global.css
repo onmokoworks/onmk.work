@@ -130,7 +130,7 @@ hr {
 @media (max-width: 768px) {
     .nav-container { padding: 0 20px; }
     .nav-icon { flex-shrink: 0; }
-    .nav-links { gap: clamp(8px, 2vw, 16px); }
+    .nav-links { gap: clamp(14px, 4vw, 20px); }
     .nav-link { font-size: 0.7rem; letter-spacing: 0; }
     .container { padding: 40px 20px; }
 }
