@@ -7,6 +7,7 @@
 }
 
 :root {
+    dynamic-range-limit: standard;
     color-scheme: light;
     --bg-color: #ffffff;
     --text-main: #111111;
