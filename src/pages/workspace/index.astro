@@ -14,6 +14,8 @@ import Layout from '../../layouts/Layout.astro';
     <ul class="pages" id="wadalab-pages" aria-label="wadalab-motionのページ" aria-hidden="true" inert>
         <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/" data-astro-reload>index.html</a></li>
         <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/wadamotion-1/" data-astro-reload>Wadamotion-1/</a></li>
+        <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/wadamotion-2/" data-astro-reload>Wadamotion-2/</a></li>
+        <li><span aria-hidden="true">- </span><a href="/workspace/wadalab-motion/wadamotion-3/" data-astro-reload>Wadamotion-3/</a></li>
     </ul>
     </div>
   </main>
@@ -27,6 +29,13 @@ import Layout from '../../layouts/Layout.astro';
     const folder = directory.querySelector<HTMLButtonElement>('.folder')!;
     const pages = directory.querySelector<HTMLElement>('.pages')!;
     const links = Array.from(pages.querySelectorAll<HTMLAnchorElement>('a'));
+    const alignSelection = (selected: HTMLElement) => {
+      const row = selected.closest('li') as HTMLElement;
+      const first = pages.querySelector<HTMLElement>('li')!;
+      const offset = pages.contains(selected) ? row.offsetTop - first.offsetTop : 0;
+      pages.style.setProperty('--selected-y', `${-offset}px`);
+    };
+    directory.addEventListener('focusin', event => alignSelection(event.target as HTMLElement));
     const setOpen = (open: boolean) => {
       folder.setAttribute('aria-expanded', String(open));
       pages.inert = !open;
@@ -64,12 +73,12 @@ import Layout from '../../layouts/Layout.astro';
   .workspace { min-height: 100svh; display: grid; place-items: center; padding: 64px 20px; font: 14px/1.8 ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
   ul { list-style: none; margin: 0; padding: 0; }
   li { white-space: nowrap; }
-  .directory-browser { display: flex; align-items: flex-start; gap: 3ch; }
+  .directory-browser { display: flex; align-items: flex-start; gap: 3ch; height: 1.8em; }
   .folder { padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; opacity: .35; transition: opacity 140ms ease-out; }
   .folder:focus { opacity: 1; }
-  .pages { transform: translateX(-6px); transition: transform 160ms ease-out; }
+  .pages { transform: translate(-6px, var(--selected-y, 0px)); transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
   .pages li { opacity: .22; transition: opacity 140ms ease-out; }
-  .folder-open .pages { transform: translateX(0); }
+  .folder-open .pages { transform: translate(0, var(--selected-y, 0px)); }
   .folder-open .pages li { opacity: .35; }
   .folder-open .pages li:focus-within { opacity: 1; }
   .workspace a { color: inherit; text-decoration: none; }
