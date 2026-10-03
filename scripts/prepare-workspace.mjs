@@ -27,7 +27,7 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
         const text = await readFile(join(source, file), 'utf8');
         // Only asset URLs: '/' is also the Lisp VM's division operator.
         const relocated = text.replace(/(["'`])\/(?=(?:[\w-]+\/)*[\w-]+\.(?:js|css|json|txt|ttf)(?:["'`?#]))/g, `$1${base}`);
-        await writeFile(target, relocated.replace(/(["'])([^"'\s]+\.js)(["'])/g, `$1$2?v=${commit}-2$3`));
+        await writeFile(target, relocated.replace(/(["'])([^"'\s]+\.(?:js|css))(["'])/g, `$1$2?v=${commit}-2$3`));
       } else await copyFile(join(source, file), target);
     }
     await copyFile(new URL('SOURCE-LICENSE.txt', output), new URL('LICENSE.txt', output));
