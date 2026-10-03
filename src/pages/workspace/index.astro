@@ -9,7 +9,7 @@ import Layout from '../../layouts/Layout.astro';
   <main class="workspace">
     <div class="directory-browser">
     <svg class="directory-pipes" aria-hidden="true"><path /></svg>
-    <ul aria-label="ディレクトリ">
+    <ul class="roots" aria-label="ディレクトリ">
       <li><button class="folder" aria-expanded="false" aria-controls="wadalab-pages"><span aria-hidden="true">- </span>wadalab-motion/</button></li>
     </ul>
     <ul class="pages" id="wadalab-pages" aria-label="wadalab-motionのページ" aria-hidden="true" inert>
@@ -27,9 +27,14 @@ import Layout from '../../layouts/Layout.astro';
     const directory = document.querySelector<HTMLElement>('.workspace');
     if (!directory || directory.dataset.keyboardReady) return;
     directory.dataset.keyboardReady = 'true';
-    const folder = directory.querySelector<HTMLButtonElement>('.folder')!;
-    const pages = directory.querySelector<HTMLElement>('.pages')!;
-    const links = Array.from(pages.querySelectorAll<HTMLAnchorElement>('a'));
+    const folders = Array.from(directory.querySelectorAll<HTMLButtonElement>('.folder'));
+    const roots = directory.querySelector<HTMLElement>('.roots')!;
+    let folder = folders[0];
+    let activeItem: HTMLElement = folder;
+    let pages = document.getElementById(folder.getAttribute('aria-controls')!)!;
+    let links = Array.from(pages.querySelectorAll<HTMLAnchorElement>('a'));
+    directory.querySelectorAll<HTMLElement>('.pages').forEach(panel => { panel.hidden = panel !== pages; });
+    const remembered = new Map<HTMLElement, HTMLAnchorElement>();
     const browser = directory.querySelector<HTMLElement>('.directory-browser')!;
     const pipe = directory.querySelector<SVGPathElement>('.directory-pipes path')!;
     let pipeFrame = 0;
@@ -53,9 +58,32 @@ import Layout from '../../layouts/Layout.astro';
       pipeFrame = requestAnimationFrame(frame);
     };
     const alignSelection = (selected: HTMLElement) => {
-      const row = selected.closest('li') as HTMLElement;
+      activeItem = selected;
+      if (selected.matches('.folder')) {
+        const next = selected as HTMLButtonElement;
+        if (next !== folder) {
+          folder.setAttribute('aria-expanded', 'false');
+          pages.hidden = true;
+          folder = next;
+          pages = document.getElementById(folder.getAttribute('aria-controls')!)!;
+          pages.hidden = false;
+          pages.inert = true;
+          pages.setAttribute('aria-hidden', 'true');
+          links = Array.from(pages.querySelectorAll<HTMLAnchorElement>('a'));
+          directory.classList.remove('folder-open');
+        }
+        folders.forEach(item => item.classList.toggle('is-selected', item === folder));
+        const row = folder.closest('li') as HTMLElement, first = roots.querySelector<HTMLElement>('li')!;
+        roots.style.setProperty('--selected-y', `${-(row.offsetTop-first.offsetTop)}px`);
+      } else if (pages.contains(selected)) {
+        remembered.set(pages, selected as HTMLAnchorElement);
+        links.forEach(link => link.closest('li')!.classList.toggle('is-selected', link === selected));
+      }
+      const child = remembered.get(pages);
+      if (!child) { followPipes(); return; }
+      const row = child.closest('li') as HTMLElement;
       const first = pages.querySelector<HTMLElement>('li')!;
-      const offset = pages.contains(selected) ? row.offsetTop - first.offsetTop : 0;
+      const offset = row.offsetTop - first.offsetTop;
       pages.style.setProperty('--selected-y', `${-offset}px`);
       followPipes();
     };
@@ -68,19 +96,25 @@ import Layout from '../../layouts/Layout.astro';
       followPipes();
       if (!open) folder.focus({preventScroll: true});
     };
-    folder.addEventListener('click', () => setOpen(folder.getAttribute('aria-expanded') !== 'true'));
-    directory.addEventListener('keydown', (event) => {
+    folders.forEach(item => item.addEventListener('click', () => { item.focus({preventScroll:true}); setOpen(folder.getAttribute('aria-expanded') !== 'true'); }));
+    document.addEventListener('keydown', (event) => {
       const keyEvent = event as KeyboardEvent;
+      if (!directory.isConnected) return;
       if (keyEvent.altKey || keyEvent.ctrlKey || keyEvent.metaKey) return;
+      const focused = document.activeElement as HTMLElement;
+      if (!directory.contains(focused)) {
+        if (focused?.closest('a, button, input, textarea, select')) return;
+        if (keyEvent.key === 'Enter') { keyEvent.preventDefault(); activeItem.click(); return; }
+      }
       if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(keyEvent.key)) return;
       keyEvent.preventDefault();
-      const current = document.activeElement as HTMLElement;
-      const items: HTMLElement[] = pages.contains(current) ? links : [folder];
+      const current = directory.contains(focused) ? focused : activeItem;
+      const items: HTMLElement[] = pages.contains(current) ? links : folders;
       const index = Math.max(0, items.indexOf(current));
       if (keyEvent.key === 'ArrowDown' || keyEvent.key === 'ArrowUp') {
         items[(index + (keyEvent.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length].focus({preventScroll: true});
       } else if (keyEvent.key === 'ArrowRight') {
-        if (current === folder) { setOpen(true); links[0]?.focus({preventScroll: true}); }
+        if (current === folder) { setOpen(true); (remembered.get(pages) ?? links[0])?.focus({preventScroll: true}); }
       } else {
         setOpen(false);
       }
@@ -104,15 +138,16 @@ import Layout from '../../layouts/Layout.astro';
   .directory-pipes { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; stroke: currentColor; stroke-width: .7; opacity: .16; transition: opacity 140ms ease-out; }
   .folder-open .directory-pipes { opacity: .3; }
   .folder { padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; opacity: .35; transition: opacity 140ms ease-out; }
-  .folder:focus { opacity: 1; }
+  .folder.is-selected { opacity: 1; }
+  .roots { transform: translateY(var(--selected-y, 0px)); transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
   .pages { transform: translate(-6px, var(--selected-y, 0px)); transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
   .pages li { opacity: .22; transition: opacity 140ms ease-out; }
   .folder-open .pages { transform: translate(0, var(--selected-y, 0px)); }
   .folder-open .pages li { opacity: .35; }
-  .folder-open .pages li:focus-within { opacity: 1; }
+  .pages li.is-selected, .folder-open .pages li.is-selected { opacity: 1; }
   .workspace a { color: inherit; text-decoration: none; }
   .workspace a:hover { text-decoration: underline; }
   .workspace a:focus-visible, .folder:focus-visible { outline: none; text-decoration: underline; text-underline-offset: 3px; }
   @media (max-width: 360px) { .workspace { font-size: 12px; } .directory-browser { gap: 4ch; } }
-  @media (prefers-reduced-motion: reduce) { .pages, .pages li, .folder { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .roots, .pages, .pages li, .folder { transition: none; } }
 </style>
