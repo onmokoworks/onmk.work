@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 ---
 
-<Layout title="workspace — onmk" hideNav hideFooter>
+<Layout title="workspace — onmk" hideNav hideFooter bodyClass="workspace-page">
   <a class="home" href="/" aria-label="トップに戻る" data-astro-reload>
     <img src="/assets/onmk-icon.jpg" alt="" width="24" height="24" />
   </a>
@@ -14,7 +14,7 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <style>
-  :global(body) { padding-top: 0; background: #fff; color: #111; }
+  :global(body.workspace-page) { padding-top: 0; background: #fff; color: #111; }
   .home { position: absolute; top: 20px; left: 20px; display: block; width: 24px; height: 24px; }
   .home img { display: block; }
   .workspace { min-height: 100svh; display: grid; place-items: center; padding: 64px 20px; font: 14px/1.8 ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace; }

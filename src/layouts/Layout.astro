@@ -7,9 +7,10 @@ interface Props {
   hideNav?: boolean;
   hideFooter?: boolean;
   noindex?: boolean;
+  bodyClass?: string;
 }
 
-const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } = Astro.props;
+const { title = "onmk", hideNav = false, hideFooter = false, noindex = false, bodyClass } = Astro.props;
 ---
 
 <!doctype html>
@@ -30,7 +31,7 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false } =
       gtag('config', 'G-BCX22M8SVE');
     </script>
   </head>
-  <body>
+  <body class={bodyClass}>
     {!hideNav && (
       <nav class="nav-bar">
         <div class="nav-container">
