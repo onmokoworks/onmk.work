@@ -8,6 +8,7 @@ import Layout from '../../layouts/Layout.astro';
   </a>
   <main class="workspace">
     <div class="directory-browser">
+    <svg class="directory-pipes" aria-hidden="true"><path /></svg>
     <ul aria-label="ディレクトリ">
       <li><button class="folder" aria-expanded="false" aria-controls="wadalab-pages"><span aria-hidden="true">- </span>wadalab-motion/</button></li>
     </ul>
@@ -29,11 +30,34 @@ import Layout from '../../layouts/Layout.astro';
     const folder = directory.querySelector<HTMLButtonElement>('.folder')!;
     const pages = directory.querySelector<HTMLElement>('.pages')!;
     const links = Array.from(pages.querySelectorAll<HTMLAnchorElement>('a'));
+    const browser = directory.querySelector<HTMLElement>('.directory-browser')!;
+    const pipe = directory.querySelector<SVGPathElement>('.directory-pipes path')!;
+    let pipeFrame = 0;
+    const drawPipes = () => {
+      const origin = browser.getBoundingClientRect(), root = folder.getBoundingClientRect();
+      const x = root.right - origin.left + 5, y = root.top - origin.top + root.height / 2;
+      const paths = links.map(link => {
+        const row = link.closest('li')!.getBoundingClientRect();
+        const endX = row.left - origin.left - 5, endY = row.top - origin.top + row.height / 2;
+        const middle = (x + endX) / 2, sign = Math.sign(endY - y);
+        const radius = Math.max(0, Math.min(5, (endX - x) / 4, Math.abs(endY - y) / 2));
+        if (Math.abs(endY - y) < 1) return `M${x} ${y}H${endX}`;
+        return `M${x} ${y}H${middle-radius}Q${middle} ${y} ${middle} ${y+sign*radius}V${endY-sign*radius}Q${middle} ${endY} ${middle+radius} ${endY}H${endX}`;
+      });
+      pipe.setAttribute('d', paths.join(' '));
+    };
+    const followPipes = () => {
+      cancelAnimationFrame(pipeFrame);
+      const until = performance.now() + 220;
+      const frame = (now: number) => { drawPipes(); if (now < until && directory.isConnected) pipeFrame = requestAnimationFrame(frame); };
+      pipeFrame = requestAnimationFrame(frame);
+    };
     const alignSelection = (selected: HTMLElement) => {
       const row = selected.closest('li') as HTMLElement;
       const first = pages.querySelector<HTMLElement>('li')!;
       const offset = pages.contains(selected) ? row.offsetTop - first.offsetTop : 0;
       pages.style.setProperty('--selected-y', `${-offset}px`);
+      followPipes();
     };
     directory.addEventListener('focusin', event => alignSelection(event.target as HTMLElement));
     const setOpen = (open: boolean) => {
@@ -41,6 +65,7 @@ import Layout from '../../layouts/Layout.astro';
       pages.inert = !open;
       pages.setAttribute('aria-hidden', String(!open));
       directory.classList.toggle('folder-open', open);
+      followPipes();
       if (!open) folder.focus({preventScroll: true});
     };
     folder.addEventListener('click', () => setOpen(folder.getAttribute('aria-expanded') !== 'true'));
@@ -61,6 +86,8 @@ import Layout from '../../layouts/Layout.astro';
       }
     });
     folder.focus({preventScroll: true});
+    drawPipes();
+    window.addEventListener('resize', () => { if (directory.isConnected) { alignSelection(directory.contains(document.activeElement) ? document.activeElement as HTMLElement : folder); } });
   }
   initializeDirectory();
   document.addEventListener('astro:page-load', initializeDirectory);
@@ -73,7 +100,9 @@ import Layout from '../../layouts/Layout.astro';
   .workspace { min-height: 100svh; display: grid; place-items: center; padding: 64px 20px; font: 14px/1.8 ui-monospace, "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
   ul { list-style: none; margin: 0; padding: 0; }
   li { white-space: nowrap; }
-  .directory-browser { display: flex; align-items: flex-start; gap: 3ch; height: 1.8em; }
+  .directory-browser { position: relative; display: flex; align-items: flex-start; gap: 5ch; height: 1.8em; }
+  .directory-pipes { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; fill: none; stroke: currentColor; stroke-width: .7; opacity: .16; transition: opacity 140ms ease-out; }
+  .folder-open .directory-pipes { opacity: .3; }
   .folder { padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; opacity: .35; transition: opacity 140ms ease-out; }
   .folder:focus { opacity: 1; }
   .pages { transform: translate(-6px, var(--selected-y, 0px)); transition: transform 180ms cubic-bezier(.2,.8,.2,1); }
@@ -84,6 +113,6 @@ import Layout from '../../layouts/Layout.astro';
   .workspace a { color: inherit; text-decoration: none; }
   .workspace a:hover { text-decoration: underline; }
   .workspace a:focus-visible, .folder:focus-visible { outline: none; text-decoration: underline; text-underline-offset: 3px; }
-  @media (max-width: 360px) { .workspace { font-size: 12px; } .directory-browser { gap: 2ch; } }
+  @media (max-width: 360px) { .workspace { font-size: 12px; } .directory-browser { gap: 4ch; } }
   @media (prefers-reduced-motion: reduce) { .pages, .pages li, .folder { transition: none; } }
 </style>
