@@ -38,7 +38,7 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
     const {SourceEngine} = await import(new URL('source-engine.js', output));
     const data = await Promise.all(['source-program.json', 'source-glyphs.json', 'font/ascii-outlines.json', 'font/alpha-centerlines.json'].map(async file => JSON.parse(await readFile(new URL(file, output), 'utf8'))));
     const engine = new SourceEngine(...data);
-    for (const character of 'あ出羽良彰カタカナＡ') {
+    for (const character of 'あ出羽良彰カタカナＡ０123456789?;:()@%') {
       const glyph = engine.make(character, 11);
       if (!glyph.outlineOnly || engine.alpha.has(glyph.sourceCharacter)) engine.closeLoopPaths(glyph, .5);
     }
