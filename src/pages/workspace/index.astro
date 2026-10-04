@@ -59,12 +59,16 @@ import Layout from '../../layouts/Layout.astro';
     };
     directory.addEventListener('click', beep);
     let pipeFrame = 0;
+    let pipeReveal: Animation | undefined;
+    const pipeSvg = browser.querySelector<SVGSVGElement>('.directory-pipes')!;
     const drawPipes = () => {
-      const origin = browser.getBoundingClientRect(), root = folder.getBoundingClientRect();
-      const x = root.right - origin.left + 5, y = root.top - origin.top + root.height / 2;
+      const root = folder.getBoundingClientRect();
+      const x = roots.offsetLeft + folder.offsetWidth + 5, y = root.height / 2;
       const paths = links.map(link => {
-        const row = link.closest('li')!.getBoundingClientRect();
-        const endX = row.left - origin.left - 5, endY = row.top - origin.top + row.height / 2;
+        const row = link.closest('li') as HTMLElement;
+        const first = pages.querySelector<HTMLElement>('li')!;
+        const endX = pages.offsetLeft + (directory.classList.contains('folder-open') ? 0 : -6) - 5;
+        const endY = row.offsetTop - first.offsetTop + (parseFloat(pages.style.getPropertyValue('--selected-y')) || 0) + row.offsetHeight / 2;
         const middle = (x + endX) / 2, sign = Math.sign(endY - y);
         const radius = Math.max(0, Math.min(5, (endX - x) / 4, Math.abs(endY - y) / 2));
         if (Math.abs(endY - y) < 1) return `M${x} ${y}H${endX}`;
@@ -74,9 +78,19 @@ import Layout from '../../layouts/Layout.astro';
     };
     const followPipes = () => {
       cancelAnimationFrame(pipeFrame);
-      const until = performance.now() + 220;
-      const frame = (now: number) => { drawPipes(); if (now < until && directory.isConnected) pipeFrame = requestAnimationFrame(frame); };
-      pipeFrame = requestAnimationFrame(frame);
+      pipeReveal?.cancel();
+      pipeSvg.style.clipPath = 'inset(-1000px 100% -1000px 0)';
+      pipeFrame = requestAnimationFrame(() => {
+        if (!directory.isConnected) return;
+        drawPipes();
+        pipeSvg.style.clipPath = 'inset(-1000px 0% -1000px 0)';
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          pipeReveal = pipeSvg.animate([
+            {clipPath: 'inset(-1000px 100% -1000px 0)'},
+            {clipPath: 'inset(-1000px 0% -1000px 0)'}
+          ], {duration: 180, easing: 'cubic-bezier(.2,.8,.2,1)'});
+        }
+      });
     };
     const alignSelection = (selected: HTMLElement) => {
       activeItem = selected;
