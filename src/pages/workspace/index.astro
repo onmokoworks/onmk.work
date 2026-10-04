@@ -38,6 +38,22 @@ import Layout from '../../layouts/Layout.astro';
     const remembered = new Map<HTMLElement, HTMLAnchorElement>();
     const browser = directory.querySelector<HTMLElement>('.directory-browser')!;
     const pipe = directory.querySelector<SVGPathElement>('.directory-pipes path')!;
+    let audio: AudioContext | undefined;
+    const beep = () => {
+      if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+      try {
+        audio ??= new AudioContext();
+        void audio.resume();
+        const oscillator = audio.createOscillator(), gain = audio.createGain(), now = audio.currentTime;
+        oscillator.type = 'sine'; oscillator.frequency.value = 1100;
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(.025, now + .003);
+        gain.gain.exponentialRampToValueAtTime(.0001, now + .045);
+        oscillator.connect(gain); gain.connect(audio.destination);
+        oscillator.start(now); oscillator.stop(now + .05);
+      } catch { /* Browsers without audio still allow navigation. */ }
+    };
+    directory.addEventListener('click', beep);
     let pipeFrame = 0;
     const drawPipes = () => {
       const origin = browser.getBoundingClientRect(), root = folder.getBoundingClientRect();
@@ -110,6 +126,7 @@ import Layout from '../../layouts/Layout.astro';
       if (!['ArrowDown', 'ArrowUp', 'ArrowRight', 'ArrowLeft'].includes(keyEvent.key)) return;
       keyEvent.preventDefault();
       const current = directory.contains(focused) ? focused : activeItem;
+      const previousItem = activeItem, wasOpen = folder.getAttribute('aria-expanded');
       const items: HTMLElement[] = pages.contains(current) ? links : folders;
       const index = Math.max(0, items.indexOf(current));
       if (keyEvent.key === 'ArrowDown' || keyEvent.key === 'ArrowUp') {
@@ -119,6 +136,7 @@ import Layout from '../../layouts/Layout.astro';
       } else {
         setOpen(false);
       }
+      if (activeItem !== previousItem || folder.getAttribute('aria-expanded') !== wasOpen) beep();
     });
     folder.focus({preventScroll: true});
     drawPipes();
