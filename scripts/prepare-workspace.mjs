@@ -7,7 +7,7 @@ const root = new URL('../', import.meta.url);
 const experiments = JSON.parse(await readFile(new URL('workspace.json', root), 'utf8'));
 const files = ['index.html', 'style.css', 'app.js', 'renderer.js', 'native-renderer.js', 'fold-core.js', 'alpha-motion.js', 'motion-config.js', 'structure.js', 'source-engine.js', 'source-vm.js', 'source-fast.js', 'source-program.json', 'source-glyphs.json', 'deletion-schedule.js', 'playback-control.js', 'SOURCE-LICENSE.txt', 'SOURCE-NOTICE.txt', 'clock.html', 'clock.css', 'clock-app.js', 'clock-core.js', 'font/ascii-outlines.json', 'font/alpha-centerlines.json', 'font/clock-skeletons.json', 'font/LICENSE.txt'];
 
-files.push('wadamotion-1.html', 'wadamotion-2.html', 'wadamotion-3.html', 'motion-library.js', 'walk-core.js', 'unfold-step.js');
+files.push('wadamotion-1.html', 'wadamotion-2.html', 'wadamotion-3.html', 'motion-library.js', 'walk-core.js', 'unfold-step.js', 'clock-flow-core.js', 'clock-flow.html');
 for (const [name, {repository, commit}] of Object.entries(experiments)) {
   if (!/^[a-z0-9-]+$/.test(name) || !/^[\w-]+\/[\w.-]+$/.test(repository) || !/^[a-f0-9]{40}$/.test(commit)) throw new Error('Invalid workspace source');
   const temporary = await mkdtemp(join(tmpdir(), 'onmk-workspace-'));
@@ -38,6 +38,8 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
     await copyFile(new URL('clock.html', output), new URL('clock/index.html', output));
     await mkdir(new URL('wadamotion-1/', output), {recursive: true});
     await copyFile(new URL('wadamotion-1.html', output), new URL('wadamotion-1/index.html', output));
+    await mkdir(new URL('clock-flow/', output), {recursive: true});
+    await copyFile(new URL('clock-flow.html', output), new URL('clock-flow/index.html', output));
     for (const number of [2, 3]) {
       await mkdir(new URL(`wadamotion-${number}/`, output), {recursive: true});
       await copyFile(new URL(`wadamotion-${number}.html`, output), new URL(`wadamotion-${number}/index.html`, output));
