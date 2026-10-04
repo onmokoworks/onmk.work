@@ -61,14 +61,16 @@ import Layout from '../../layouts/Layout.astro';
     let pipeFrame = 0;
     let pipeReveal: Animation | undefined;
     const pipeSvg = browser.querySelector<SVGSVGElement>('.directory-pipes')!;
-    const drawPipes = () => {
-      const root = folder.getBoundingClientRect();
-      const x = roots.offsetLeft + folder.offsetWidth + 5, y = root.height / 2;
+    const drawPipes = (moving = false) => {
+      const root = folder.getBoundingClientRect(), origin = browser.getBoundingClientRect();
+      const x = moving ? root.right - origin.left + 5 : roots.offsetLeft + folder.offsetWidth + 5;
+      const y = moving ? root.top - origin.top + root.height / 2 : root.height / 2;
       const paths = links.map(link => {
         const row = link.closest('li') as HTMLElement;
         const first = pages.querySelector<HTMLElement>('li')!;
-        const endX = pages.offsetLeft + (directory.classList.contains('folder-open') ? 0 : -6) - 5;
-        const endY = row.offsetTop - first.offsetTop + (parseFloat(pages.style.getPropertyValue('--selected-y')) || 0) + row.offsetHeight / 2;
+        const bounds = row.getBoundingClientRect();
+        const endX = moving ? bounds.left - origin.left - 5 : pages.offsetLeft + (directory.classList.contains('folder-open') ? 0 : -6) - 5;
+        const endY = moving ? bounds.top - origin.top + bounds.height / 2 : row.offsetTop - first.offsetTop + (parseFloat(pages.style.getPropertyValue('--selected-y')) || 0) + row.offsetHeight / 2;
         const middle = (x + endX) / 2, sign = Math.sign(endY - y);
         const radius = Math.max(0, Math.min(5, (endX - x) / 4, Math.abs(endY - y) / 2));
         if (Math.abs(endY - y) < 1) return `M${x} ${y}H${endX}`;
@@ -76,9 +78,20 @@ import Layout from '../../layouts/Layout.astro';
       });
       pipe.setAttribute('d', paths.join(' '));
     };
-    const followPipes = () => {
+    const followPipes = (reveal = false) => {
       cancelAnimationFrame(pipeFrame);
       pipeReveal?.cancel();
+      if (!reveal) {
+        pipeSvg.style.clipPath = 'inset(-1000px 0% -1000px 0)';
+        const until = performance.now() + 220;
+        const frame = (now: number) => {
+          if (!directory.isConnected) return;
+          drawPipes(true);
+          if (now < until) pipeFrame = requestAnimationFrame(frame);
+        };
+        pipeFrame = requestAnimationFrame(frame);
+        return;
+      }
       pipeSvg.style.clipPath = 'inset(-1000px 100% -1000px 0)';
       pipeFrame = requestAnimationFrame(() => {
         if (!directory.isConnected) return;
@@ -94,9 +107,11 @@ import Layout from '../../layouts/Layout.astro';
     };
     const alignSelection = (selected: HTMLElement) => {
       activeItem = selected;
+      let switchedFolder = false;
       if (selected.matches('.folder')) {
         const next = selected as HTMLButtonElement;
         if (next !== folder) {
+          switchedFolder = true;
           folder.setAttribute('aria-expanded', 'false');
           pages.hidden = true;
           folder = next;
@@ -115,12 +130,12 @@ import Layout from '../../layouts/Layout.astro';
         links.forEach(link => link.closest('li')!.classList.toggle('is-selected', link === selected));
       }
       const child = remembered.get(pages);
-      if (!child) { followPipes(); return; }
+      if (!child) { followPipes(switchedFolder); return; }
       const row = child.closest('li') as HTMLElement;
       const first = pages.querySelector<HTMLElement>('li')!;
       const offset = row.offsetTop - first.offsetTop;
       pages.style.setProperty('--selected-y', `${-offset}px`);
-      followPipes();
+      followPipes(switchedFolder);
     };
     directory.addEventListener('focusin', event => alignSelection(event.target as HTMLElement));
     const setOpen = (open: boolean) => {
