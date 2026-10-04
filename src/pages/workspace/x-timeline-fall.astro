@@ -1,0 +1,27 @@
+---
+const posts = [
+  ['mado', 'mado_test', '画面の中にあるものにも、重さがあったら。', '01'],
+  ['sora', 'sora_sample', '今日は何も起きないタイムラインです。まだ。', '02'],
+  ['nami', 'nami_demo', '右下の Drop を押すと、投稿が落ちます。つかんで投げても大丈夫。', '03'],
+  ['kado', 'kado_test', '積んで、崩して、元に戻す。', '04'],
+  ['ito', 'ito_sample', 'ここにいる人も投稿も、全部架空です。', '05'],
+  ['yoko', 'yoko_demo', 'スクロールの先にも、もう少し。', '06'],
+];
+---
+<!doctype html>
+<html lang="ja" data-color-scheme="light">
+<head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>X-timeline-fall — workspace</title><link rel="icon" href="data:,"/><link rel="stylesheet" href="/workspace/x-timeline-fall/content.css"/></head>
+<body>
+<div class="shell">
+<header><nav aria-label="サンプルのナビゲーション"><a class="back" href="/workspace/">← workspace</a><b class="mark">X</b><a href="#timeline">ホーム</a><a href="#timeline">話題を検索</a><a href="#timeline">通知</a><a href="#timeline">メッセージ</a><a href="#timeline">ブックマーク</a><a class="repo" href="https://github.com/onmokoworks/x-timeline-fall">リポジトリ ↗</a></nav></header>
+<main id="timeline"><div class="heading"><h1>ホーム</h1><small>架空のタイムライン / 拡張機能デモ</small></div><div class="tabs"><span>おすすめ</span><span>フォロー中</span></div><div class="compose">いまどうしてる？</div>
+{posts.map(([name, handle, text, number]) => <article data-testid="tweet"><div class="avatar">{number}</div><div class="post"><div class="name"><b>{name}</b><span>@{handle} · いま</span></div><p>{text}</p><div class="actions"><span>♡</span><span>↻</span><span>↗</span><span>···</span></div></div></article>)}
+</main>
+<aside><div class="notice">すべてサンプルです。<br/>Xへの接続・ログインはありません。</div><div data-testid="trend"><small>いまの話題</small><b>重力</b><span>6件の架空の投稿</span></div><div data-testid="trend"><small>実験</small><b>タイムラインを落とす</b><span>Drop → ドラッグ → Reset</span></div><p>Mode: All では、ナビゲーションなども落ちます。</p></aside>
+</div>
+<script is:inline src="/workspace/x-timeline-fall/matter.min.js"></script>
+<script is:inline src="/workspace/x-timeline-fall/content.js"></script>
+</body></html>
+<style is:global>
+*{box-sizing:border-box}html,body{margin:0;background:#fff;color:#111;font:15px/1.55 system-ui,sans-serif}a{color:inherit;text-decoration:none}.shell{max-width:1160px;margin:auto;display:grid;grid-template-columns:220px minmax(0,600px) 280px}header{padding:26px 20px}nav{display:flex;flex-direction:column;align-items:flex-start;gap:24px}.back,.repo{font:12px monospace;color:#777}.mark{font-size:30px}main{border-left:1px solid #eee;border-right:1px solid #eee;min-height:100vh}.heading{padding:20px}.heading h1{font-size:20px;margin:0 0 4px}.heading small{color:#888;font-size:11px}.tabs{display:flex;justify-content:space-around;border-bottom:1px solid #eee;padding:16px}.tabs span:first-child{border-bottom:2px solid #111}.compose{color:#aaa;padding:24px;border-bottom:1px solid #eee}article{display:flex;gap:12px;padding:22px 18px;border-bottom:1px solid #eee;background:#fff;min-height:140px}.avatar{flex:none;width:38px;height:38px;border-radius:50%;background:#eee;display:grid;place-items:center;font:12px monospace}.post{flex:1;min-width:0}.name{display:flex;flex-wrap:wrap;gap:8px}.name span{color:#888;font-size:12px}.post p{margin:8px 0 22px}.actions{display:flex;justify-content:space-between;color:#999;font-size:15px}aside{padding:30px 24px;color:#888;font-size:12px}aside>div{padding:16px 0;border-bottom:1px solid #eee}aside b,aside span{display:block}aside b{color:#111;padding:8px 0}#xtp-controls{background:#fff;padding:8px;border:1px solid #eee;border-radius:28px}#xtp-toggle,#xtp-mode{font-weight:400}@media(max-width:1000px){.shell{grid-template-columns:180px minmax(0,600px)}aside{display:none}}@media(max-width:600px){.shell{display:block}header{padding:16px}nav{flex-direction:row;align-items:center;gap:16px}nav>a:not(.back):not(.repo){display:none}.mark{display:none}.repo{margin-left:auto}main{border:0}.heading{padding-top:8px}article{padding:18px 16px}.name span{font-size:11px}#xtp-controls{right:10px;bottom:10px}}
+</style>
