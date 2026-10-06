@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "prestart": "node scripts/prepare-workspace.mjs",
     "start": "astro dev",
-    "prebuild": "node scripts/prepare-workspace.mjs",
+    "prebuild": "node scripts/prepare-workspace.mjs && node scripts/prepare-char-space.mjs",
     "build": "astro build",
     "preview": "astro preview"
   },
