@@ -480,3 +480,5 @@ body { padding-left:104px; }
 .space-image-point { padding:0;transform-origin:50% 50%; }
 .space-image-point img { object-position:center center; }
 .space-image-point.is-axis-dot { transform-origin:center center; }
+
+.space-image-layer { z-index:200000; }
