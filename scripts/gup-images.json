@@ -1,0 +1,748 @@
+{
+  "images": {
+    "gup-miho": {
+      "image": "assets/gup/miho.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/miho.png",
+      "bytes": 35012,
+      "sha256": "0d8d5992b7269d90f004166ef6967d7ed8828cca80519f2d0ac972b9bc44ff91"
+    },
+    "gup-saori": {
+      "image": "assets/gup/saori.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/saori.png",
+      "bytes": 19773,
+      "sha256": "a0f4f29b75bc25bcf908bb17839a154218fa3fdbdb1f612cc80a89fed7f0817e"
+    },
+    "gup-hana": {
+      "image": "assets/gup/hana.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/isuzu.png",
+      "bytes": 18223,
+      "sha256": "820fa76c203fca7bfb855b1304101a65642810e02fe19c06ac2b6ca6b574d09f"
+    },
+    "gup-yukari": {
+      "image": "assets/gup/yukari.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/akiyama.png",
+      "bytes": 19542,
+      "sha256": "765f5d1ebef59d10cb7db54aa9b3386a34d68f70e3ce5072ce31193ceb0d80e4"
+    },
+    "gup-mako": {
+      "image": "assets/gup/mako.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/mako.png",
+      "bytes": 18975,
+      "sha256": "58d1d25c45242a540c79f92f7d8572a6caa0f205f6b32096884f87bdbb107488"
+    },
+    "gup-an": {
+      "image": "assets/gup/an.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/sumitani.png",
+      "bytes": 21029,
+      "sha256": "7b4f474fd9b0af3cc47c59f6adfec44ae3d03e0224f28777fd74098269eeb74c"
+    },
+    "gup-yuzuko": {
+      "image": "assets/gup/yuzuko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/koyama.png",
+      "bytes": 19753,
+      "sha256": "cb4ecbefb7fa153ddeb62b3faa912dda97e4f6701e113aca7b6acfd3097c0711"
+    },
+    "gup-momo": {
+      "image": "assets/gup/momo.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kasima.png",
+      "bytes": 17532,
+      "sha256": "cf5116fa2e7f25f4582b46468bab5866c4111ee460baa304b287e7c1ef286150"
+    },
+    "gup-noriko": {
+      "image": "assets/gup/noriko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/isobe.png",
+      "bytes": 15701,
+      "sha256": "1931a13492cc35e0a203da7e3368d1b18ec3a650c567b9d5404eecdf902655d1"
+    },
+    "gup-taeko": {
+      "image": "assets/gup/taeko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kondou.png",
+      "bytes": 37459,
+      "sha256": "2584879f8b2d84662882199aec91a1714208b61e139e84b8589fb60b416a9751"
+    },
+    "gup-shinobu": {
+      "image": "assets/gup/shinobu.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kasai.png",
+      "bytes": 33120,
+      "sha256": "c69212a2f8ed7c3fbab45ed0d3de1f0cced85bef27ceae0f8ecd2e37922dfe0b"
+    },
+    "gup-akebi": {
+      "image": "assets/gup/akebi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/sasaki.png",
+      "bytes": 123579,
+      "sha256": "0ca80a42a91638d8631b31eb2b3d5f774487f7472d0a157da1ab670091b37e26"
+    },
+    "gup-kaesaru": {
+      "image": "assets/gup/kaesaru.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kaesaru.png",
+      "bytes": 19854,
+      "sha256": "6561733e199c5498f95b52fb1519493830a177a100e0c8df3787bf318bd5c733"
+    },
+    "gup-elvin": {
+      "image": "assets/gup/elvin.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/ervin.png",
+      "bytes": 23512,
+      "sha256": "78d0844ad2b851e179d8a358be302516acf2886702852393994ee371c77ceba2"
+    },
+    "gup-saemonza": {
+      "image": "assets/gup/saemonza.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/saemonnsa.png",
+      "bytes": 23615,
+      "sha256": "19e2dbd7e32bbb80683dc4c82f88b8230632ce24c1118ecd2d5837ada6157a70"
+    },
+    "gup-oryo": {
+      "image": "assets/gup/oryo.jpg",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/oryou.jpg",
+      "bytes": 53046,
+      "sha256": "3fc4bc755056dd5d99a37c5586fe715423769b72ba07db5af5358edb3f76154f"
+    },
+    "gup-azusa": {
+      "image": "assets/gup/azusa.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/azusa.png",
+      "bytes": 18046,
+      "sha256": "1d6057e04200737e56315cfbfba5969d737c17714b4dd2920ad367973a57b0fd"
+    },
+    "gup-ayumi": {
+      "image": "assets/gup/ayumi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/yamagou.png",
+      "bytes": 32870,
+      "sha256": "c9ae06e35319cdf4f443ce56237252857f97dee74973077146a475476ca8f468"
+    },
+    "gup-saki": {
+      "image": "assets/gup/saki.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/maruyama-1.png",
+      "bytes": 104653,
+      "sha256": "a3a996576e4d77be5ae27cb4af9be205ebaffe7d0d3707b2706aa35587607315"
+    },
+    "gup-karina": {
+      "image": "assets/gup/karina.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/sakagauchi.png",
+      "bytes": 32883,
+      "sha256": "60828c5ca0b6d783f534a9a65d45aea9c34769e5a1b609b6b511bf20476a4a7a"
+    },
+    "gup-yuuki": {
+      "image": "assets/gup/yuuki.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/utsugi.png",
+      "bytes": 18180,
+      "sha256": "21e13fbe45a8e2c36231383d9ed1d14027aa5f99e16a91598c824e7dc20201c5"
+    },
+    "gup-aya": {
+      "image": "assets/gup/aya.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/aya.png",
+      "bytes": 22274,
+      "sha256": "c79e71f6d169715336553c7b9e01a2a226c15403a09fdd78b6965c8c7eaca2c6"
+    },
+    "gup-midoriko": {
+      "image": "assets/gup/midoriko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/sono.png",
+      "bytes": 31277,
+      "sha256": "180780ea9b49a75a0467cd22ac65bc4cb6be0093ed16d804d9f0fc2f421e2e75"
+    },
+    "gup-moyoko": {
+      "image": "assets/gup/moyoko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/gotou.png",
+      "bytes": 31862,
+      "sha256": "279e79d036594dc33d430fbae862f58ba3b41619ae7c44e9b74763f57ed3c10b"
+    },
+    "gup-nozomi": {
+      "image": "assets/gup/nozomi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kaneharu.png",
+      "bytes": 29787,
+      "sha256": "7f83500f48771a9b984565bec3003fad30cc25e9bd550a0e06b4b8ca049b69be"
+    },
+    "gup-nakajima": {
+      "image": "assets/gup/nakajima.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2022/10/nakajima-20221005.png",
+      "bytes": 40525,
+      "sha256": "8982ceeabdf9b388b4df28502726eeeee2d99203f3541873e55fc0e829ac628a"
+    },
+    "gup-suzuki": {
+      "image": "assets/gup/suzuki.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/suzuki.png",
+      "bytes": 44250,
+      "sha256": "8cd478206578ce403e486b3c4dbabdad1baac750618fd12663ca2e05047407bd"
+    },
+    "gup-hoshino": {
+      "image": "assets/gup/hoshino.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/hoshino.png",
+      "bytes": 42782,
+      "sha256": "012cb8cc850379ec9f6de3fd0440bf112c7a03e9fa5dceb76cbcb61a7a625d96"
+    },
+    "gup-tsuchiya": {
+      "image": "assets/gup/tsuchiya.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2022/10/tsuchiya-20221005.png",
+      "bytes": 40062,
+      "sha256": "5b2387ce76166305f46bdca7f0a0252dac9884ae5fc6f8c5f36ea1aaf3512994"
+    },
+    "gup-nekonya": {
+      "image": "assets/gup/nekonya.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/nekonya.png",
+      "bytes": 37884,
+      "sha256": "acf8870786be03d8838ea6cb77393a4f293ef61ec72a829ccdb6eba4faa4412a"
+    },
+    "gup-momoga": {
+      "image": "assets/gup/momoga.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/momoga-1.png",
+      "bytes": 128254,
+      "sha256": "a5ab74418c382fb17bc77a44293f704e0e4a6b0f1d7a1fc50d4da4bb2a373d50"
+    },
+    "gup-pyontan": {
+      "image": "assets/gup/pyontan.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/piyotan.png",
+      "bytes": 35545,
+      "sha256": "a8c961fda50be04ffa9e1f66b06c85ff9f19cf0e9956f5ec937fb266d6f89418"
+    },
+    "gup-ogin": {
+      "image": "assets/gup/ogin.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/ogin.png",
+      "bytes": 126439,
+      "sha256": "0ed3e805621b763cf7d2eb7b60a47dcbe87446cd3b1cc2b01cd72d1c5f86c8a8"
+    },
+    "gup-ram": {
+      "image": "assets/gup/ram.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/ramu-2.png",
+      "bytes": 57834,
+      "sha256": "487fe08e6f46b8448f65c75f72bcee48ca2d947273b3d39dd519a1e884a3e5b1"
+    },
+    "gup-murakami": {
+      "image": "assets/gup/murakami.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/murakami.png",
+      "bytes": 118236,
+      "sha256": "5d07d4d26e01d7eb907e8db31758be20a571de4bdd7b81aa16e83817357ca063"
+    },
+    "gup-flint": {
+      "image": "assets/gup/flint.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/flint.png",
+      "bytes": 159174,
+      "sha256": "50dcb18780c3bb35d4f2ff6ab041f1043f26034eb8d5b7ed3ab51249c069f787"
+    },
+    "gup-cutluss": {
+      "image": "assets/gup/cutluss.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/cutluss.png",
+      "bytes": 148456,
+      "sha256": "bcbff5cec220bb2e45a87c515ed4bab1d1ca61027e3b227fd282c848e2c2a497"
+    },
+    "gup-darjilin": {
+      "image": "assets/gup/darjilin.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/drgilin_03.png",
+      "bytes": 29697,
+      "sha256": "bffc783585e85e81232cbc5ebc93b9cd30f8e6d94075d7f743e2ca0a00c7598f"
+    },
+    "gup-arisu-stggc": {
+      "image": "assets/gup/arisu-stggc.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/arisu-20240329.png",
+      "bytes": 38078,
+      "sha256": "7d35fd2b839d66c02b14c5ecb7847fbc58899042221cc66bf906010c32db8a0b"
+    },
+    "gup-orangepeko": {
+      "image": "assets/gup/orangepeko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/orangepeco_03.png",
+      "bytes": 16977,
+      "sha256": "44692d4c3c0395fd168848adf1e4caa2800ff2698add59d8f0f17ea4dc563b1d"
+    },
+    "gup-assam": {
+      "image": "assets/gup/assam.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/assam_03.png",
+      "bytes": 35605,
+      "sha256": "0d5ee1f907ea8e8f0f0dda8515c03ade781b39899a003c54d4f2ea0ccb81d125"
+    },
+    "gup-rosehip": {
+      "image": "assets/gup/rosehip.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/rosehip.png",
+      "bytes": 180446,
+      "sha256": "d34e6930210f7568fe10438d27957fca5a85c0eb0af0e0c83db50b37fce72f3b"
+    },
+    "gup-rukuriri": {
+      "image": "assets/gup/rukuriri.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/rukuriri-2.png",
+      "bytes": 31467,
+      "sha256": "6538fdb6f2e8e88ba0a72375dea2758ecdffbc3393f059af7f7b99e74aab0cd6"
+    },
+    "gup-cranberry": {
+      "image": "assets/gup/cranberry.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/cranberry-2.png",
+      "bytes": 33838,
+      "sha256": "4986e0a7d7193ea610474ac241ece0a5f4c681809ceefeee41ee1bb9ac2789fb"
+    },
+    "gup-vanilla": {
+      "image": "assets/gup/vanilla.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/vanilla-2.png",
+      "bytes": 27360,
+      "sha256": "774d7c6ec70ef8a181653f0723f632e34b063e10383f19874aa2db8c9de422f6"
+    },
+    "gup-peach": {
+      "image": "assets/gup/peach.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/peach-3.png",
+      "bytes": 36504,
+      "sha256": "536e07f74db26d6fb9e36145a692d68d69d2a88516b3024c7d05c74e7b7b619b"
+    },
+    "gup-kei": {
+      "image": "assets/gup/kei.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kei_03_03-1.png",
+      "bytes": 40047,
+      "sha256": "6c84565b99199d881e1f2c9df099c8495f293164cdabd436b04489b323492343"
+    },
+    "gup-naomi": {
+      "image": "assets/gup/naomi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/naomi_03.png",
+      "bytes": 32816,
+      "sha256": "ee21de648e00132cb88468f2214240f0e6a821dc73dcf0a5df6750f0756926d5"
+    },
+    "gup-arisa": {
+      "image": "assets/gup/arisa.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/arisa_03.png",
+      "bytes": 39576,
+      "sha256": "bc34185351d6a4a8a365fdb5da90273ddc2816e3fd908d8e8498f526f426bcaa"
+    },
+    "gup-anchobi": {
+      "image": "assets/gup/anchobi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/ancyobi_03.png",
+      "bytes": 69552,
+      "sha256": "7b1c82b7574efbb7f7ba33ae9b54a2a71f94860cc28e735b118312ac4f331abc"
+    },
+    "gup-carpaccio": {
+      "image": "assets/gup/carpaccio.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/karupaccyo_03.png",
+      "bytes": 40319,
+      "sha256": "4e155b974d3f56b9e30245f51ee5a08a9f46ecedb0fdee17e3f58abc49105476"
+    },
+    "gup-peparoni": {
+      "image": "assets/gup/peparoni.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/peparoni_03.png",
+      "bytes": 38655,
+      "sha256": "57079e36bcd387b0dad0ec234ada927c85f73c4cff1752158ae315a770f7b6d3"
+    },
+    "gup-kachusya": {
+      "image": "assets/gup/kachusya.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kacyusya_03.png",
+      "bytes": 33980,
+      "sha256": "e387c6c718b65202d738ada1c9edc713977b08c37a8ebe9c56e42e6246091125"
+    },
+    "gup-nonna": {
+      "image": "assets/gup/nonna.jpg",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/nonna_03.jpg",
+      "bytes": 75544,
+      "sha256": "ea48d439f88d1cd89b75f742018a6dccc909742d0b98e814f027f0f983d29b58"
+    },
+    "gup-clarla": {
+      "image": "assets/gup/clarla.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/clarla.png",
+      "bytes": 126235,
+      "sha256": "b2e545af8ed6d39602c83cc34d517d9052ac87d89cdd7cc8868cf20963409058"
+    },
+    "gup-nina": {
+      "image": "assets/gup/nina.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/nina-daikaru.png",
+      "bytes": 19066,
+      "sha256": "eec3801e2a04f1b8fef21822f2e96279067c660ddb8b182cf3672e03f63dfa65"
+    },
+    "gup-arina": {
+      "image": "assets/gup/arina.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/arina.png",
+      "bytes": 17713,
+      "sha256": "0c846eb51a9d0d74ef5f4c04b06c2f2212664f4c925a34624c4c3368ab7683c5"
+    },
+    "gup-maho": {
+      "image": "assets/gup/maho.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/maho_03.png",
+      "bytes": 32118,
+      "sha256": "b8b3d048663093f5bad58b8405187d7939c8818ada73edbc50ae53b213d76456"
+    },
+    "gup-erika": {
+      "image": "assets/gup/erika.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/erika_03.png",
+      "bytes": 32267,
+      "sha256": "5d8770ce78c4ffb36cd2b13b49bc95a0649a5d52aa348b8fee6b8ec5ad5037dd"
+    },
+    "gup-koume": {
+      "image": "assets/gup/koume.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/koume-2.png",
+      "bytes": 27130,
+      "sha256": "90079d7224943bf30954e58f537482b7d7d291614e35c82e6d9a31be3d533149"
+    },
+    "gup-kojimaemi": {
+      "image": "assets/gup/kojimaemi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/kojima-2.png",
+      "bytes": 28366,
+      "sha256": "82cffe4f4887da7cd0ddf34ccc9d5f6e2228106085bb78792c034db4841deddb"
+    },
+    "gup-hida": {
+      "image": "assets/gup/hida.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/hida-3.png",
+      "bytes": 151385,
+      "sha256": "e4932962d8d6f3cf75cb1bdfb98cbb6ed3061ff2b1a277beb686538830a73a59"
+    },
+    "gup-iruma": {
+      "image": "assets/gup/iruma.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/iruma-2.png",
+      "bytes": 31085,
+      "sha256": "784f86fa07c60d79d815c8c79271a2325e8d321f140bb98b9962af35607d5c6c"
+    },
+    "gup-katsuya": {
+      "image": "assets/gup/katsuya.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/katsuya-2.png",
+      "bytes": 31220,
+      "sha256": "abe4bfa7eb4a33d1814758e3e86ecdeba8121ce49820d44e08f3f968b829d895"
+    },
+    "gup-kinuyo": {
+      "image": "assets/gup/kinuyo.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kinuyo.png",
+      "bytes": 135731,
+      "sha256": "5fcea22e9d0a947d57afedded9c2b91fc5392ca32551e0105e6d80023a6b8e46"
+    },
+    "gup-fukuda": {
+      "image": "assets/gup/fukuda.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/fukuda.png",
+      "bytes": 136455,
+      "sha256": "7da1a8dd16666c0844e877ab2c5ed00a8d9658043eb757ae48aa3fc831aaf860"
+    },
+    "gup-tamada": {
+      "image": "assets/gup/tamada.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/tamada.png",
+      "bytes": 19224,
+      "sha256": "8a4295769e7331a5bacec17250c62ed5ca09c6acc6d3be9208cb9cc185b466ca"
+    },
+    "gup-hosomi": {
+      "image": "assets/gup/hosomi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/hosomi.png",
+      "bytes": 18780,
+      "sha256": "ba8fdeeca47a7ff9e891f494af555a1427fa018e8930a47621cdd3d42f8efbf0"
+    },
+    "gup-hamada": {
+      "image": "assets/gup/hamada.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/hamada.png",
+      "bytes": 17184,
+      "sha256": "ba6dcd35b91c339a7e96f7235ef2663ea942f8e62c562bea85cd494a520c946b"
+    },
+    "gup-ikeda": {
+      "image": "assets/gup/ikeda.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/ikeda-1.png",
+      "bytes": 20700,
+      "sha256": "4ccbf1bf560c84cd8a62ab5fdb6b3aac7bb5683b99948cf7155113e543254d77"
+    },
+    "gup-teramoto": {
+      "image": "assets/gup/teramoto.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/teramoto.png",
+      "bytes": 17931,
+      "sha256": "856e5923988a12cde5e0268292bd9e034c31838af02df10cea70d9fc2dee4d88"
+    },
+    "gup-nagura": {
+      "image": "assets/gup/nagura.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/nagura.png",
+      "bytes": 18928,
+      "sha256": "d88e1a1c69b20bde32b8b48d635065195f157b927690630adb0b305a6785d4cc"
+    },
+    "gup-kubota": {
+      "image": "assets/gup/kubota.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kubota.png",
+      "bytes": 25627,
+      "sha256": "b8022e7c82a730015b7b82cca92faa162fc2418dde8814594ca5f7969d8c4a0f"
+    },
+    "gup-nishihara": {
+      "image": "assets/gup/nishihara.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2021/03/nishihara-1.png",
+      "bytes": 20740,
+      "sha256": "813bdd43f561fadff16916b17c7903b55db934ee332e35daded55041b29082d2"
+    },
+    "gup-kaminishi": {
+      "image": "assets/gup/kaminishi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2021/03/uenishi.png",
+      "bytes": 23282,
+      "sha256": "9f7a9296a55218168c31ef6fee46aab480a6612c8b7f9f4254b226f8b3bba936"
+    },
+    "gup-hasegawa": {
+      "image": "assets/gup/hasegawa.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2021/03/hasegawa.png",
+      "bytes": 20262,
+      "sha256": "69a0f91face91a63b96fea040bb75514dcafce94224e7abbf1da7ed460f0f0ee"
+    },
+    "gup-hirai": {
+      "image": "assets/gup/hirai.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2021/03/hirai.png",
+      "bytes": 18338,
+      "sha256": "6af92d617ddb6b025deac51c58cad3a40f29248ab955300c97b6992ac69a6468"
+    },
+    "gup-mika": {
+      "image": "assets/gup/mika.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/mika.png",
+      "bytes": 125254,
+      "sha256": "feec166fefec644b33aab3cb59ad540f7387c657285e23079de9c4e46a479abd"
+    },
+    "gup-aki": {
+      "image": "assets/gup/aki.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/aki.png",
+      "bytes": 163310,
+      "sha256": "7e41e4bff1a95a2959967eee4a99210885fc1456c07232a1e834f87b397ad1ee"
+    },
+    "gup-mikko": {
+      "image": "assets/gup/mikko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/mikko.png",
+      "bytes": 134732,
+      "sha256": "f5080233bcf97906a28650f19dba1b9506c81e0dcaeb8c6cacb195ab14f91296"
+    },
+    "gup-youko": {
+      "image": "assets/gup/youko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2021/03/youko-1.png",
+      "bytes": 40811,
+      "sha256": "97cb5ce30e83533ac7e00e6a2d2e5f9db0134154b3a5d1a43760a3cb30b138ef"
+    },
+    "gup-keizoku-yuri": {
+      "image": "assets/gup/keizoku-yuri.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/keizoku-yuri-2.png",
+      "bytes": 37825,
+      "sha256": "782bb3d95f9e737da3e786b7c698c9df702893923952a10df34658db69f57701"
+    },
+    "gup-tami": {
+      "image": "assets/gup/tami.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/tami-2.png",
+      "bytes": 29297,
+      "sha256": "b0305d291fd3fa8fb90c6da8908dc7388443b8cb2501094752d046d56b5d8d46"
+    },
+    "gup-tomi": {
+      "image": "assets/gup/tomi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/tomi-2.png",
+      "bytes": 33897,
+      "sha256": "274234d6680a20240a01347b1c5d472c76b202fd4c56359955f8c5f28af223b4"
+    },
+    "gup-reino": {
+      "image": "assets/gup/reino.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/reino-2.png",
+      "bytes": 34352,
+      "sha256": "e231c76525fd1ab924bc65869efd06e034866fb66f21f88246f7598929ac0daf"
+    },
+    "gup-ari": {
+      "image": "assets/gup/ari.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2023/10/ari-2.png",
+      "bytes": 30528,
+      "sha256": "f80121995da3737cf4986cf9e7aea66ded8ae23b2f35b09eebdee6234ffe709d"
+    },
+    "gup-arisu": {
+      "image": "assets/gup/arisu.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/arisu-daigaku-2-20240329.png",
+      "bytes": 51742,
+      "sha256": "cc8e416b833ca562070f27d9f5e185f8f677c066b25f68ea0e85433995feebc3"
+    },
+    "gup-megumi": {
+      "image": "assets/gup/megumi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/megumi.png",
+      "bytes": 130741,
+      "sha256": "093b501e81c0d43bfc3cb245cea25e93004227ff0f480e7543c5e8a98c01c1fc"
+    },
+    "gup-azumi": {
+      "image": "assets/gup/azumi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/azumi.png",
+      "bytes": 136053,
+      "sha256": "4d638433e7792a41d2def16f04b4774938e1de0b2030e495af1d1cba277ebb52"
+    },
+    "gup-rumi": {
+      "image": "assets/gup/rumi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/rumi.png",
+      "bytes": 117214,
+      "sha256": "78708b2e07cf6c547427293a6dabe7368464f03810e16fa3da7757cc3efc937c"
+    },
+    "gup-mary": {
+      "image": "assets/gup/mary.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/mary-daikarui-1.png",
+      "bytes": 47676,
+      "sha256": "05abb14eb68edbd7a6403faf9574ccfb8f7a78d9793eb8fe66b004974e82d115"
+    },
+    "gup-ando": {
+      "image": "assets/gup/ando.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/ando-daikaru20190111.png",
+      "bytes": 165142,
+      "sha256": "48ed64efb19ccda5253c4a4fcfe0376718e2f33ef184edb1b8824f7cb31a3557"
+    },
+    "gup-oshida": {
+      "image": "assets/gup/oshida.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/oshida-thumbnail20190111.png",
+      "bytes": 177967,
+      "sha256": "e820082a2f1075df7c483641be78799719c4f3fcda78a424b06aa1bed812548d"
+    },
+    "gup-sofue": {
+      "image": "assets/gup/sofue.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/sofue.png",
+      "bytes": 93368,
+      "sha256": "a8dcb20b1dbafa8befc0ffc1e117bb33f46e1584b503d08f739b8cc122f448ff"
+    },
+    "gup-isabe": {
+      "image": "assets/gup/isabe.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/isabe.png",
+      "bytes": 27540,
+      "sha256": "b134a67d6695a630756ba0617d032030e10b01ced85ac895cc30e1661d6d4dc3"
+    },
+    "gup-koala": {
+      "image": "assets/gup/koala.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/koala-3.png",
+      "bytes": 21703,
+      "sha256": "df4b3acf30c88a70e9f6d0b5be6ef63960964403de77907cabf6ded34c63eecc"
+    },
+    "gup-warabi": {
+      "image": "assets/gup/warabi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/warabi-20240329.png",
+      "bytes": 42960,
+      "sha256": "5c89d14b22af872a1ca8244648b1d870eff86341cc84d378f239379a5a38de84"
+    },
+    "gup-kamonohashi": {
+      "image": "assets/gup/kamonohashi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kamonohashi.png",
+      "bytes": 25151,
+      "sha256": "24fcaed87542edd83adebd6d9c00625563a43c54e923ebe76fad6cf4c20e61e3"
+    },
+    "gup-eclair": {
+      "image": "assets/gup/eclair.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/ekurel-4.png",
+      "bytes": 20615,
+      "sha256": "efc46f2b187d6676841ff4d2df1e78d7dbe88979bfbb9ec6c5930855801ff04b"
+    },
+    "gup-kebiko": {
+      "image": "assets/gup/kebiko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/kebiko-3.png",
+      "bytes": 18042,
+      "sha256": "62db732fe613e8aa942a739f3a56edbff6d9fd58fcbae7545243be95087fa6c2"
+    },
+    "gup-aoshidan": {
+      "image": "assets/gup/aoshidan.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/aoshidan-highschool-Roboto-Slab.png",
+      "bytes": 161645,
+      "sha256": "0b09de14b496d94cb4f492a475f586d7428d577a7626621107634c6cb1be4b54"
+    },
+    "gup-yuko": {
+      "image": "assets/gup/yuko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/yuko-3.png",
+      "bytes": 21332,
+      "sha256": "3379b1dcc1e4f1a5abc214d9cb9d27d3952ed02639b907a08e9c4e5abfecb1a7"
+    },
+    "gup-waterzooi": {
+      "image": "assets/gup/waterzooi.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/waterzooi-2.png",
+      "bytes": 30422,
+      "sha256": "da155135b672965f8834dd04959a0e74a7d7fc16a2914ea5104e4fc157dbad28"
+    },
+    "gup-sofia": {
+      "image": "assets/gup/sofia.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/sofia-2.png",
+      "bytes": 22612,
+      "sha256": "1cf254624cb0d059d8a52d55840472fc207b56bdd5973c46e0bd1250a7fb8d6a"
+    },
+    "gup-maiko": {
+      "image": "assets/gup/maiko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/maiko-5.png",
+      "bytes": 18811,
+      "sha256": "749a3cd11222005d2e3e95e7d4e8c55790f1d10b2bc7ae3069acf1dbb12638a6"
+    },
+    "gup-senjyu": {
+      "image": "assets/gup/senjyu.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2024/03/senjyu-2.png",
+      "bytes": 18858,
+      "sha256": "7ea3d2e972c8a1bf50b4880ac0912e49bebe403f7b497288d116d99fa9cc3f73"
+    },
+    "gup-ami": {
+      "image": "assets/gup/ami.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/cyouno_03.png",
+      "bytes": 16101,
+      "sha256": "bf6881b0762fe205a0e5d415612c721f4f629cbae5201f1c821eff9b80a8715d"
+    },
+    "gup-chitose": {
+      "image": "assets/gup/chitose.jpg",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2022/06/chitose-main.jpg",
+      "bytes": 51483,
+      "sha256": "2e5d0c90cc5a1266f3be6cd67344e492f2cb41b0f4c435b3d3364f29f793ffef"
+    },
+    "gup-rijicyo": {
+      "image": "assets/gup/rijicyo.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/shichirou-1.png",
+      "bytes": 146051,
+      "sha256": "33ebf6f1539e04ee8444864802e5d1f2bef53fe8a622670a557fdeb9d767ef0c"
+    },
+    "gup-kanon-2": {
+      "image": "assets/gup/kanon-2.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/03/kanon-1.png",
+      "bytes": 102740,
+      "sha256": "5bfb1411676542716ed7537e308d04fd09094b09dceb626f6406ba9ee8fc4afb"
+    },
+    "gup-remi": {
+      "image": "assets/gup/remi.jpg",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/03/remi.jpg",
+      "bytes": 43844,
+      "sha256": "7d1a9022f64c896149ffaddf08b63a5143b1996c35fcb286bbba07a8afb703c6"
+    },
+    "gup-hibiki": {
+      "image": "assets/gup/hibiki.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/03/hibiki.png",
+      "bytes": 90977,
+      "sha256": "c6a3297b65dd08048c27e57fda573725be9b079f4fe4940ad8cbe29f63cfd4c5"
+    },
+    "gup-shiho": {
+      "image": "assets/gup/shiho.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/nisizumi_03.png",
+      "bytes": 35181,
+      "sha256": "3caecbd4f08ba0e8a6c5b80e0f12408454fb553de2db13f492363da4e842089f"
+    },
+    "gup-chiyo": {
+      "image": "assets/gup/chiyo.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/chiyo.png",
+      "bytes": 162821,
+      "sha256": "48bfc80daaba95ec9fb6782c38079512636757feaf534e8513f35e07e9d02c32"
+    },
+    "gup-yuri": {
+      "image": "assets/gup/yuri.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/yuri.png",
+      "bytes": 170080,
+      "sha256": "85101f989c7153fcbe9ee783d878e990dbb79a636a22c08963b3909b9dd01971"
+    },
+    "gup-shinzaburo": {
+      "image": "assets/gup/shinzaburo.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2022/06/shinzaburo-main.png",
+      "bytes": 23860,
+      "sha256": "1dbc3b50cce29f9fa742939be4c1c75adf8cc2a617095e07c76978fb516e822c"
+    },
+    "gup-jyungorou": {
+      "image": "assets/gup/jyungorou.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/jyungorou.png",
+      "bytes": 20144,
+      "sha256": "a81a9d1ed9f14803aaab05c223d99276a953a16f8474ffd3c1d1ce8e4a182bac"
+    },
+    "gup-yoshiko": {
+      "image": "assets/gup/yoshiko.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/yoshiko.png",
+      "bytes": 18091,
+      "sha256": "1c3b4606c1ee1718dd51a03b2cd740115862de769035e8d8ceba7aaafc7fdae7"
+    },
+    "gup-hisako": {
+      "image": "assets/gup/hisako.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/reisen_03-1.png",
+      "bytes": 100486,
+      "sha256": "5ef3badc389a51af1bf284564a4662037ebe8d620af415499851211743e229c1"
+    },
+    "gup-ohtaiga": {
+      "image": "assets/gup/ohtaiga.jpg",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/03/chara_ohtaiga.jpg",
+      "bytes": 83295,
+      "sha256": "8eb6393467642cbce6015766b8da47dbb0c41124f864137a695c4028e595557c"
+    },
+    "gup-jane": {
+      "image": "assets/gup/jane.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2022/07/jane-e1657872307661.png",
+      "bytes": 250529,
+      "sha256": "c5d09b76cf26656d993e0b6c3eb7258813ec396148b6c3fddb513d567818542d"
+    },
+    "gup-belle": {
+      "image": "assets/gup/belle.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2022/07/belle-e1657872461733.png",
+      "bytes": 213040,
+      "sha256": "29ba6ecaaaa3d0db8db1c16d913b9221f68f4614e02898ec6166914d5c6815b6"
+    },
+    "gup-yakunin": {
+      "image": "assets/gup/yakunin.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/renta-1.png",
+      "bytes": 95053,
+      "sha256": "2f206b116484b25142bb21bc49d272c73df489ac983c26038f2215684a45ad42"
+    },
+    "gup-kawashimake": {
+      "image": "assets/gup/kawashimake.png",
+      "url": "https://girls-und-panzer-finale.jp/iaY7mRf2zJ/wp-content/uploads/2020/02/kawashima-kyoudai_zenshin_memonasi-trimming-Roboto-Slab-1.png",
+      "bytes": 231315,
+      "sha256": "be549c49db2437f9a853948149411835512a5a759862763e35d9745199b4ee54"
+    }
+  }
+}

@@ -482,3 +482,9 @@ body { padding-left:104px; }
 .space-image-point.is-axis-dot { transform-origin:center center; }
 
 .space-image-layer { z-index:200000; }
+
+.space-content-controls { display:flex;align-items:center;flex-wrap:wrap;gap:18px;margin:4px 0 10px;font-size:13px; }
+.space-content-controls label { display:flex;align-items:center;gap:6px; }
+.space-content-controls input[type=checkbox] { width:auto;accent-color:#295f86; }
+.space-content-controls select { width:auto;min-width:110px;padding:4px 6px; }
+#space-data-links { display:flex;flex-wrap:wrap;gap:12px;font-size:12px; }
