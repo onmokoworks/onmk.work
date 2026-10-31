@@ -10,17 +10,21 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
 <Layout title="wadalab-motion — 芸祭" hideNav hideFooter noindex bodyClass="geisai-page">
   <div class="frame" data-mode="attract">
     <aside class="panel">
-      <h1>和田研フォントが<br />線から文字になる</h1>
-      <p class="lead">和田研フォントの骨格データを使って、線を伸ばしながら文字を書くモーションを作っています。</p>
-      <p class="hint hint-attract">キーボードを打つと<br />入力モードに切り替わります</p>
-      <p class="hint hint-typing">しばらく何も打たないと<br />『夢十夜』が流れはじめます</p>
+      <h1>wadalab-motion</h1>
+      <p class="hint hint-attract">キーを押すと入力できます</p>
+      <p class="hint hint-typing">しばらく打たないと『夢十夜』に戻ります</p>
+      <!-- キー配置は展示用の HHKB と PC の設定に合わせて確認する。 -->
+      <dl class="keys">
+        <dt><kbd>control</kbd>+<kbd>space</kbd></dt><dd>かな／英数</dd>
+        <dt><kbd>space</kbd></dt><dd>変換</dd>
+        <dt><kbd>return</kbd></dt><dd>確定・改行</dd>
+        <dt><kbd>BS</kbd></dt><dd>1文字消す</dd>
+      </dl>
       <figure class="qr">
         <div class="qr-code" set:html={qr} />
-        <figcaption>スマホでも試せます<br /><span>onmk.work/workspace/wadalab-motion</span></figcaption>
+        <figcaption>onmk.work/workspace/wadalab-motion</figcaption>
       </figure>
       <dl class="credit">
-        <dt>制作</dt><dd>onmk</dd>
-        <dt>コード</dt><dd>github.com/onmokoworks/wadalab-motion</dd>
         <dt>骨格データ</dt><dd>CLWFK（東京大学和田研究室・電子書体オープンラボラトリー）</dd>
         <dt>英数字</dt><dd>和田研細丸ゴシック2004絵文字（希土類元素レアアース）</dd>
         <dt>本文</dt><dd>夏目漱石『夢十夜』第一夜（青空文庫）</dd>
@@ -45,16 +49,18 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
     padding: 6cqh 4.4cqh 5cqh; border-right: 1px solid #ddd;
     font: 2.1cqh/1.75 Wadalab, sans-serif; letter-spacing: .03em;
   }
-  .geisai-page h1 { margin: 0; font-size: 4cqh; line-height: 1.45; font-weight: normal; }
-  .geisai-page .lead { margin: 0; }
+  .geisai-page h1 { margin: 0; font-size: 3.6cqh; line-height: 1.45; font-weight: normal; }
   .geisai-page .hint { margin: 0; padding-left: 1.2cqh; border-left: 2px solid #111; }
+  .geisai-page .keys { margin: 1cqh 0 0; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 2.2cqh 2.4cqh; font-size: 2.3cqh; }
+  .geisai-page .keys dt { display: flex; align-items: center; gap: .8cqh; margin: 0; color: #777; }
+  .geisai-page .keys dd { margin: 0; }
+  .geisai-page kbd { display: inline-block; min-width: 5.2cqh; padding: .5cqh 1.1cqh; border: 1px solid #111; border-bottom-width: 3px; border-radius: .6cqh; color: #111; font: 1.8cqh/1.4 Wadalab, sans-serif; text-align: center; }
   .geisai-page .frame[data-mode="attract"] .hint-typing,
   .geisai-page .frame[data-mode="typing"] .hint-attract { display: none; }
   .geisai-page .qr { margin: auto 0 0; display: flex; align-items: flex-end; gap: 2.4cqh; }
   .geisai-page .qr-code { flex: none; width: 15cqh; }
   .geisai-page .qr-code svg { display: block; width: 100%; height: auto; }
-  .geisai-page figcaption { font-size: 1.8cqh; }
-  .geisai-page figcaption span { color: #777; font-size: 1.35cqh; overflow-wrap: anywhere; }
+  .geisai-page figcaption { color: #777; font-size: 1.35cqh; overflow-wrap: anywhere; }
   .geisai-page .credit { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .3cqh 1.4cqh; color: #777; font-size: 1.25cqh; line-height: 1.6; }
   .geisai-page .credit dt, .geisai-page .credit dd { margin: 0; }
   .geisai-page .credit dd { overflow-wrap: anywhere; }
