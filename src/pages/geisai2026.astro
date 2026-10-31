@@ -1,0 +1,144 @@
+---
+import QRCode from 'qrcode';
+import Layout from '../layouts/Layout.astro';
+
+// 21:9 の展示画面用。左 5/21 に説明、右 16/21 で試打と Wadamotion-4 を切り替える。
+const tryUrl = 'https://onmk.work/workspace/wadalab-motion/';
+const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#111111', light: '#0000' } });
+---
+
+<Layout title="wadalab-motion — 芸祭" hideNav hideFooter noindex bodyClass="geisai-page">
+  <div class="frame" data-mode="attract">
+    <aside class="panel">
+      <h1>和田研フォントが<br />線から文字になる</h1>
+      <p class="lead">和田研フォントの骨格データを使って、線を伸ばしながら文字を書くモーションを作っています。</p>
+      <p class="hint hint-attract">キーボードを打つと<br />入力モードに切り替わります</p>
+      <p class="hint hint-typing">しばらく何も打たないと<br />『夢十夜』が流れはじめます</p>
+      <figure class="qr">
+        <div class="qr-code" set:html={qr} />
+        <figcaption>スマホでも試せます<br /><span>onmk.work/workspace/wadalab-motion</span></figcaption>
+      </figure>
+      <dl class="credit">
+        <dt>制作</dt><dd>onmk</dd>
+        <dt>コード</dt><dd>github.com/onmokoworks/wadalab-motion</dd>
+        <dt>骨格データ</dt><dd>CLWFK（東京大学和田研究室・電子書体オープンラボラトリー）</dd>
+        <dt>英数字</dt><dd>和田研細丸ゴシック2004絵文字（希土類元素レアアース）</dd>
+        <dt>本文</dt><dd>夏目漱石『夢十夜』第一夜（青空文庫）</dd>
+      </dl>
+    </aside>
+    <main class="stage">
+      <iframe class="typing" src="/workspace/wadalab-motion/index.html" title="文字を入力"></iframe>
+    </main>
+  </div>
+</Layout>
+
+<style is:global>
+  @font-face { font-family: Wadalab; src: url('/workspace/wadalab-motion/font/wlmaru2004emoji.ttf') format('truetype'); font-display: swap; }
+  .geisai-page { margin: 0; height: 100vh; overflow: hidden; background: #fff; color: #111; cursor: none; }
+  .geisai-page .frame {
+    position: absolute; inset: 0; margin: auto;
+    width: min(100vw, calc(100vh * 21 / 9)); height: min(100vh, calc(100vw * 9 / 21));
+    display: grid; grid-template-columns: 5fr 16fr; container-type: size;
+  }
+  .geisai-page .panel {
+    display: flex; flex-direction: column; gap: 3.2cqh; min-width: 0;
+    padding: 6cqh 4.4cqh 5cqh; border-right: 1px solid #ddd;
+    font: 2.1cqh/1.75 Wadalab, sans-serif; letter-spacing: .03em;
+  }
+  .geisai-page h1 { margin: 0; font-size: 4cqh; line-height: 1.45; font-weight: normal; }
+  .geisai-page .lead { margin: 0; }
+  .geisai-page .hint { margin: 0; padding-left: 1.2cqh; border-left: 2px solid #111; }
+  .geisai-page .frame[data-mode="attract"] .hint-typing,
+  .geisai-page .frame[data-mode="typing"] .hint-attract { display: none; }
+  .geisai-page .qr { margin: auto 0 0; display: flex; align-items: flex-end; gap: 2.4cqh; }
+  .geisai-page .qr-code { flex: none; width: 15cqh; }
+  .geisai-page .qr-code svg { display: block; width: 100%; height: auto; }
+  .geisai-page figcaption { font-size: 1.8cqh; }
+  .geisai-page figcaption span { color: #777; font-size: 1.35cqh; overflow-wrap: anywhere; }
+  .geisai-page .credit { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .3cqh 1.4cqh; color: #777; font-size: 1.25cqh; line-height: 1.6; }
+  .geisai-page .credit dt, .geisai-page .credit dd { margin: 0; }
+  .geisai-page .credit dd { overflow-wrap: anywhere; }
+  .geisai-page .stage { position: relative; overflow: hidden; }
+  .geisai-page .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .geisai-page .attract { pointer-events: none; opacity: 0; transition: opacity .8s; }
+  .geisai-page .attract.is-visible { opacity: 1; }
+</style>
+
+<script is:inline>
+  (() => {
+    const params = new URLSearchParams(location.search);
+    // 最後の入力からこの秒数で Wadamotion-4 に戻す。?idle=10 で調整できる。
+    const idleSeconds = Number(params.get('idle')) || 45;
+    const frame = document.querySelector('.geisai-page .frame');
+    if (!frame) return;
+    const stage = frame.querySelector('.stage'), typing = frame.querySelector('.typing');
+    let mode = 'attract', lastInput = 0, attract = null, input = null, attractTimer = 0;
+
+    const setMode = next => { mode = next; frame.dataset.mode = next; };
+    const focusInput = () => {
+      if (!input || input.ownerDocument.querySelector('dialog[open]')) return;
+      typing.contentWindow.focus();
+      input.focus({ preventScroll: true });
+    };
+
+    function showAttract() {
+      if (attract) return;
+      attract = document.createElement('iframe');
+      attract.className = 'attract';
+      attract.title = '夢十夜 第一夜';
+      attract.tabIndex = -1;
+      attract.src = `/workspace/wadalab-motion/wadamotion-4/index.html?start=${Math.floor(Math.random() * 68)}`;
+      attract.addEventListener('load', () => {
+        const style = attract.contentDocument.createElement('style');
+        style.textContent = 'a{display:none!important}canvas{cursor:none!important}';
+        attract.contentDocument.head.append(style);
+        requestAnimationFrame(() => attract?.classList.add('is-visible'));
+        focusInput();
+      }, { once: true });
+      stage.append(attract);
+    }
+
+    function hideAttract() {
+      clearTimeout(attractTimer);
+      if (!attract) return;
+      const leaving = attract;
+      attract = null;
+      leaving.classList.remove('is-visible');
+      setTimeout(() => leaving.remove(), 800);
+    }
+
+    function enterAttract() {
+      setMode('attract');
+      // 打たれた文字を消すアニメーションを見せてから切り替える。
+      if (input.value) {
+        input.value = '';
+        input.dispatchEvent(new InputEvent('input', { inputType: 'deleteContentBackward' }));
+        attractTimer = setTimeout(showAttract, 1800);
+      } else showAttract();
+    }
+
+    function activity() {
+      lastInput = performance.now();
+      if (mode === 'attract') { setMode('typing'); hideAttract(); }
+    }
+
+    typing.addEventListener('load', () => {
+      const doc = typing.contentDocument;
+      const style = doc.createElement('style');
+      style.textContent = '#paste,#info{display:none!important}body{cursor:none}';
+      doc.head.append(style);
+      input = doc.getElementById('input');
+      for (const type of ['keydown', 'compositionstart', 'input']) input.addEventListener(type, event => { if (event.isTrusted) activity(); });
+      focusInput();
+      showAttract();
+    });
+
+    // 展示中にフォーカスが外れても、次のキー入力を取りこぼさないようにする。
+    document.addEventListener('pointerdown', () => setTimeout(focusInput));
+    addEventListener('focus', focusInput);
+    setInterval(() => {
+      if (input && typing.contentDocument.activeElement !== input) focusInput();
+      if (mode === 'typing' && performance.now() - lastInput > idleSeconds * 1000) enterAttract();
+    }, 1000);
+  })();
+</script>
