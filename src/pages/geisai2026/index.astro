@@ -143,8 +143,8 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
         try {
           const response = await fetch('/api/geisai2026/moderate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
           if (!response.ok) return;
-          const { probability } = await response.json();
-          if (probability >= 0.5 && input.value.startsWith(text)) clearText();
+          const { flagged } = await response.json();
+          if (flagged && input.value.startsWith(text)) clearText();
         } catch { /* 回線が切れても展示は続ける。 */ }
         finally { if (checking === text) checking = ''; }
       }, 400);
