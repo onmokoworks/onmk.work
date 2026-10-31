@@ -1,8 +1,8 @@
 ---
 import QRCode from 'qrcode';
-import Layout from '../layouts/Layout.astro';
+import Layout from '../../layouts/Layout.astro';
 
-// 21:9 の展示画面用。左 5/21 に説明、右 16/21 で試打と Wadamotion-4 を切り替える。
+// 21:9 の展示画面用。左 5/21 に説明、右 16/21 で試打と説明（Wadamotion-4 の動き）を切り替える。
 const tryUrl = 'https://onmk.work/workspace/wadalab-motion/';
 const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrectionLevel: 'M', color: { dark: '#111111', light: '#0000' } });
 ---
@@ -12,7 +12,7 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
     <aside class="panel">
       <h1>wadalab-motion</h1>
       <p class="hint hint-attract">キーを押すと入力できます</p>
-      <p class="hint hint-typing">しばらく打たないと『夢十夜』に戻ります</p>
+      <p class="hint hint-typing">しばらく打たないと最初の画面に戻ります</p>
       <!-- キー配置は展示用の HHKB と PC の設定に合わせて確認する。 -->
       <dl class="keys">
         <dt><kbd>control</kbd>+<kbd>space</kbd></dt><dd>かな／英数</dd>
@@ -27,7 +27,6 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
       <dl class="credit">
         <dt>骨格データ</dt><dd>CLWFK（東京大学和田研究室・電子書体オープンラボラトリー）</dd>
         <dt>英数字</dt><dd>和田研細丸ゴシック2004絵文字（希土類元素レアアース）</dd>
-        <dt>本文</dt><dd>夏目漱石『夢十夜』第一夜（青空文庫）</dd>
       </dl>
     </aside>
     <main class="stage">
@@ -73,7 +72,7 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
 <script is:inline>
   (() => {
     const params = new URLSearchParams(location.search);
-    // 最後の入力からこの秒数で Wadamotion-4 に戻す。?idle=10 で調整できる。
+    // 最後の入力からこの秒数で説明の画面に戻す。?idle=10 で調整できる。
     const idleSeconds = Number(params.get('idle')) || 45;
     const frame = document.querySelector('.geisai-page .frame');
     if (!frame) return;
@@ -91,9 +90,9 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
       if (attract) return;
       attract = document.createElement('iframe');
       attract.className = 'attract';
-      attract.title = '夢十夜 第一夜';
+      attract.title = 'wadalab-motion の説明';
       attract.tabIndex = -1;
-      attract.src = `/workspace/wadalab-motion/wadamotion-4/index.html?start=${Math.floor(Math.random() * 68)}`;
+      attract.src = '/geisai2026/attract/';
       attract.addEventListener('load', () => {
         const style = attract.contentDocument.createElement('style');
         style.textContent = 'a{display:none!important}canvas{cursor:none!important}';
