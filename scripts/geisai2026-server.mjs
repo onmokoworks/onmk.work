@@ -25,14 +25,16 @@ async function moderate(text) {
       model: 'clef-flash',
       state: {text},
       questions: {
-        lewd: {type: 'noul', instructions: 'Does `text`, typed by a visitor at a public art exhibition (usually Japanese), contain sexual, obscene, or lewd words, including slang, euphemisms, and spellings deliberately split or disguised with kana, kanji, romaji, or symbols?'},
+        lewd: {type: 'noul', instructions: 'Does `text`, typed by a visitor at a public art exhibition (usually Japanese), contain anything sexual, obscene, or lewd that would be inappropriate on a public screen, including words like エロ or えろい, slang, euphemisms, and spellings deliberately split or disguised with spaces, kana, kanji, romaji, or symbols such as ○ or π?'},
+        // 一つの質問だと崩した表記の確率が低く出るので、別に聞いて高いほうを使う。
+        disguised: {type: 'noul', instructions: 'Does `text` contain an obscene word, such as a word for genitals or sex, written with spaces, ○, ×, *, or other symbols inserted between or replacing some of its letters?'},
       },
     }),
   });
   const {success, result, errors} = await response.json();
   if (!response.ok || !success) throw new Error(`Clef-flash ${response.status} ${JSON.stringify(errors)}`);
-  const lewd = result.answers?.lewd;
-  return typeof lewd === 'number' ? lewd : lewd?.noul ?? 0;
+  const probability = answer => typeof answer === 'number' ? answer : answer?.noul ?? 0;
+  return Math.max(probability(result.answers?.lewd), probability(result.answers?.disguised));
 }
 
 createServer(async (request, response) => {
