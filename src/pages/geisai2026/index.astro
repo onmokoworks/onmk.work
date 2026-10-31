@@ -122,10 +122,32 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
       setMode('attract');
       // 打たれた文字を消すアニメーションを見せてから切り替える。
       if (input.value) {
-        input.value = '';
-        input.dispatchEvent(new InputEvent('input', { inputType: 'deleteContentBackward' }));
+        clearText();
         attractTimer = setTimeout(showAttract, 1800);
       } else showAttract();
+    }
+
+    // 卑猥語は Jev で判定して、打たれてから 3 秒以内に全文を消す。
+    // 判定は scripts/geisai2026-server.mjs が中継する。ほかの環境では API がないので何もしない。
+    let checkTimer = 0, checking = '';
+    function clearText() {
+      input.value = '';
+      input.dispatchEvent(new InputEvent('input', { inputType: 'deleteContentBackward' }));
+    }
+    function scheduleCheck() {
+      clearTimeout(checkTimer);
+      checkTimer = setTimeout(async () => {
+        const text = input.value;
+        if (!text.trim() || text === checking) return;
+        checking = text;
+        try {
+          const response = await fetch('/api/geisai2026/moderate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
+          if (!response.ok) return;
+          const { probability } = await response.json();
+          if (probability >= 0.6 && input.value.startsWith(text)) clearText();
+        } catch { /* 回線が切れても展示は続ける。 */ }
+        finally { if (checking === text) checking = ''; }
+      }, 400);
     }
 
     function activity() {
@@ -140,6 +162,8 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
       doc.head.append(style);
       input = doc.getElementById('input');
       for (const type of ['keydown', 'compositionstart', 'input']) input.addEventListener(type, event => { if (event.isTrusted) activity(); });
+      input.addEventListener('input', event => { if (event.isTrusted && !event.isComposing) scheduleCheck(); });
+      input.addEventListener('compositionend', scheduleCheck);
       focusInput();
       showAttract();
     });

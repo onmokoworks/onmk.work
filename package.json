@@ -9,7 +9,8 @@
     "start": "astro dev",
     "prebuild": "node scripts/prepare-workspace.mjs && node scripts/prepare-char-space.mjs && node scripts/prepare-gup-images.mjs --site",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "geisai": "npm run build && node scripts/geisai2026-server.mjs"
   },
   "dependencies": {
     "astro": "^5.0.0",
