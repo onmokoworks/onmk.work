@@ -127,7 +127,7 @@ const qr = await QRCode.toString(tryUrl, { type: 'svg', margin: 0, errorCorrecti
       } else showAttract();
     }
 
-    // 卑猥語は Jev で判定して、打たれてから 3 秒以内に全文を消す。
+    // 卑猥語は Clef-flash で判定して、打たれてから 3 秒以内に全文を消す。
     // 判定は scripts/geisai2026-server.mjs が中継する。ほかの環境では API がないので何もしない。
     let checkTimer = 0, checking = '';
     function clearText() {

@@ -1,6 +1,6 @@
 // 芸祭の展示機で /geisai2026/ を動かすローカルサーバー。
-// `npm run build` 済みの dist/ を配信し、/api/geisai2026/moderate で Jev に卑猥語の判定を中継する。
-// OPENROUTER_API_KEY は .env に置く（ブラウザには渡さない）。
+// `npm run build` 済みの dist/ を配信し、/api/geisai2026/moderate で Clef-flash（Workers AI）に卑猥語の判定を中継する。
+// CLOUDFLARE_ACCOUNT_ID と CLOUDFLARE_AUTH_TOKEN（Workers AI の権限）は .env に置く（ブラウザには渡さない）。
 import {createServer} from 'node:http';
 import {readFile, stat} from 'node:fs/promises';
 import {extname, join, normalize} from 'node:path';
@@ -10,27 +10,29 @@ const dist = join(root, 'dist');
 const port = Number(process.env.PORT) || 4326;
 const env = Object.fromEntries((await readFile(join(root, '.env'), 'utf8').catch(() => '')).split('\n')
   .map(line => line.match(/^\s*([\w.]+)\s*=\s*(.*?)\s*$/)).filter(Boolean).map(([, key, value]) => [key, value.replace(/^(['"])(.*)\1$/, '$2')]));
-const apiKey = process.env.OPENROUTER_API_KEY || env.OPENROUTER_API_KEY;
-if (!apiKey) console.warn('OPENROUTER_API_KEY がないので、卑猥語の判定はせずに配信だけします。');
+const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || env.CLOUDFLARE_ACCOUNT_ID;
+const apiKey = process.env.CLOUDFLARE_AUTH_TOKEN || env.CLOUDFLARE_AUTH_TOKEN;
+if (!accountId || !apiKey) console.warn('CLOUDFLARE_ACCOUNT_ID か CLOUDFLARE_AUTH_TOKEN がないので、卑猥語の判定はせずに配信だけします。');
 
 const types = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml', '.png': 'image/png', '.jpg': 'image/jpeg', '.ttf': 'font/ttf', '.woff2': 'font/woff2', '.txt': 'text/plain; charset=utf-8'};
 
 async function moderate(text) {
-  const response = await fetch('https://openrouter.ai/api/alpha/decisions', {
+  const response = await fetch(`https://api.cloudflare.com/client/v4/accounts/${accountId}/ai/run/@cf/cloudflare/clef-flash`, {
     method: 'POST',
     headers: {Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json'},
     signal: AbortSignal.timeout(4000),
     body: JSON.stringify({
-      model: 'typesafe/jev-1.14',
+      model: 'clef-flash',
       state: {text},
       questions: {
         lewd: {type: 'noul', instructions: 'Does `text`, typed by a visitor at a public art exhibition (usually Japanese), contain sexual, obscene, or lewd words, including slang, euphemisms, and spellings deliberately split or disguised with kana, kanji, romaji, or symbols?'},
       },
     }),
   });
-  if (!response.ok) throw new Error(`Jev ${response.status}`);
-  const result = await response.json();
-  return result.answers?.lewd?.noul ?? 0;
+  const {success, result, errors} = await response.json();
+  if (!response.ok || !success) throw new Error(`Clef-flash ${response.status} ${JSON.stringify(errors)}`);
+  const lewd = result.answers?.lewd;
+  return typeof lewd === 'number' ? lewd : lewd?.noul ?? 0;
 }
 
 createServer(async (request, response) => {
@@ -40,7 +42,7 @@ createServer(async (request, response) => {
       let body = '';
       for await (const chunk of request) { body += chunk; if (body.length > 20000) throw new Error('too long'); }
       const text = String(JSON.parse(body).text ?? '').slice(0, 2000);
-      const probability = apiKey && text.trim() ? await moderate(text) : 0;
+      const probability = accountId && apiKey && text.trim() ? await moderate(text) : 0;
       response.writeHead(200, {'Content-Type': 'application/json'}).end(JSON.stringify({probability}));
     } catch (error) {
       console.warn('判定に失敗:', error.message);
