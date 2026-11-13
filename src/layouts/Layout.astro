@@ -8,9 +8,37 @@ interface Props {
   hideFooter?: boolean;
   noindex?: boolean;
   bodyClass?: string;
+  description?: string;
+  image?: string; // OGP 用の画像 URL(microCMS 画像なら 1200x630 に切り抜く)
+  ogType?: "website" | "article";
 }
 
-const { title = "onmk", hideNav = false, hideFooter = false, noindex = false, bodyClass } = Astro.props;
+const {
+  title = "onmk",
+  hideNav = false,
+  hideFooter = false,
+  noindex = false,
+  bodyClass,
+  description: rawDescription,
+  image,
+  ogType = "website",
+} = Astro.props;
+
+const SITE_NAME = "onmk";
+const DEFAULT_DESCRIPTION = "おーん/onmk の作品・プロジェクト・文章。";
+const DEFAULT_IMAGE = Astro.site ? new URL("/assets/onmk-icon.jpg", Astro.site).href : "/assets/onmk-icon.jpg";
+
+// HTML を落として 1 行にし、長すぎる場合は切り詰める
+const plain = (rawDescription ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+const description = plain ? (plain.length > 120 ? `${plain.slice(0, 119)}…` : plain) : DEFAULT_DESCRIPTION;
+
+const ogImage = image
+  ? image.includes("images.microcms-assets.io") && !image.includes("?")
+    ? `${image}?w=1200&h=630&fit=crop`
+    : image
+  : DEFAULT_IMAGE;
+const twitterCard = image ? "summary_large_image" : "summary";
+const canonicalUrl = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 ---
 
 <!doctype html>
@@ -19,6 +47,19 @@ const { title = "onmk", hideNav = false, hideFooter = false, noindex = false, bo
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="ja_JP" />
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
     <link rel="icon" href="/assets/onmk-icon.jpg" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
     <meta name="theme-color" content="#b1b7d1" />

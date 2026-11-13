@@ -20,7 +20,12 @@ const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 ---
 
-<Layout title={`${post.title} | onmk`}>
+<Layout
+  title={`${post.title} | onmk`}
+  description={post.excerpt || post.body}
+  image={post.eyecatch?.url}
+  ogType="article"
+>
   <div class="container">
     <a href="/writings" class="back">← writings</a>
 

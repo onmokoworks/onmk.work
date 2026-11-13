@@ -25,7 +25,12 @@ const galleryImages = (work.images ?? []).slice(1);
 const thumbnail = !embedUrl ? work.images?.[0] : undefined;
 ---
 
-<Layout title={`${work.title} | onmk`}>
+<Layout
+  title={`${work.title} | onmk`}
+  description={work.description}
+  image={work.images?.[0]?.url}
+  ogType="article"
+>
   <div class="container">
     <a href="/works" class="back">← works</a>
 

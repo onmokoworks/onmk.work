@@ -131,7 +131,7 @@ export const getLogEntries = async (queries?: MicroCMSQueries) => {
 
 export const getBlogPosts = async (queries?: MicroCMSQueries) => {
   if (client) {
-    return await client.getList<BlogPost>({ endpoint: "blog", queries });
+    return await client.getList<BlogPost>({ endpoint: "writings", queries });
   }
   return await getListFallback<BlogPost>(mockBlogPosts as BlogPost[], queries);
 };

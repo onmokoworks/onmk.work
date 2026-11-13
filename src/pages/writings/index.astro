@@ -8,7 +8,7 @@ try {
   const res = await getBlogPosts({ orders: "-publishedAt", limit: 100 });
   posts = res.contents;
 } catch {
-  // microCMS の blog エンドポイント未作成 / 認証なしのときは空表示
+  // microCMS の writings エンドポイント未作成 / 認証なしのときは空表示
   posts = [];
 }
 

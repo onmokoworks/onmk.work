@@ -22,7 +22,12 @@ const tags = splitTags(script.tool);
 const scriptUrl = script.url?.trim();
 ---
 
-<Layout title={`${script.title} | onmk`}>
+<Layout
+  title={`${script.title} | onmk`}
+  description={script.summary || script.description}
+  image={script.thumbnail?.url}
+  ogType="article"
+>
   <div class="container">
     <a href="/projects" class="back">&larr; projects</a>
 
