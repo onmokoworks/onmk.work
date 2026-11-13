@@ -53,6 +53,7 @@ export type BlogPost = {
   body?: string;
   excerpt?: string;
   eyecatch?: MicroCMSImage;
+  thumb?: MicroCMSImage; // microCMS 側のフィールド ID。取得時に eyecatch へ揃える
   tag?: Tag[];
 } & MicroCMSListContent;
 
@@ -131,7 +132,11 @@ export const getLogEntries = async (queries?: MicroCMSQueries) => {
 
 export const getBlogPosts = async (queries?: MicroCMSQueries) => {
   if (client) {
-    return await client.getList<BlogPost>({ endpoint: "writings", queries });
+    const response = await client.getList<BlogPost>({ endpoint: "writings", queries });
+    return {
+      ...response,
+      contents: response.contents.map((post) => ({ ...post, eyecatch: post.eyecatch ?? post.thumb })),
+    };
   }
   return await getListFallback<BlogPost>(mockBlogPosts as BlogPost[], queries);
 };

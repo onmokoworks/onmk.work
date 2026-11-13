@@ -30,6 +30,12 @@ const fmtDate = (iso: string) =>
     <a href="/writings" class="back">← writings</a>
 
     <article class="blog-detail">
+      {post.eyecatch && (
+        <div class="blog-eyecatch">
+          <img src={`${post.eyecatch.url}?w=1200`} alt="" />
+        </div>
+      )}
+
       <header class="blog-head">
         <span class="blog-date">{fmtDate(post.publishedAt)}</span>
         <h1 class="blog-title">{post.title}</h1>
@@ -39,12 +45,6 @@ const fmtDate = (iso: string) =>
           </div>
         )}
       </header>
-
-      {post.eyecatch && (
-        <div class="blog-eyecatch">
-          <img src={`${post.eyecatch.url}?w=1200`} alt="" />
-        </div>
-      )}
 
       {post.body && <div class="blog-body" set:html={post.body}></div>}
     </article>
@@ -98,7 +98,9 @@ const fmtDate = (iso: string) =>
   }
   .blog-eyecatch img {
     width: 100%;
+    height: auto;
     display: block;
+    border-radius: 8px;
   }
 
   .blog-body {
