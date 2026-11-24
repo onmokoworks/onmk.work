@@ -48,7 +48,7 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
     // Browsers without ES modules (old Android) get the Clock as one classic script.
     const legacy = await build({
       entryPoints: [join(source, 'clock-flow-app.js')], bundle: true, format: 'iife', target: 'es2015', minify: true, write: false,
-      plugins: [{name: 'web-root', setup: ({onResolve}) => onResolve({filter: /^\//},({path}) => ({path: join(source, path)}))}],
+      plugins: [{name: 'web-root', setup: ({onResolve}) => onResolve({filter: /^\//},({path, kind}) => kind === 'entry-point' ? undefined : {path: join(source, path)})}], // the entry itself is an absolute path on Linux
     });
     await writeFile(new URL('clock-flow-legacy.js', output), legacy.outputFiles[0].text.replace(/(["'`])\/(?=font\/)/g,`$1${base}`));
     await writeFile(new URL('build-source.json', output), JSON.stringify({repository, commit}));
