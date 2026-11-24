@@ -2,12 +2,13 @@ import {mkdtemp, readFile, writeFile, mkdir, readdir, copyFile, rm} from 'node:f
 import {tmpdir} from 'node:os';
 import {join, resolve, sep} from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {build} from 'esbuild'; // ships with Astro (Vite)
 
 const root = new URL('../', import.meta.url);
 const experiments = JSON.parse(await readFile(new URL('workspace.json', root), 'utf8'));
 const files = ['index.html', 'style.css', 'app.js', 'renderer.js', 'native-renderer.js', 'fold-core.js', 'alpha-motion.js', 'motion-config.js', 'structure.js', 'source-engine.js', 'source-vm.js', 'source-fast.js', 'source-program.json', 'source-glyphs.json', 'deletion-schedule.js', 'playback-control.js', 'SOURCE-LICENSE.txt', 'SOURCE-NOTICE.txt', 'clock.html', 'clock.css', 'clock-app.js', 'clock-core.js', 'font/ascii-outlines.json', 'font/alpha-centerlines.json', 'font/clock-skeletons.json', 'font/LICENSE.txt'];
 
-files.push('source-contour-motion.js', 'wadamotion-4.html', 'motion-4.js', 'motion-4-diagnostics.js', 'transition-spacing.js', 'text-spacing.js', 'night-one.json', 'wadamotion-1.html', 'wadamotion-2.html', 'wadamotion-3.html', 'motion-library.js', 'walk-core.js', 'unfold-step.js', 'clock-flow-core.js', 'glyph-morph.js', 'clock-flow.html');
+files.push('source-contour-motion.js', 'wadamotion-4.html', 'motion-4.js', 'motion-4-diagnostics.js', 'transition-spacing.js', 'text-spacing.js', 'night-one.json', 'wadamotion-1.html', 'wadamotion-2.html', 'wadamotion-3.html', 'motion-library.js', 'walk-core.js', 'unfold-step.js', 'clock-flow-core.js', 'glyph-morph.js', 'clock-flow.html', 'clock-flow-app.js');
 for (const [name, {repository, commit}] of Object.entries(experiments)) {
   if (!/^[a-z0-9-]+$/.test(name) || !/^[\w-]+\/[\w.-]+$/.test(repository) || !/^[a-f0-9]{40}$/.test(commit)) throw new Error('Invalid workspace source');
   const temporary = await mkdtemp(join(tmpdir(), 'onmk-workspace-'));
@@ -44,6 +45,12 @@ for (const [name, {repository, commit}] of Object.entries(experiments)) {
       await mkdir(new URL(`wadamotion-${number}/`, output), {recursive: true});
       await copyFile(new URL(`wadamotion-${number}.html`, output), new URL(`wadamotion-${number}/index.html`, output));
     }
+    // Browsers without ES modules (old Android) get the Clock as one classic script.
+    const legacy = await build({
+      entryPoints: [join(source, 'clock-flow-app.js')], bundle: true, format: 'iife', target: 'es2015', minify: true, write: false,
+      plugins: [{name: 'web-root', setup: ({onResolve}) => onResolve({filter: /^\//},({path}) => ({path: join(source, path)}))}],
+    });
+    await writeFile(new URL('clock-flow-legacy.js', output), legacy.outputFiles[0].text.replace(/(["'`])\/(?=font\/)/g,`$1${base}`));
     await writeFile(new URL('build-source.json', output), JSON.stringify({repository, commit}));
     // Exercise the packaged files before deployment, including VM arithmetic.
     const {SourceEngine} = await import(new URL('source-engine.js', output));
