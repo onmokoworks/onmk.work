@@ -6,8 +6,12 @@
 <title>有志ラボ選択相談会</title>
 <link rel="icon" href="data:,">
 <style>
-  html, body { margin: 0; height: 100%; background: #fff; color: #111; overflow: hidden; overscroll-behavior: none; }
-  canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  /* The page is a little taller than the screen so that scrolling down tucks the
+     browser's toolbars away. Nothing else scrolls: the canvas stays fixed. */
+  html { background: #fff; color: #111; overflow-x: hidden; overscroll-behavior-x: none; scrollbar-width: none; }
+  html::-webkit-scrollbar { display: none; }
+  body { margin: 0; height: calc(100vh + 160px); }
+  canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
 </style>
 <canvas role="marquee" aria-label="有志ラボ選択相談会"></canvas>
 <script src="data.js"></script>
@@ -29,7 +33,7 @@
   function resize() {
     width = innerWidth; height = innerHeight; ratio = Math.min(window.devicePixelRatio || 1, 2);
     scale = height * HEIGHT / 400;
-    canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+    canvas.style.height = height + 'px'; canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
   }
 
   // Scroll input, in screen pixels. It moves the text and feeds the fold.
@@ -45,7 +49,8 @@
   addEventListener('wheel', function (event) {
     var unit = event.deltaMode === 1 ? 32 : event.deltaMode === 2 ? height : 1;
     // Only sideways movement counts; vertical scrolling is ignored on purpose.
-    if (event.deltaX) scrolled(event.deltaX * unit);
+    if (!event.deltaX) return;
+    scrolled(event.deltaX * unit);
     if (event.cancelable) event.preventDefault();
   }, {passive: false});
   // A finger or mouse drag measures its own speed; letting go hands that speed to
@@ -64,8 +69,7 @@
       var t = event.changedTouches[i]; if (t.identifier !== touch.id) continue;
       dragged(touch.x - t.clientX); touch.x = t.clientX;
     }
-    if (event.cancelable) event.preventDefault();
-  }, {passive: false});
+  }, {passive: true});
   addEventListener('touchend', function () { if (touch) released(); touch = null; }); addEventListener('touchcancel', function () { touch = null; speed = 0; });
   // Dragging sideways with a mouse scrolls too; the text follows the pointer.
   var grab = null;
@@ -94,12 +98,15 @@
 
   function draw() {
     var now = performance.now(), dt = Math.min(.05, (now - last) / 1000); last = now;
+    if (!queued) { queued = true; (window.requestAnimationFrame || function (callback) { setTimeout(callback, 16); })(paint); }
     offset += (SPEED + glide / scale) * dt; glide *= Math.exp(-dt / 1.5);
     // While the pulse is held the fold eases in; afterwards it eases back out.
     if (held > 0) { held -= dt; if (held <= 0) push = 0; }
     folded += (push - folded) * (1 - Math.exp(-dt / (push > folded ? .09 : .26)));
     trail.unshift(folded); if (trail.length > 120) trail.pop();
-
+    render();
+  }
+  function render() {
     context.setTransform(ratio, 0, 0, ratio, 0, 0); context.clearRect(0, 0, width, height);
     context.strokeStyle = color; context.lineCap = 'round'; context.lineJoin = 'round';
     var span = period * scale, shift = ((offset * scale) % span + span) % span, top = (height - 400 * scale) / 2;
@@ -115,9 +122,16 @@
         trace(glyph, progress, x, top - amount * 36 * scale);
       }
     }
-    (window.requestAnimationFrame || function (callback) { setTimeout(callback, 16); })(draw);
   }
-  resize(); addEventListener('resize', resize); draw();
+  // A double tap or double click fills the whole screen, hiding every browser bar.
+  canvas.addEventListener("dblclick", function () {
+    var root = document.documentElement, enter = root.requestFullscreen || root.webkitRequestFullscreen, leave = document.exitFullscreen || document.webkitExitFullscreen;
+    if (document.fullscreenElement || document.webkitFullscreenElement) { if (leave) leave.call(document); } else if (enter) enter.call(root);
+  });
+  // Redraw at once after a resize: toolbars sliding away resize the canvas, which clears it.
+  var queued = false;
+  function paint() { queued = false; draw(); }
+  resize(); addEventListener('resize', function () { resize(); render(); }); paint();
 })();
 </script>
 </html>
