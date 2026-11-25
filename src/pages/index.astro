@@ -4,7 +4,8 @@ import { getTimeline, type TimelineKind } from "../library/timeline";
 
 const timeline = await getTimeline();
 
-// Twemoji codepoints per kind (SVGs vendored in /public/emoji/).
+// Twemoji codepoints per kind. Colour SVGs are vendored in /public/emoji/; the
+// timeline shows the greyscale copies in /public/emoji/mono/ (scripts/mono-emoji.mjs).
 const emojiCode: Partial<Record<TimelineKind, string>> = {
   work: "1f3ac", // 🎬
   blog: "1f4dd", // 📝
@@ -45,7 +46,7 @@ const fmtDate = (iso: string) => {
                   rel={entry.external ? "noopener" : undefined}
                 >
                   <span class="tl-icon" aria-hidden="true">
-                    <img class="tl-emoji" src={`/emoji/${entry.emojiCode ?? emojiCode[entry.kind]}.svg`} alt="" loading="lazy" />
+                    <img class="tl-emoji" src={`/emoji/mono/${entry.emojiCode ?? emojiCode[entry.kind]}.svg`} alt="" loading="lazy" />
                   </span>
                   <span class="tl-content">
                     <span class="tl-meta">
@@ -178,7 +179,6 @@ const fmtDate = (iso: string) => {
     width: 16px;
     height: 16px;
     display: block;
-    filter: grayscale(1);
   }
   .tl-item[data-kind="blog"] .tl-icon,
   .tl-item[data-kind="work"] .tl-icon { color: var(--text-main); }
