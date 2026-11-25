@@ -13,7 +13,8 @@
 <script src="data.js"></script>
 <script>
 // A banner that flows right to left. Scrolling sideways (swipe, drag, arrow keys) pushes
-// the flow and folds the strokes away; they unfold again as soon as it stops.
+// the flow and folds the strokes away for a moment; they unfold again right away,
+// even while the scrolling goes on.
 // Plain script and old syntax on purpose: this also has to run on old phones.
 (function () {
   var banner = window.BANNER, canvas = document.querySelector('canvas'), context = canvas.getContext('2d');
@@ -32,8 +33,15 @@
   }
 
   // Scroll input, in screen pixels. It moves the text and feeds the fold.
-  var offset = 0, push = 0, folded = 0, trail = [], last = performance.now();
-  function scrolled(pixels) { offset += pixels / scale; push = Math.min(1, push + Math.abs(pixels) / 500); }
+  var offset = 0, push = 0, held = 0, folded = 0, trail = [], last = performance.now();
+  // A slide starts one short pulse. Devices report slides very differently (a few
+  // big steps or a long stream of small ones), so the pulse has a fixed length and
+  // a new one can start only after the strokes are mostly back.
+  function scrolled(pixels) {
+    offset += pixels / scale;
+    if (held <= 0 && folded < .12) { held = .2; push = .75; }
+    if (held > 0) push = Math.min(1, push + Math.abs(pixels) / 160);
+  }
   addEventListener('wheel', function (event) {
     var unit = event.deltaMode === 1 ? 32 : event.deltaMode === 2 ? height : 1;
     // Only sideways movement counts; vertical scrolling is ignored on purpose.
@@ -78,8 +86,9 @@
   function draw() {
     var now = performance.now(), dt = Math.min(.05, (now - last) / 1000); last = now;
     offset += SPEED * dt;
-    // The fold drifts towards the pushed amount and lets go even more slowly.
-    folded += (push - folded) * (1 - Math.exp(-dt / .3)); push *= Math.exp(-dt / .95);
+    // While the pulse is held the fold eases in; afterwards it eases back out.
+    if (held > 0) { held -= dt; if (held <= 0) push = 0; }
+    folded += (push - folded) * (1 - Math.exp(-dt / (push > folded ? .09 : .26)));
     trail.unshift(folded); if (trail.length > 120) trail.pop();
 
     context.setTransform(ratio, 0, 0, ratio, 0, 0); context.clearRect(0, 0, width, height);
@@ -90,7 +99,7 @@
         var glyph = characters[c], x = x0 + starts[c] * scale;
         if (x > width || x + glyph.advance * scale < 0) continue;
         // Each character follows the one before it a few frames later.
-        var amount = ease(Math.min(1, trail[Math.min(trail.length - 1, c * 6)] || 0)), progress = 1 - .94 * amount;
+        var amount = ease(Math.min(1, trail[Math.min(trail.length - 1, c * 4)] || 0)), progress = 1 - .94 * amount;
         context.lineWidth = glyph.width * scale * (.45 + .55 * progress);
         context.globalAlpha = Math.min(1, progress * 2.2);
         // Folded strokes also lift a little, as if floating off the line.
