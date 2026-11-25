@@ -12,7 +12,7 @@
 <canvas role="marquee" aria-label="有志ラボ選択相談会"></canvas>
 <script src="data.js"></script>
 <script>
-// A banner that flows right to left. Scrolling (wheel, swipe, arrow keys) pushes
+// A banner that flows right to left. Scrolling sideways (swipe, drag, arrow keys) pushes
 // the flow and folds the strokes away; they unfold again as soon as it stops.
 // Plain script and old syntax on purpose: this also has to run on old phones.
 (function () {
@@ -36,16 +36,16 @@
   function scrolled(pixels) { offset += pixels / scale; push = Math.min(1, push + Math.abs(pixels) / 500); }
   addEventListener('wheel', function (event) {
     var unit = event.deltaMode === 1 ? 32 : event.deltaMode === 2 ? height : 1;
-    scrolled((Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX) * unit);
+    // Only sideways movement counts; vertical scrolling is ignored on purpose.
+    if (event.deltaX) scrolled(event.deltaX * unit);
     if (event.cancelable) event.preventDefault();
   }, {passive: false});
   var touch = null;
-  addEventListener('touchstart', function (event) { var t = event.changedTouches[0]; touch = {id: t.identifier, x: t.clientX, y: t.clientY}; }, {passive: true});
+  addEventListener('touchstart', function (event) { var t = event.changedTouches[0]; touch = {id: t.identifier, x: t.clientX}; }, {passive: true});
   addEventListener('touchmove', function (event) {
     for (var i = 0; touch && i < event.changedTouches.length; i++) {
       var t = event.changedTouches[i]; if (t.identifier !== touch.id) continue;
-      var dx = touch.x - t.clientX, dy = touch.y - t.clientY;
-      scrolled(Math.abs(dy) > Math.abs(dx) ? dy : dx); touch.x = t.clientX; touch.y = t.clientY;
+      scrolled(touch.x - t.clientX); touch.x = t.clientX;
     }
     if (event.cancelable) event.preventDefault();
   }, {passive: false});
@@ -56,7 +56,7 @@
   addEventListener('mousemove', function (event) { if (grab !== null) { scrolled(grab - event.clientX); grab = event.clientX; } });
   addEventListener('mouseup', function () { grab = null; canvas.style.cursor = ''; });
   addEventListener('keydown', function (event) {
-    var step = {ArrowDown: 120, ArrowRight: 120, PageDown: 400, ' ': 400, ArrowUp: -120, ArrowLeft: -120, PageUp: -400}[event.key];
+    var step = {ArrowRight: 120, ArrowLeft: -120}[event.key];
     if (step) { scrolled(step); event.preventDefault(); }
   });
 
@@ -78,9 +78,9 @@
   function draw() {
     var now = performance.now(), dt = Math.min(.05, (now - last) / 1000); last = now;
     offset += SPEED * dt;
-    // The fold rises quickly towards the pushed amount and lets go slowly.
-    folded += (push - folded) * (1 - Math.exp(-dt / .12)); push *= Math.exp(-dt / .45);
-    trail.unshift(folded); if (trail.length > 90) trail.pop();
+    // The fold drifts towards the pushed amount and lets go even more slowly.
+    folded += (push - folded) * (1 - Math.exp(-dt / .3)); push *= Math.exp(-dt / .95);
+    trail.unshift(folded); if (trail.length > 120) trail.pop();
 
     context.setTransform(ratio, 0, 0, ratio, 0, 0); context.clearRect(0, 0, width, height);
     context.strokeStyle = color; context.lineCap = 'round'; context.lineJoin = 'round';
@@ -90,10 +90,11 @@
         var glyph = characters[c], x = x0 + starts[c] * scale;
         if (x > width || x + glyph.advance * scale < 0) continue;
         // Each character follows the one before it a few frames later.
-        var amount = trail[Math.min(trail.length - 1, c * 3)] || 0, progress = 1 - .94 * ease(Math.min(1, amount));
+        var amount = ease(Math.min(1, trail[Math.min(trail.length - 1, c * 6)] || 0)), progress = 1 - .94 * amount;
         context.lineWidth = glyph.width * scale * (.45 + .55 * progress);
-        context.globalAlpha = Math.min(1, progress * 4);
-        trace(glyph, progress, x, top);
+        context.globalAlpha = Math.min(1, progress * 2.2);
+        // Folded strokes also lift a little, as if floating off the line.
+        trace(glyph, progress, x, top - amount * 36 * scale);
       }
     }
     (window.requestAnimationFrame || function (callback) { setTimeout(callback, 16); })(draw);
