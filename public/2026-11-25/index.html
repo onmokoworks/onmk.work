@@ -6,18 +6,94 @@
 <title>有志ラボ選択相談会</title>
 <link rel="icon" href="data:,">
 <style>
-  html, body { margin: 0; height: 100%; background: #fff; color: #111; overflow: hidden; }
-  /* Two identical halves; sliding by one half loops without a seam. */
-  .flow {
-    position: absolute; top: 0; left: 0; height: 100%;
-    display: flex; align-items: center; white-space: nowrap;
-    font: 900 70vh/1 "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Noto Sans CJK JP", "Yu Gothic", Meiryo, sans-serif;
-    -webkit-animation: flow 14s linear infinite; animation: flow 14s linear infinite;
-    will-change: transform;
-  }
-  .flow span { padding-right: 1em; }
-  @-webkit-keyframes flow { to { -webkit-transform: translateX(-50%); } }
-  @keyframes flow { to { transform: translateX(-50%); } }
+  html, body { margin: 0; height: 100%; background: #fff; color: #111; overflow: hidden; overscroll-behavior: none; }
+  canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; touch-action: none; }
 </style>
-<div class="flow" role="marquee" aria-label="有志ラボ選択相談会"><span>有志ラボ選択相談会</span><span aria-hidden="true">有志ラボ選択相談会</span></div>
+<canvas role="marquee" aria-label="有志ラボ選択相談会"></canvas>
+<script src="data.js"></script>
+<script>
+// A banner that flows right to left. Scrolling (wheel, swipe, arrow keys) pushes
+// the flow and folds the strokes away; they unfold again as soon as it stops.
+// Plain script and old syntax on purpose: this also has to run on old phones.
+(function () {
+  var banner = window.BANNER, canvas = document.querySelector('canvas'), context = canvas.getContext('2d');
+  var color = getComputedStyle(canvas).color;
+  var characters = Array.from(banner.text).map(function (character) { return banner.glyphs[character]; });
+  var GAP = 400, SPEED = 290, HEIGHT = .7; // units between repeats, units per second, glyph height / screen height
+  var starts = [], period = 0;
+  characters.forEach(function (glyph) { starts.push(period); period += glyph.advance; });
+  period += GAP;
+
+  var width, height, scale, ratio;
+  function resize() {
+    width = innerWidth; height = innerHeight; ratio = Math.min(window.devicePixelRatio || 1, 2);
+    scale = height * HEIGHT / 400;
+    canvas.width = Math.round(width * ratio); canvas.height = Math.round(height * ratio);
+  }
+
+  // Scroll input, in screen pixels. It moves the text and feeds the fold.
+  var offset = 0, push = 0, folded = 0, trail = [], last = performance.now();
+  function scrolled(pixels) { offset += pixels / scale; push = Math.min(1, push + Math.abs(pixels) / 500); }
+  addEventListener('wheel', function (event) {
+    var unit = event.deltaMode === 1 ? 32 : event.deltaMode === 2 ? height : 1;
+    scrolled((Math.abs(event.deltaY) > Math.abs(event.deltaX) ? event.deltaY : event.deltaX) * unit);
+    if (event.cancelable) event.preventDefault();
+  }, {passive: false});
+  var touch = null;
+  addEventListener('touchstart', function (event) { var t = event.changedTouches[0]; touch = {id: t.identifier, x: t.clientX, y: t.clientY}; }, {passive: true});
+  addEventListener('touchmove', function (event) {
+    for (var i = 0; touch && i < event.changedTouches.length; i++) {
+      var t = event.changedTouches[i]; if (t.identifier !== touch.id) continue;
+      var dx = touch.x - t.clientX, dy = touch.y - t.clientY;
+      scrolled(Math.abs(dy) > Math.abs(dx) ? dy : dx); touch.x = t.clientX; touch.y = t.clientY;
+    }
+    if (event.cancelable) event.preventDefault();
+  }, {passive: false});
+  addEventListener('touchend', function () { touch = null; }); addEventListener('touchcancel', function () { touch = null; });
+  addEventListener('keydown', function (event) {
+    var step = {ArrowDown: 120, ArrowRight: 120, PageDown: 400, ' ': 400, ArrowUp: -120, ArrowLeft: -120, PageUp: -400}[event.key];
+    if (step) { scrolled(step); event.preventDefault(); }
+  });
+
+  function ease(t) { return t * t * (3 - 2 * t); }
+  // One glyph at fold progress 0..1 (1 = whole), interpolated between baked steps.
+  function trace(glyph, progress, x, y) {
+    var position = progress * banner.steps, step = Math.min(banner.steps - 1, Math.floor(position)), mix = position - step;
+    context.beginPath();
+    for (var s = 0; s < glyph.strokes.length; s++) {
+      var stroke = glyph.strokes[s], size = stroke.points * 2, a = step * size, b = a + size, data = stroke.data;
+      for (var i = 0; i < size; i += 2) {
+        var px = x + (data[a + i] + (data[b + i] - data[a + i]) * mix) * scale / 10, py = y + (data[a + i + 1] + (data[b + i + 1] - data[a + i + 1]) * mix) * scale / 10;
+        if (i) context.lineTo(px, py); else context.moveTo(px, py);
+      }
+    }
+    context.stroke();
+  }
+
+  function draw() {
+    var now = performance.now(), dt = Math.min(.05, (now - last) / 1000); last = now;
+    offset += SPEED * dt;
+    // The fold rises quickly towards the pushed amount and lets go slowly.
+    folded += (push - folded) * (1 - Math.exp(-dt / .12)); push *= Math.exp(-dt / .45);
+    trail.unshift(folded); if (trail.length > 90) trail.pop();
+
+    context.setTransform(ratio, 0, 0, ratio, 0, 0); context.clearRect(0, 0, width, height);
+    context.strokeStyle = color; context.lineCap = 'round'; context.lineJoin = 'round';
+    var span = period * scale, shift = ((offset * scale) % span + span) % span, top = (height - 400 * scale) / 2;
+    for (var x0 = -shift; x0 < width; x0 += span) {
+      for (var c = 0; c < characters.length; c++) {
+        var glyph = characters[c], x = x0 + starts[c] * scale;
+        if (x > width || x + glyph.advance * scale < 0) continue;
+        // Each character follows the one before it a few frames later.
+        var amount = trail[Math.min(trail.length - 1, c * 3)] || 0, progress = 1 - .94 * ease(Math.min(1, amount));
+        context.lineWidth = glyph.width * scale * (.45 + .55 * progress);
+        context.globalAlpha = Math.min(1, progress * 4);
+        trace(glyph, progress, x, top);
+      }
+    }
+    (window.requestAnimationFrame || function (callback) { setTimeout(callback, 16); })(draw);
+  }
+  resize(); addEventListener('resize', resize); draw();
+})();
+</script>
 </html>
