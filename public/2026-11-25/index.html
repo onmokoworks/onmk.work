@@ -48,24 +48,33 @@
     if (event.deltaX) scrolled(event.deltaX * unit);
     if (event.cancelable) event.preventDefault();
   }, {passive: false});
+  // A finger or mouse drag measures its own speed; letting go hands that speed to
+  // the glide, which keeps the text sliding and fades out over a couple of seconds.
+  var glide = 0, speed = 0, moved = 0;
+  function dragged(pixels) {
+    var now = performance.now(), dt = (now - moved) / 1000; moved = now;
+    if (dt > 0 && dt < .2) speed = .3 * speed + .7 * Math.max(-9000, Math.min(9000, pixels / dt)); else speed = 0;
+    glide = 0; scrolled(pixels);
+  }
+  function released() { glide = performance.now() - moved < 120 ? speed : 0; speed = 0; }
   var touch = null;
-  addEventListener('touchstart', function (event) { var t = event.changedTouches[0]; touch = {id: t.identifier, x: t.clientX}; }, {passive: true});
+  addEventListener('touchstart', function (event) { var t = event.changedTouches[0]; touch = {id: t.identifier, x: t.clientX}; glide = 0; speed = 0; moved = performance.now(); }, {passive: true});
   addEventListener('touchmove', function (event) {
     for (var i = 0; touch && i < event.changedTouches.length; i++) {
       var t = event.changedTouches[i]; if (t.identifier !== touch.id) continue;
-      scrolled(touch.x - t.clientX); touch.x = t.clientX;
+      dragged(touch.x - t.clientX); touch.x = t.clientX;
     }
     if (event.cancelable) event.preventDefault();
   }, {passive: false});
-  addEventListener('touchend', function () { touch = null; }); addEventListener('touchcancel', function () { touch = null; });
+  addEventListener('touchend', function () { if (touch) released(); touch = null; }); addEventListener('touchcancel', function () { touch = null; speed = 0; });
   // Dragging sideways with a mouse scrolls too; the text follows the pointer.
   var grab = null;
-  canvas.addEventListener('mousedown', function (event) { if (event.button === 0) { grab = event.clientX; canvas.style.cursor = 'grabbing'; event.preventDefault(); } });
-  addEventListener('mousemove', function (event) { if (grab !== null) { scrolled(grab - event.clientX); grab = event.clientX; } });
-  addEventListener('mouseup', function () { grab = null; canvas.style.cursor = ''; });
+  canvas.addEventListener('mousedown', function (event) { if (event.button === 0) { grab = event.clientX; glide = 0; speed = 0; moved = performance.now(); canvas.style.cursor = 'grabbing'; event.preventDefault(); } });
+  addEventListener('mousemove', function (event) { if (grab !== null) { dragged(grab - event.clientX); grab = event.clientX; } });
+  addEventListener('mouseup', function () { if (grab !== null) released(); grab = null; canvas.style.cursor = ''; });
   addEventListener('keydown', function (event) {
     var step = {ArrowRight: 120, ArrowLeft: -120}[event.key];
-    if (step) { scrolled(step); event.preventDefault(); }
+    if (step) { scrolled(step); glide += step * 5; event.preventDefault(); }
   });
 
   function ease(t) { return t * t * (3 - 2 * t); }
@@ -85,7 +94,7 @@
 
   function draw() {
     var now = performance.now(), dt = Math.min(.05, (now - last) / 1000); last = now;
-    offset += SPEED * dt;
+    offset += (SPEED + glide / scale) * dt; glide *= Math.exp(-dt / 1.5);
     // While the pulse is held the fold eases in; afterwards it eases back out.
     if (held > 0) { held -= dt; if (held <= 0) push = 0; }
     folded += (push - folded) * (1 - Math.exp(-dt / (push > folded ? .09 : .26)));
