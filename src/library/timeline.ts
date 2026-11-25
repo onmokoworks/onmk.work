@@ -18,7 +18,7 @@ export interface TimelineEntry {
   external: boolean;
   badge: string; // human label shown next to the date
   meta?: string; // small trailing detail (release tag, language, ...)
-  thumbnail?: string; // image URL when the source has one (works/tools/blog)
+  thumbnail?: string; // image URL when the source has one (works/tools; writings show none)
   thumbnailFallback?: string; // fallback when a YouTube max-resolution image is unavailable
   emojiCode?: string; // per-entry Twemoji override
 }
@@ -83,7 +83,7 @@ function blogToEntries(posts: BlogPost[]): TimelineEntry[] {
     href: `/writings/${post.slug ?? post.id}`,
     external: false,
     badge: "Writing",
-    thumbnail: thumb(post.eyecatch?.url),
+    // No thumbnail: writings are listed as text only on the home timeline.
   }));
 }
 
@@ -105,7 +105,6 @@ export async function getTimeline(): Promise<TimelineYear[]> {
       href: post.href,
       external: true,
       badge: "Writing",
-      thumbnail: post.thumbnail,
     })),
   ].filter((entry) => Boolean(entry.date));
 
